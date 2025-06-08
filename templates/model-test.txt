@@ -1,0 +1,78 @@
+import Model from '@/models/Model';
+import {{name}}, { IncomingApiData } from '@/models/{{name}}';
+import { describe, expect, it } from 'vitest';
+
+describe('{{name}}', () => {
+  it('should be a valid model', () => {
+    expect({{name}}).toBeDefined();
+    expect({{name}}.prototype).toBeDefined();
+    expect({{name}}.prototype.constructor).toBeDefined();
+    expect({{name}}.prototype instanceof Model).toBeTruthy();
+  });
+
+  it('should registered as a children of Model', () => {
+    expect(Model.children.{{nameSnakeCase}}).toBe({{name}});
+  });
+
+  it('should be able to create a new {{nameSeparated}}', () => {
+    const {{nameCamelCase}} = new {{name}}(1, 'Malik');
+
+    expect({{nameCamelCase}}).toBeDefined();
+    expect({{nameCamelCase}}.id).toBe(1);
+    expect({{nameCamelCase}}.name).toBe('Malik');
+  });
+
+  it('should be able to create a new {{nameSeparated}} from API data', () => {
+    const apiData: IncomingApiData = {
+      id: 1,
+      name: 'Malik',
+    };
+    const {{nameCamelCase}} = {{name}}.fromApiData(apiData);
+
+    expect({{nameCamelCase}}).toBeDefined();
+    expect({{nameCamelCase}}.id).toBe(apiData.id);
+    expect({{nameCamelCase}}.name).toBe(apiData.name);
+  });
+
+  it('should be able to create a new {{nameSeparated}} array from API data array', () => {
+    const apiData: IncomingApiData[] = [
+      {
+        id: 1,
+        name: 'Rapik'
+      },
+      {
+        id: 2,
+        name: 'Aqshal'
+      }
+    ];
+    const {{nameCamelCasePlural}} = {{name}}.fromApiData(apiData);
+
+    expect({{nameCamelCasePlural}}).toBeDefined();
+    expect({{nameCamelCasePlural}}.length).toBe(apiData.length);
+    expect({{nameCamelCasePlural}}[0].id).toBe(apiData[0].id);
+    expect({{nameCamelCasePlural}}[0].name).toBe(apiData[0].name);
+    expect({{nameCamelCasePlural}}[1].id).toBe(apiData[1].id);
+    expect({{nameCamelCasePlural}}[1].name).toBe(apiData[1].name);
+  });
+
+  it('should be able to convert {{nameSeparated}} to API data', () => {
+    const {{nameCamelCase}} = new {{name}}(1, 'Malik');
+    const apiData = {{name}}.toApiData({{nameCamelCase}});
+
+    expect(apiData).toBeDefined();
+    expect(apiData.id).toBe({{nameCamelCase}}.id);
+    expect(apiData.name).toBe({{nameCamelCase}}.name);
+  });
+
+  it('should be able to convert {{nameSeparated}} array to API data array', () => {
+    const {{nameCamelCasePlural}} = [new {{name}}(1, 'Malik'), new {{name}}(2, 'Fauzan')];
+    const apiData = {{name}}.toApiData({{nameCamelCasePlural}});
+
+    expect(apiData).toBeDefined();
+    expect(apiData.length).toBe({{nameCamelCasePlural}}.length);
+    expect(apiData[0].id).toBe({{nameCamelCasePlural}}[0].id);
+    expect(apiData[0].name).toBe({{nameCamelCasePlural}}[0].name);
+    expect(apiData[1].id).toBe({{nameCamelCasePlural}}[1].id);
+    expect(apiData[1].name).toBe({{nameCamelCasePlural}}[1].name);
+  });
+});

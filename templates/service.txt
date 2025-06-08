@@ -1,0 +1,74 @@
+import { {{model}} } from '@/models';
+import api from '@/utils/api';
+
+export default class {{name}} {
+  /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: {{model}}[];
+   * }>}
+   * */
+  static async getAll(token) {
+    const response = await api.get('{{endpoint}}', {token});
+    if(!response.data) return response;
+    return { ...response, data: {{model}}.fromApiData(response.data)};
+  }
+
+  /**
+   * @param {{{model}}} data
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  errors?: { [key: string]: string[] };
+   * }}
+   */
+  static async store(data, token) {
+    return await api.post('{{endpoint}}', { body: {{model}}.toApiData(data), token });
+  }
+
+  /**
+   * @param {number} id
+   * @param {{{model}}} data
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  errors?: { [key: string]: string[] };
+   * }>}
+   */
+  static async update(id, data, token) {
+    return await api.patch(`{{endpoint}}/edit/${id}`, { body: {{model}}.toApiData(data), token });
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   * }>}
+   */
+  static async delete(id, token) {
+    return await api.delete(`{{endpoint}}/delete/${id}`, { token });
+  }
+
+  /**
+   * @param {number[]} ids
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   * }>}
+   */
+  static async deleteBatch(ids, token) {
+    return await api.delete(`{{endpoint}}/multi-delete/?id=${ids.join(',')}`, { token });
+  }
+}

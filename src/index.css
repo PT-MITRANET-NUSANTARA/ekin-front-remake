@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Plus Jakarta Sans';
+    src: url(assets/font/PlusJakartaSans-Regular.ttf) format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .landing-village-card-container {
+    background: linear-gradient(to top, #0001, #000), url('/image_asset/foto_desa.jpg');
+    background-position: center;
+    background-size: cover;
+  }
+  b.news-text,
+  p.news-text {
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+}
