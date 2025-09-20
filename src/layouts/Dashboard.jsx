@@ -8,7 +8,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const { logout, token, user } = useAuth();
+  const { logout, token, user, photoProfile } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -72,7 +72,7 @@ const Dashboard = () => {
                   <Dropdown menu={{ items }}>
                     <a onClick={(e) => e.preventDefault()}>
                       <Space>
-                        <Avatar className="bg-color-primary-100 text-color-primary-500 font-semibold">U</Avatar>
+                        <Avatar src={photoProfile} />
                       </Space>
                     </a>
                   </Dropdown>

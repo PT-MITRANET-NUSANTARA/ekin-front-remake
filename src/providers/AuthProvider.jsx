@@ -29,11 +29,13 @@ import { useCallback, useEffect, useState } from 'react';
 export default function AuthProvider({ children }) {
   const { execute: loginService, isLoading: loginIsLoading } = useService(AuthService.login);
   const { execute: logoutService, isLoading: logoutIsLoading } = useService(AuthService.logout);
+  const { execute: getPhotoService, isLoading: getPhotoServiceLoading } = useService(AuthService.getPhoto);
   const { execute: forgotService, isLoading: forgotIsLoading } = useService(AuthService.forgot);
   const { execute: resetService, isLoading: resetIsLoading } = useService(AuthService.reset);
   const { execute: getUser, isLoading: getUserIsLoading } = useService(AuthService.me);
   const [token, setToken] = useLocalStorage('token', '');
   const [user, setUser] = useState(null);
+  const [photoProfile, setPhotoProfile] = useState(null);
 
   env.dev(() => {
     window.token = token;
@@ -46,22 +48,28 @@ export default function AuthProvider({ children }) {
       return;
     }
 
-    const fetchUser = async () => {
+    const fetchUserAndPhoto = async () => {
       try {
-        const { code, data } = await getUser(token);
+        const { code, data: userData } = await getUser(token);
         if (code === HttpStatusCode.UNAUTHORIZED) {
           setToken('');
           return;
         }
-        setUser(data);
+
+        setUser(userData);
+
+        const res = await getPhotoService(token);
+        if (res?.data) {
+          setPhotoProfile(res.data);
+        }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error('Error fetching user or photo:', error);
         setToken('');
       }
     };
 
-    fetchUser();
-  }, [getUser, setToken, token]);
+    fetchUserAndPhoto();
+  }, [getPhotoService, getUser, setToken, token]);
 
   const login = useCallback(
     /**
@@ -134,7 +142,8 @@ export default function AuthProvider({ children }) {
         reset,
         token,
         user,
-        isLoading: loginIsLoading || logoutIsLoading || getUserIsLoading || forgotIsLoading || resetIsLoading,
+        photoProfile,
+        isLoading: loginIsLoading || logoutIsLoading || getUserIsLoading || forgotIsLoading || resetIsLoading || getPhotoServiceLoading,
         onUnauthorized
       }}
     >

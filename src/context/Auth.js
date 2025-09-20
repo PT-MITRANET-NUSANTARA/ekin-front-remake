@@ -7,6 +7,7 @@ const AuthContext = createContext({
   reset: () => Promise.resolve({ isSuccess: false, message: '' }),
   token: JSON.parse(localStorage.getItem('token'))?.data || '',
   user: null,
+  photoProfile: null,
   isLoading: false,
   onUnauthorized: () => {}
 });
