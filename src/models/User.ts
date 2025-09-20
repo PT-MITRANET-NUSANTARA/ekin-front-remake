@@ -1,73 +1,90 @@
 import { Action, Role } from '@/constants';
 import Model, { ModelChildren } from './Model';
-import Permission from './Permission';
+// import Permission from './Permission';
 
 export interface IncomingApiData {
-  id: number;
-  email: string;
-  name: string;
-  role: {
+  idASN: number;
+  nipBaru: number;
+  nama: string;
+  nik: number;
+  status_asn: string;
+  unor: {
     id: number;
-    name: string;
-    permissions: string[];
+    nama: string;
   };
+  foto: string;
   permissions: string[];
 }
 
 export interface untranslatedIncoming {}
 
-interface OutgoingApiData {
-  email: IncomingApiData['email'];
-}
+// interface OutgoingApiData {
+//   email: IncomingApiData['email'];
+// }
 
 export default class User extends Model {
   constructor(
-    public id: number,
-    public email: string,
+    public idAsn: number,
+    public newNip: number,
     public name: string,
-    public token: string,
-    public role: Role,
-    public roleId: number,
-    public permissions: Permission[] = []
+    public nik: number,
+    public asn_status: string,
+    public unor: {
+      id: number;
+      nama: string;
+    },
+    public photo: string
+    // public permissions: Permission[] = []
   ) {
     super();
   }
 
-  is(role: Role) {
-    return this.role === role;
-  }
+  // is(role: Role) {
+  //   return this.role === role;
+  // }
 
-  can(action: Action, model: ModelChildren) {
-    return this.permissions.some((permission) => permission.can(action, model));
-  }
+  // can(action: Action, model: ModelChildren) {
+  //   return this.permissions.some((permission) => permission.can(action, model));
+  // }
 
-  cant(action: Action, model: ModelChildren) {
-    return !this.can(action, model);
-  }
+  // cant(action: Action, model: ModelChildren) {
+  //   return !this.can(action, model);
+  // }
 
-  eitherCan(...permissions: [Action, ModelChildren][]) {
-    return permissions.some(([action, model]) => this.can(action, model));
-  }
+  // eitherCan(...permissions: [Action, ModelChildren][]) {
+  //   return permissions.some(([action, model]) => this.can(action, model));
+  // }
 
-  cantDoAny(...permissions: [Action, ModelChildren][]) {
-    return !this.eitherCan(...permissions);
-  }
+  // cantDoAny(...permissions: [Action, ModelChildren][]) {
+  //   return !this.eitherCan(...permissions);
+  // }
 
   static fromApiData(apiData: IncomingApiData, token: string): User {
     const roles = {
       admin: Role.ADMIN,
       opd_provinsi: Role.PEGAWAI
     };
-    const role = roles[apiData.role.name as keyof typeof roles] || null;
-    const permissions = Permission.fromApiData([...apiData.role.permissions, ...apiData.permissions]);
-    return new User(apiData.id, apiData.email, apiData.name, token, role, apiData.role.id, permissions);
+    // const role = roles[apiData.role.name as keyof typeof roles] || null;
+    // const permissions = Permission.fromApiData([...apiData.role.permissions, ...apiData.permissions]);
+    return new User(
+      apiData.idASN,
+      apiData.nipBaru,
+      apiData.nama,
+      apiData.nik,
+      apiData.status_asn,
+      {
+        id: apiData.unor.id,
+        nama: apiData.unor.nama
+      },
+      apiData.foto
+    );
   }
 
-  static toApiData(user: User): OutgoingApiData {
-    return {
-      email: user.email
-    };
-  }
+  // static toApiData(user: User): OutgoingApiData {
+  //   return {
+  //     email: user.email
+  //   };
+  // }
 }
 
 Model.children.pengguna = User;

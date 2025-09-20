@@ -17,7 +17,7 @@ const Login = () => {
    * }} values
    */
   const onFinish = async (values) => {
-    const { isSuccess, message } = await login(values.email, values.password);
+    const { isSuccess, message } = await login(values.username, values.password);
     if (!isSuccess) return error('Gagal', message);
   };
 
@@ -31,8 +31,8 @@ const Login = () => {
       </div>
       <Form name="login" layout="vertical" initialValues={{ remember: true }} onFinish={onFinish}>
         <Form.Item
-          label="Email"
-          name="email"
+          label="Username"
+          name="username"
           rules={[
             {
               required: true,
