@@ -1,7 +1,7 @@
 import { PAGINATION_ALL } from '@/constants';
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
-export const BASE_URL = `${baseUrl}`;
+export const BASE_URL = `${baseUrl}/api`;
 
 const controllers = {};
 
@@ -50,15 +50,7 @@ async function customFetch(endpoint, method, body, token, file, abortController)
 
   const response = await fetch(BASE_URL + endpoint, options);
 
-  const contentType = response.headers.get('content-type');
-
-  if (contentType && contentType.includes('application/json')) {
-    return await response.json();
-  } else {
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    return { isSuccess: true, data: url };
-  }
+  return await response.json();
 }
 
 /**
@@ -104,22 +96,10 @@ function createCustomFetch(method) {
   };
 }
 
-async function customFetchFile(endpoint, token) {
-  const response = await fetch(BASE_URL + endpoint, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : ''
-    }
-  });
-  const blob = await response.blob();
-  const url = URL.createObjectURL(blob);
-  return { isSuccess: response.ok, data: url };
-}
-
 export default {
   get: createCustomFetch('GET'),
   post: createCustomFetch('POST'),
   patch: createCustomFetch('PATCH'),
   put: createCustomFetch('PUT'),
-  delete: createCustomFetch('DELETE'),
-  getFile: customFetchFile
+  delete: createCustomFetch('DELETE')
 };

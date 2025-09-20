@@ -14,11 +14,11 @@ export default class AuthService {
    * }>} - A promise that resolves to an object containing the HTTP status code, status, message, and authentication token.
    */
   static async login(username, password) {
-    const response = await api.post('/auth/login', { body: { username, password } });
+    const response = await api.post('/auth/login', { body: { username, password }, base: 'public' });
     if (!response.data) return response;
     return {
       ...response,
-      data: response.data.token
+      data: response.data
     };
   }
 
@@ -32,13 +32,18 @@ export default class AuthService {
    * }>}
    */
   static async me(token) {
-    const response = await api.get('/auth/me', { token });
+    const response = await api.get('/auth/profile', { token });
     if (!response.data) return response;
     return { ...response, data: User.fromApiData(response.data, token) };
   }
 
   static async logout() {
     return await api.post('/auth/logout');
+  }
+
+  static async getPhoto(token) {
+    const response = await api.getFile('/auth/profile/foto', token);
+    return response;
   }
 
   static async forgot(email) {
