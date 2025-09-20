@@ -60,8 +60,6 @@ const DashboardSider = ({ collapsed, onCloseMenu }) => {
         }))
     }));
 
-
-
   return isDesktop ? (
     <Sider theme="light" className="p-4" width={230} collapsed={collapsed}>
       <Link to="/">

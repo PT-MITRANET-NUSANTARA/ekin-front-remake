@@ -13,8 +13,8 @@ export default class AuthService {
    *   data?: string
    * }>} - A promise that resolves to an object containing the HTTP status code, status, message, and authentication token.
    */
-  static async login(email, password) {
-    const response = await api.post('/auth/login', { body: { email, password } });
+  static async login(username, password) {
+    const response = await api.post('/auth/login', { body: { username, password } });
     if (!response.data) return response;
     return {
       ...response,

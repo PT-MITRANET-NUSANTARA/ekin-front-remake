@@ -23,7 +23,7 @@ function App() {
               path,
               element: <Element />
             })),
-     
+
             { path: '*', element: <Notfound /> }
           ]
         },
@@ -56,8 +56,7 @@ function App() {
                   element: <Element />
                 };
               })
-            ),
-
+            )
           ]
         },
         {

@@ -1,11 +1,7 @@
-
 const Home = () => {
-
   return (
     <>
-      <section className="mx-auto  w-full max-w-screen-xl flex justify-center text-3xl items-center  gap-x-10 px-6 py-28">
-        Wellcome
-      </section>
+      <section className="mx-auto flex w-full max-w-screen-xl items-center justify-center gap-x-10 px-6 py-28 text-3xl">Wellcome</section>
     </>
   );
 };
