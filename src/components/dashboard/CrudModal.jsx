@@ -128,14 +128,15 @@ export default function CrudModal({ isModalOpen, data: initialData, close, title
   };
 
   return (
-    <Modal title={type !== CrudModalType.CONFIRM_DELETE ? title : ''} open={isModalOpen} onClose={close} onCancel={close} footer={null} {...props}>
-      {type === CrudModalType.CONFIRM_DELETE ? (
-        <div className="flex flex-col items-center justify-center gap-y-4">
+    <Modal title={![CrudModalType.CONFIRM_DELETE, CrudModalType.DELETE].includes(type) ? title : ''} open={isModalOpen} onClose={close} onCancel={close} footer={null} {...props}>
+      {type === CrudModalType.CONFIRM_DELETE || type === CrudModalType.DELETE ? (
+        <div className="flex flex-col items-center justify-center gap-y-2 py-4">
           <DeleteOutlined style={{ fontSize: '32px' }} />
           <p>{title}</p>
+          <small className="mb-4 max-w-xs text-center">Data yang Anda hapus tidak dapat dipulihkan. Penghapusan ini juga akan berdampak pada data lain yang terkait.</small>
           <div className="flex items-center gap-x-2">
             <Button type="default" onClick={close}>
-              Tidak
+              Batal
             </Button>
             <Button danger type="primary" onClick={onSubmit} loading={isLoading}>
               Ya Hapus

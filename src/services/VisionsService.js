@@ -1,26 +1,26 @@
 /* eslint-disable no-unused-vars */
-import { {{model}} } from '@/models';
+import { Visions } from '@/models';
 import api from '@/utils/api';
 
-export default class {{name}} {
+export default class VisionsService {
   /**
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
-   *  data?: {{model}}[];
+   *  data?: Visions[];
    * }>}
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('{{endpoint}}', {token});
-    if(!response.data) return response;
-    return { ...response, data: {{model}}.fromApiData(response.data)};
+    const response = await api.get('/visi', { token, params });
+    if (!response.data) return response;
+    return { ...response, data: Visions.fromApiData(response.data) };
   }
 
   /**
-   * @param {{{model}}} data
+   * @param {Visions} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -30,12 +30,12 @@ export default class {{name}} {
    * }}
    */
   static async store(data, token) {
-    return await api.post('{{endpoint}}', { body: {{model}}.toApiData(data), token });
+    return await api.post('/visi', { body: Visions.toApiData(data), token });
   }
 
   /**
    * @param {number} id
-   * @param {{{model}}} data
+   * @param {Visions} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -45,7 +45,7 @@ export default class {{name}} {
    * }>}
    */
   static async update(id, data, token) {
-    return await api.patch(`{{endpoint}}/edit/${id}`, { body: {{model}}.toApiData(data), token });
+    return await api.patch(`/visi/${id}`, { body: Visions.toApiData(data), token });
   }
 
   /**
@@ -58,7 +58,7 @@ export default class {{name}} {
    * }>}
    */
   static async delete(id, token) {
-    return await api.delete(`{{endpoint}}/delete/${id}`, { token });
+    return await api.delete(`/visi/${id}`, { token });
   }
 
   /**
@@ -71,6 +71,6 @@ export default class {{name}} {
    * }>}
    */
   static async deleteBatch(ids, token) {
-    return await api.delete(`{{endpoint}}/multi-delete/?id=${ids.join(',')}`, { token });
+    return await api.delete(`/visi/multi-delete/?id=${ids.join(',')}`, { token });
   }
 }
