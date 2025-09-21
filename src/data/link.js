@@ -37,7 +37,8 @@ export const dashboardLink = [
     icon: DatabaseOutlined,
     children: [
       { path: '/dashboard/visions', label: 'Visi', element: Dashboard.Visions },
-      { path: '/dashboard/missions', label: 'Misi', element: Dashboard.Missions }
+      { path: '/dashboard/missions', label: 'Misi', element: Dashboard.Missions },
+      { path: '/dashboard/renstras', label: 'Rencana Strategi', element: Dashboard.Renstras }
     ]
   }
 ].map((item) => ({

@@ -14,7 +14,7 @@ export default class MissionsService {
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/misi', { token });
+    const response = await api.get('/misi', { token, params });
     if (!response.data) return response;
     return { ...response, data: Missions.fromApiData(response.data) };
   }
