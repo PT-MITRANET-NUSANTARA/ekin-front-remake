@@ -1,6 +1,7 @@
 enum Modul {
   VISION = 'Visi',
-  MISSION = 'Misi'
+  MISSION = 'Misi',
+  RENSTRA = 'Rencana Strategi'
 }
 
 export default Modul;
