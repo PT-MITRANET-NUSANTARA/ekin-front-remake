@@ -1,16 +1,10 @@
-import { Action } from '@/constants';
-import { useAuth } from '@/hooks';
 import { DeleteOutlined, ExportOutlined, ImportOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Skeleton, Typography } from 'antd';
 import PropTypes from 'prop-types';
 
-const { CREATE, DELETE } = Action;
-
 const { Title, Text } = Typography;
 
-export default function DataHeader({ modul, subtitle, selectedData, onStore, onDeleteBatch, model, children, onImport, onExport }) {
-  const { user } = useAuth();
-
+export default function DataHeader({ modul, subtitle, selectedData, onStore, onDeleteBatch, children, onImport, onExport }) {
   return (
     <>
       <div className="mb-6">
@@ -24,32 +18,34 @@ export default function DataHeader({ modul, subtitle, selectedData, onStore, onD
             subtitle
           ))}
       </div>
-      {(children || (user && user.eitherCan([DELETE, model], [CREATE, model]))) && (
-        <div className="mb-6 flex flex-col-reverse justify-end gap-2 empty:hidden md:flex-row">
-          {user && user.can(DELETE, model) && onDeleteBatch && (
-            <Button className="me-auto" icon={<DeleteOutlined />} variant="solid" color="danger" disabled={!selectedData?.length} onClick={onDeleteBatch}>
-              Hapus {selectedData?.length || null} Pilihan
-            </Button>
-          )}
-          {user && user.can(CREATE, model) && onStore && (
-            <Button icon={<PlusOutlined />} type="primary" onClick={onStore}>
-              Tambah
-            </Button>
-          )}
-          {onImport && (
-            <Button variant="solid" icon={<ImportOutlined />} onClick={onImport}>
-              Import
-            </Button>
-          )}
-          {onExport && (
-            <Button variant="solid" icon={<ExportOutlined />} onClick={onExport}>
-              Export
-            </Button>
-          )}
+      {/* {(children || (user && user.eitherCan([DELETE, model], [CREATE, model]))) && ( */}
+      <div className="mb-6 flex flex-col-reverse justify-end gap-2 empty:hidden md:flex-row">
+        {/* {user && user.can(DELETE, model) && onDeleteBatch && ( */}
+        {onDeleteBatch && (
+          <Button className="me-auto" icon={<DeleteOutlined />} variant="solid" color="danger" disabled={!selectedData?.length} onClick={onDeleteBatch}>
+            Hapus {selectedData?.length || null} Pilihan
+          </Button>
+        )}
+        {/* {user && user.can(CREATE, model) && onStore && ( */}
+        {onStore && (
+          <Button icon={<PlusOutlined />} type="primary" onClick={onStore}>
+            Tambah
+          </Button>
+        )}
+        {onImport && (
+          <Button variant="solid" icon={<ImportOutlined />} onClick={onImport}>
+            Import
+          </Button>
+        )}
+        {onExport && (
+          <Button variant="solid" icon={<ExportOutlined />} onClick={onExport}>
+            Export
+          </Button>
+        )}
 
-          {children}
-        </div>
-      )}
+        {children}
+      </div>
+      {/* )} */}
     </>
   );
 }
