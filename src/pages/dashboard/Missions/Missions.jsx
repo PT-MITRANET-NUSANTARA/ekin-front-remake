@@ -32,11 +32,9 @@ const Missions = () => {
 
   React.useEffect(() => {
     fetchMissions();
-    fetchVision({ token: token });
   }, [fetchMissions, fetchVision, pagination.page, pagination.per_page, token]);
 
   const missions = getAllMissions.data ?? [];
-  const vision = getAllMissions.data ?? [];
 
   const column = [
     {
@@ -64,7 +62,7 @@ const Missions = () => {
             onClick={() => {
               modal.edit({
                 title: `Ubah ${Modul.MISSION}`,
-                formFields: formFields({ fetchVision, options: { visions: vision } }),
+                formFields: formFields({ fetchVision }),
                 data: { ...record, visi_id: { value: record.visi.id, label: record.visi.nama } },
                 onSubmit: async (values) => {
                   const { isSuccess, message } = await updateMission.execute(record.id, values, token);

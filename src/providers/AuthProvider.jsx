@@ -48,28 +48,39 @@ export default function AuthProvider({ children }) {
       return;
     }
 
-    const fetchUserAndPhoto = async () => {
+    const fetchUser = async () => {
       try {
         const { code, data: userData } = await getUser(token);
         if (code === HttpStatusCode.UNAUTHORIZED) {
           setToken('');
           return;
         }
-
         setUser(userData);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setToken('');
+      }
+    };
 
+    fetchUser();
+  }, [getPhotoService, getUser, setToken, token]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchPhoto = async () => {
+      try {
         const res = await getPhotoService(token);
         if (res?.data) {
           setPhotoProfile(res.data);
         }
       } catch (error) {
-        console.error('Error fetching user or photo:', error);
-        setToken('');
+        console.error('Error fetching photo profile:', error);
       }
     };
 
-    fetchUserAndPhoto();
-  }, [getPhotoService, getUser, setToken, token]);
+    fetchPhoto();
+  }, [getPhotoService, token]);
 
   const login = useCallback(
     /**

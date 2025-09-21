@@ -120,7 +120,7 @@ const Visions = () => {
 
   return (
     <Card>
-      <DataTableHeader modul={Modul.VISION} onStore={onCreate} selectedData={selectedNews} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader modul={Modul.VISION} onStore={onCreate} selectedData={selectedNews} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>
       <div className="w-full max-w-full overflow-x-auto">
         <DataTable data={visions} columns={column} loading={getAllVisions.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} handleSelectedData={(_, selectedRows) => setSelectedNews(selectedRows)} />
       </div>
