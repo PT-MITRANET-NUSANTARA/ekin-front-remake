@@ -1,13 +1,13 @@
 import { Action } from '@/constants';
-import { useAuth } from '@/hooks';
 import strings from '@/utils/strings';
 import { InfoOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 
-export default function Detail({ title = strings('detail'), onClick, model, action = Action.READ }) {
-  const { user } = useAuth();
-  if (action !== Action.NONE && (!user || user.cant(action, model))) return null;
+// export default function Detail({ title = strings('detail'), onClick, model, action = Action.READ }) {
+export default function Detail({ title = strings('detail'), onClick }) {
+  // const { user } = useAuth();
+  // if (action !== Action.NONE && (!user || user.cant(action, model))) return null;
 
   return (
     <Tooltip title={title}>

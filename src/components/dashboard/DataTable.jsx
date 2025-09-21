@@ -14,7 +14,7 @@ export default function DataTable({ columns, data, loading, title = '', handleSe
     {
       title: 'No',
       dataIndex: 'index',
-      render: (_, __, index) => ((pagination?.page || 1) - 1) * (pagination?.perPage || 10) + (index + 1),
+      render: (_, __, index) => ((pagination?.page || 1) - 1) * (pagination?.per_page || 10) + (index + 1),
       width: '5%',
       fixed: 'left'
     },
@@ -151,7 +151,7 @@ export default function DataTable({ columns, data, loading, title = '', handleSe
         pagination
           ? {
               current: pagination.page,
-              pageSize: pagination.perPage,
+              pageSize: pagination.per_page,
               total: pagination.totalData,
               onChange: pagination.onChange
             }
@@ -168,7 +168,7 @@ DataTable.propTypes = {
   loading: PropTypes.bool.isRequired,
   pagination: PropTypes.shape({
     page: PropTypes.number.isRequired,
-    perPage: PropTypes.number.isRequired,
+    per_page: PropTypes.number.isRequired,
     totalData: PropTypes.number.isRequired,
     onChange: PropTypes.func.isRequired
   }),
