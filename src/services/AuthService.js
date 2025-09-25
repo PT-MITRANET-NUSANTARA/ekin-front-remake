@@ -41,6 +41,10 @@ export default class AuthService {
     return await api.post('/auth/logout');
   }
 
+  static async verifyToken(token) {
+    return await api.post('/auth/verify', { token });
+  }
+
   static async getPhoto(token) {
     const response = await api.getFile('/auth/profile/foto', token);
     return response;

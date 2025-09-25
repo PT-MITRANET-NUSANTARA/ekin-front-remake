@@ -21,7 +21,6 @@ const Renstras = () => {
   const updateRenstras = useService(RenstrasService.update);
   const [filterValues, setFilterValues] = React.useState({ search: '' });
   const pagination = usePagination({ totalData: getAllRenstras.totalData });
-  const [selectedNews, setSelectedNews] = React.useState([]);
 
   const fetchRenstras = React.useCallback(() => {
     execute({
@@ -115,9 +114,9 @@ const Renstras = () => {
                     children: record.tanggal_mulai
                   },
                   {
-                    key: 'tanggal_akhir',
+                    key: 'tanggal_selesai',
                     label: `Periode Akhir ${Modul.RENSTRA}`,
-                    children: record.tanggal_akhir
+                    children: record.tanggal_selesai
                   },
                   {
                     key: 'misi',
@@ -165,9 +164,9 @@ const Renstras = () => {
 
   return (
     <Card>
-      <DataTableHeader modul={Modul.RENSTRA} onStore={onCreate} selectedData={selectedNews} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader modul={Modul.RENSTRA} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} handleSelectedData={(_, selectedRows) => setSelectedNews(selectedRows)} />
+        <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} />
       </div>
     </Card>
   );

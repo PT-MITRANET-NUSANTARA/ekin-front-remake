@@ -7,6 +7,7 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import { flattenLandingLinks } from './utils/landingLink';
 import { Notfound } from './pages/result';
+import { GoalsIndicators } from './pages/dashboard';
 
 function App() {
   const { isLoading, user } = useAuth();
@@ -56,7 +57,8 @@ function App() {
                   element: <Element />
                 };
               })
-            )
+            ),
+            { path: '/dashboard/goals/:id', element: <GoalsIndicators /> }
           ]
         },
         {

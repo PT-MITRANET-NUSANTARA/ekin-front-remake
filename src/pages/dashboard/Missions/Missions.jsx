@@ -19,7 +19,6 @@ const Missions = () => {
   const updateMission = useService(MissionsService.update);
   const [filterValues, setFilterValues] = React.useState({ search: '' });
   const pagination = usePagination({ totalData: getAllMissions.totalData });
-  const [selectedNews, setSelectedNews] = React.useState([]);
 
   const fetchMissions = React.useCallback(() => {
     execute({
@@ -154,9 +153,9 @@ const Missions = () => {
 
   return (
     <Card>
-      <DataTableHeader modul={Modul.MISSION} onStore={onCreate} selectedData={selectedNews} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader modul={Modul.MISSION} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={missions} columns={column} loading={getAllMissions.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} handleSelectedData={(_, selectedRows) => setSelectedNews(selectedRows)} />
+        <DataTable data={missions} columns={column} loading={getAllMissions.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
       </div>
     </Card>
   );

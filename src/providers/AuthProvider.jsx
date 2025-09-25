@@ -63,7 +63,7 @@ export default function AuthProvider({ children }) {
     };
 
     fetchUser();
-  }, [getPhotoService, getUser, setToken, token]);
+  }, [getUser, setToken, token]);
 
   useEffect(() => {
     if (!token) return;
