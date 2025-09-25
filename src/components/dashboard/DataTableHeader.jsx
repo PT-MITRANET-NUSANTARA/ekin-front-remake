@@ -10,8 +10,6 @@ const { Title } = Typography;
 // export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch, model, children, onImport, onExport, onSearch, filter }) {
 export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch, children, onImport, onExport, onSearch, filter }) {
   const { user } = useAuth();
-  console.log(user);
-
   const hasImportCapability = !!onImport && typeof onImport === 'object';
 
   const importMenuItems = hasImportCapability
@@ -112,7 +110,7 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
         (user && (
           <div className="mb-6 flex flex-col-reverse justify-end gap-2 empty:hidden md:flex-row">
             {/* {user && user.can(DELETE, model) && onDeleteBatch && ( */}
-            {user && (
+            {onDeleteBatch && (
               <Button className="me-auto hidden lg:flex" icon={<DeleteOutlined />} variant="solid" color="danger" disabled={!selectedData?.length} onClick={onDeleteBatch}>
                 Hapus {selectedData?.length || null} Pilihan
               </Button>
