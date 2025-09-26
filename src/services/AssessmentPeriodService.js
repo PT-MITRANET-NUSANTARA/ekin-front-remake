@@ -14,7 +14,7 @@ export default class AssessmentPeriodService {
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/assessment-period', { token, params });
+    const response = await api.get('/periode-penilaian', { token, params });
     if (!response.data) return response;
     return { ...response, data: AssessmentPeriod.fromApiData(response.data) };
   }
@@ -30,7 +30,7 @@ export default class AssessmentPeriodService {
    * }}
    */
   static async store(data, token) {
-    return await api.post('/assessment-period', { body: AssessmentPeriod.toApiData(data), token });
+    return await api.post('/periode-penilaian', { body: AssessmentPeriod.toApiData(data), token });
   }
 
   /**
@@ -45,7 +45,7 @@ export default class AssessmentPeriodService {
    * }>}
    */
   static async update(id, data, token) {
-    return await api.patch(`/assessment-period/edit/${id}`, { body: AssessmentPeriod.toApiData(data), token });
+    return await api.patch(`/periode-penilaian/${id}`, { body: AssessmentPeriod.toApiData(data), token });
   }
 
   /**
@@ -58,7 +58,7 @@ export default class AssessmentPeriodService {
    * }>}
    */
   static async delete(id, token) {
-    return await api.delete(`/assessment-period/delete/${id}`, { token });
+    return await api.delete(`/periode-penilaian/${id}`, { token });
   }
 
   /**
@@ -71,6 +71,6 @@ export default class AssessmentPeriodService {
    * }>}
    */
   static async deleteBatch(ids, token) {
-    return await api.delete(`/assessment-period/multi-delete/?id=${ids.join(',')}`, { token });
+    return await api.delete(`/periode-penilaian/multi-delete/?id=${ids.join(',')}`, { token });
   }
 }

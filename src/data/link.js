@@ -43,7 +43,8 @@ export const dashboardLink = [
       { path: '/dashboard/programs', label: 'Program', element: Dashboard.Programs },
       { path: '/dashboard/activities', label: 'Kegiatan', element: Dashboard.Activities },
       { path: '/dashboard/subactivities', label: 'Sub Kegiatan', element: Dashboard.SubActivities },
-      { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts }
+      { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts },
+      { path: '/dashboard/assessmentperiod', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod }
     ]
   }
 ].map((item) => ({
