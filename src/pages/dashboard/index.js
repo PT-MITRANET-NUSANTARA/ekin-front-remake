@@ -12,3 +12,4 @@ export { default as SubActivities } from './SubActivities/SubActivities';
 export { default as SubAcitivitiesIndicators } from './SubActivities/SubActivitiesIndicators';
 export { default as Rkts } from './Rkts/Rkts';
 export { default as DetailRkt } from './Rkts/DetailRkts';
+export { default as AssessmentPeriod } from './AssessmentPeriods/AssessmentPeriods';

@@ -6,7 +6,8 @@ enum Modul {
   PROGRAM = 'Program',
   ACTIVITY = 'Kegiatan',
   SUBACTIVITY = 'Sub Kegiatan',
-  RKT = 'Rkt'
+  RKT = 'RKT',
+  ASSESSMENTPERIOD = 'Periode Penilaian'
 }
 
 export default Modul;

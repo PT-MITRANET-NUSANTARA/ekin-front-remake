@@ -1,92 +1,58 @@
-import { DatatableColumn, FormField as FormFieldType, Override } from '@/types';
-import strings from '@/utils/strings';
-import { DescriptionsItemType } from 'antd/es/descriptions';
 import Model from './Model';
-import { InputType } from '@/constants';
 
 export interface IncomingApiData {
-  id: number;
+  id: string;
+  periode_start: string;
+  periode_end: string;
+  unit_id: number;
   name: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface OutgoingApiData {
   name: string;
+  periode_start: string;
+  periode_end: string;
+  unit_id: number;
 }
 
-type FormValue = Pick<AssessmentPeriod, 'name'>;
+interface FormValue {
+  nama: string;
+  tanggal_mulai: string;
+  tanggal_selesai: string;
+  id_unit: number;
+}
 
 type ReturnType<S, From, To> = S extends From[] ? To[] : To;
-type Column = DatatableColumn<AssessmentPeriod>;
-type FormField = FormFieldType<FormValue>;
-type DescriptionsType = Override<DescriptionsItemType, { key: keyof Omit<AssessmentPeriod, 'descriptions'> }>;
 
 export default class AssessmentPeriod extends Model {
   constructor(
-    public id: number,
-    public name: string
+    public id: string,
+    public tanggal_mulai: string,
+    public tanggal_selesai: string,
+    public id_unit: number,
+    public nama: string,
+    public created_at: string,
+    public updated_at: string
   ) {
     super();
   }
 
-  public static columns: Record<keyof Omit<AssessmentPeriod, 'descriptions'>, (column?: Partial<Column>) => Column> = {
-    id: (column) => ({
-      title: strings('id'),
-      dataIndex: 'id',
-      sorter: (a, b) => a.id - b.id,
-      ...column
-    }),
-    name: (column) => ({
-      title: strings('name'),
-      dataIndex: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
-      searchable: true,
-      ...column
-    })
-  };
-
-  private static _formFields: Record<keyof FormValue, (field?: Partial<FormField>) => FormField> = {
-    name: (field) => ({
-      label: strings('name'),
-      name: 'name',
-      type: InputType.TEXT,
-      rules: [{ required: true, message: strings('s_is_required', strings('name')) }],
-      ...field
-    })
-  };
-
-  public static formFields(): FormField[] {
-    return [this._formFields.name()];
-  }
-
-  public descriptions: Record<keyof Omit<AssessmentPeriod, 'descriptions'>, (item?: Partial<DescriptionsType>) => DescriptionsType> = {
-    id: (item) => ({
-      key: 'id',
-      label: strings('id'),
-      children: this.id,
-      ...item
-    }),
-    name: (item) => ({
-      key: 'name',
-      label: strings('name'),
-      children: this.name,
-      ...item
-    })
-  };
-
   public static fromApiData<T extends IncomingApiData | IncomingApiData[]>(apiData: T): ReturnType<T, IncomingApiData, AssessmentPeriod> {
     if (Array.isArray(apiData)) return apiData.map((object) => this.fromApiData(object)) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
-    return new AssessmentPeriod(apiData.id, apiData.name) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
+    return new AssessmentPeriod(apiData.id, apiData.periode_start, apiData.periode_end, apiData.unit_id, apiData.name, apiData.createdAt, apiData.updatedAt) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
   }
 
-  public static toApiData<T extends AssessmentPeriod | AssessmentPeriod[]>(assessmentPeriod: T): ReturnType<T, AssessmentPeriod, OutgoingApiData> {
-    if (Array.isArray(assessmentPeriod)) return assessmentPeriod.map((object) => this.toApiData(object)) as ReturnType<T, AssessmentPeriod, OutgoingApiData>;
+  public static toApiData<T extends FormValue | FormValue[]>(assessmentPeriod: T): ReturnType<T, FormValue, OutgoingApiData> {
+    if (Array.isArray(assessmentPeriod)) return assessmentPeriod.map((object) => this.toApiData(object)) as ReturnType<T, FormValue, OutgoingApiData>;
     const apiData: OutgoingApiData = {
-      name: assessmentPeriod.name
+      name: assessmentPeriod.nama,
+      periode_start: assessmentPeriod.tanggal_selesai,
+      periode_end: assessmentPeriod.tanggal_selesai,
+      unit_id: assessmentPeriod.id_unit
     };
 
-    return apiData as ReturnType<T, AssessmentPeriod, OutgoingApiData>;
+    return apiData as ReturnType<T, FormValue, OutgoingApiData>;
   }
 }
-
-// FIXME: you maybe want to change below line. If you don't want to then delete this FIXME line
-Model.children.assessment_period = AssessmentPeriod;
