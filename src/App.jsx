@@ -7,7 +7,8 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import { flattenLandingLinks } from './utils/landingLink';
 import { Notfound } from './pages/result';
-import { GoalsIndicators } from './pages/dashboard';
+import { GoalsIndicators, ProgramsIndicators } from './pages/dashboard';
+import AcitivitiesIndicators from './pages/dashboard/Activities/ActivitiesIndicator';
 
 function App() {
   const { isLoading, user } = useAuth();
@@ -58,7 +59,9 @@ function App() {
                 };
               })
             ),
-            { path: '/dashboard/goals/:id', element: <GoalsIndicators /> }
+            { path: '/dashboard/goals/:id', element: <GoalsIndicators /> },
+            { path: '/dashboard/programs/:id', element: <ProgramsIndicators /> },
+            { path: '/dashboard/activities/:id', element: <AcitivitiesIndicators /> }
           ]
         },
         {

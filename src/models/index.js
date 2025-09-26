@@ -5,3 +5,6 @@ export { default as Visions } from './Visions';
 export { default as Missions } from './Missions';
 export { default as Renstras } from './Renstras';
 export { default as Goals } from './Goals';
+export { default as Programs } from './Programs';
+export { default as Activities } from './Activities';
+export { default as SubActivities } from './SubActivities';
