@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { MissionsService, RenstrasService } from '@/services';
-import { Card, List, Space } from 'antd';
+import { Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Renstras as RenstraModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -166,7 +166,9 @@ const Renstras = () => {
     <Card>
       <DataTableHeader modul={Modul.RENSTRA} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} />
+        <Skeleton loading={getAllRenstras.isLoading}>
+          <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} />
+        </Skeleton>
       </div>
     </Card>
   );

@@ -1,7 +1,7 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { AssessmentPeriodService } from '@/services';
-import { Card, Space } from 'antd';
+import { Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { AssessmentPeriod as AssessmentPeriodModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -128,7 +128,9 @@ const AssessmentPeriods = () => {
     <Card>
       <DataTableHeader modul={Modul.ASSESSMENTPERIOD} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={assessmentPeriods} columns={column} loading={getAllAssessmentPeriods.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
+        <Skeleton loading={getAllAssessmentPeriods.isLoading}>
+          <DataTable data={assessmentPeriods} columns={column} loading={getAllAssessmentPeriods.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
+        </Skeleton>
       </div>
     </Card>
   );

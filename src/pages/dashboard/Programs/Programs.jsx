@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { GoalsService, ProgramsService } from '@/services';
-import { Button, Card, Space } from 'antd';
+import { Button, Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Programs as ProgramModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -163,7 +163,9 @@ const Programs = () => {
     <Card>
       <DataTableHeader modul={Modul.PROGRAM} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={programs} columns={column} loading={getAllPrograms.isLoading} pagination={pagination} />
+        <Skeleton loading={getAllPrograms.isLoading}>
+          <DataTable data={programs} columns={column} loading={getAllPrograms.isLoading} pagination={pagination} />
+        </Skeleton>
       </div>
     </Card>
   );

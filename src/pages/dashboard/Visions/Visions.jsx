@@ -1,7 +1,7 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { VisionsService } from '@/services';
-import { Card, Space } from 'antd';
+import { Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Visions as VisionModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -121,7 +121,9 @@ const Visions = () => {
     <Card>
       <DataTableHeader modul={Modul.VISION} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={visions} columns={column} loading={getAllVisions.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
+        <Skeleton loading={getAllVisions.isLoading}>
+          <DataTable data={visions} columns={column} loading={getAllVisions.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
+        </Skeleton>
       </div>
     </Card>
   );
