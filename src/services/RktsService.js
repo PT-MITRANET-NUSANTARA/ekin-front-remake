@@ -1,22 +1,22 @@
 /* eslint-disable no-unused-vars */
-import { SubActivities } from '@/models';
+import { Rkts } from '@/models';
 import api from '@/utils/api';
 
-export default class SubActivitiesService {
+export default class RktsService {
   /**
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
-   *  data?: SubActivities[];
+   *  data?: Rkts[];
    * }>}
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/sub-kegiatan', { token, params });
+    const response = await api.get('/rkt', { token, params });
     if (!response.data) return response;
-    return { ...response, data: SubActivities.fromApiData(response.data) };
+    return { ...response, data: Rkts.fromApiData(response.data) };
   }
 
   /**
@@ -25,17 +25,17 @@ export default class SubActivitiesService {
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
-   *  data?: Activities[];
+   *  data?: Rkts[];
    * }>}
    * */
   static async getById(token, id) {
-    const response = await api.get(`/sub-kegiatan/${id}`, { token });
+    const response = await api.get(`/rkt/${id}`, { token });
     if (!response.data) return response;
-    return { ...response, data: SubActivities.fromApiData(response.data) };
+    return { ...response, data: Rkts.fromApiData(response.data) };
   }
 
   /**
-   * @param {SubActivities} data
+   * @param {Rkts} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -45,12 +45,12 @@ export default class SubActivitiesService {
    * }}
    */
   static async store(data, token) {
-    return await api.post('/sub-kegiatan', { body: SubActivities.toApiData(data), token });
+    return await api.post('/rkt', { body: Rkts.toApiData(data), token });
   }
 
   /**
    * @param {number} id
-   * @param {SubActivities} data
+   * @param {Rkts} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -60,7 +60,7 @@ export default class SubActivitiesService {
    * }>}
    */
   static async update(id, data, token) {
-    return await api.patch(`/sub-kegiatan/${id}`, { body: SubActivities.toApiData(data), token });
+    return await api.patch(`/rkt/${id}`, { body: Rkts.toApiData(data), token });
   }
 
   /**
@@ -73,7 +73,7 @@ export default class SubActivitiesService {
    * }>}
    */
   static async delete(id, token) {
-    return await api.delete(`/sub-kegiatan/${id}`, { token });
+    return await api.delete(`/rkt/${id}`, { token });
   }
 
   /**
@@ -86,6 +86,6 @@ export default class SubActivitiesService {
    * }>}
    */
   static async deleteBatch(ids, token) {
-    return await api.delete(`/sub-kegiatan/multi-delete/?id=${ids.join(',')}`, { token });
+    return await api.delete(`/rkt/multi-delete/?id=${ids.join(',')}`, { token });
   }
 }

@@ -3,7 +3,7 @@ import env from '@/utils/env';
 import { useCallback, useState } from 'react';
 
 export interface Response<T> {
-  code: number;
+  statusCode: number;
   status: boolean;
   message: string;
   data: T;
@@ -50,7 +50,7 @@ export default function useService<T, P extends any[]>(serviceMethod: (...params
         setData(response.data);
         setTotalData(response.pagination?.total || 0);
         message = response.message;
-        code = response.code;
+        code = response.statusCode;
         if (onUnauthorized && code === HttpStatusCode.UNAUTHORIZED) onUnauthorized();
         isSuccess = response.status;
       } catch (error) {
