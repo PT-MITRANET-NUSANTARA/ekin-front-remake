@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { MissionsService, VisionsService } from '@/services';
-import { Card, Space, Typography } from 'antd';
+import { Card, Skeleton, Space, Typography } from 'antd';
 import React from 'react';
 import { Missions as MissionModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -155,7 +155,9 @@ const Missions = () => {
     <Card>
       <DataTableHeader modul={Modul.MISSION} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={missions} columns={column} loading={getAllMissions.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
+        <Skeleton loading={getAllMissions.isLoading}>
+          <DataTable data={missions} columns={column} loading={getAllMissions.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
+        </Skeleton>
       </div>
     </Card>
   );

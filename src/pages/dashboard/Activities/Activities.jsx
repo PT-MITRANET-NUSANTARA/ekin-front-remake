@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { ActivitiesService, ProgramsService } from '@/services';
-import { Button, Card, Space } from 'antd';
+import { Button, Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Activities as ActivityModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -163,7 +163,9 @@ const Activities = () => {
     <Card>
       <DataTableHeader modul={Modul.ACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={activities} columns={column} loading={getAllActivities.isLoading} pagination={pagination} />
+        <Skeleton loading={getAllActivities.isLoading}>
+          <DataTable data={activities} columns={column} loading={getAllActivities.isLoading} pagination={pagination} />
+        </Skeleton>
       </div>
     </Card>
   );

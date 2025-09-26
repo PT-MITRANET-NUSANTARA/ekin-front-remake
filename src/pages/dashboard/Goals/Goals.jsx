@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { GoalsService, RenstrasService } from '@/services';
-import { Button, Card, Space, Tag } from 'antd';
+import { Button, Card, Skeleton, Space, Tag } from 'antd';
 import React from 'react';
 import { Goals as GoalModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -149,7 +149,9 @@ const Goals = () => {
     <Card>
       <DataTableHeader modul={Modul.GOAL} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={goals} columns={column} loading={getAllGoals.isLoading} pagination={pagination} />
+        <Skeleton loading={getAllGoals.isLoading}>
+          <DataTable data={goals} columns={column} loading={getAllGoals.isLoading} pagination={pagination} />
+        </Skeleton>
       </div>
     </Card>
   );

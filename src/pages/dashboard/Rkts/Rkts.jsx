@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { RenstrasService, RktsService, SubActivitiesService } from '@/services';
-import { Button, Card, List, Space } from 'antd';
+import { Button, Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Rkts as RktModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -179,7 +179,9 @@ const SubActivities = () => {
     <Card>
       <DataTableHeader modul={Modul.RKT} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={rkts} columns={column} loading={getAllRkts.isLoading} pagination={pagination} />
+        <Skeleton loading={getAllRkts.isLoading}>
+          <DataTable data={rkts} columns={column} loading={getAllRkts.isLoading} pagination={pagination} />
+        </Skeleton>
       </div>
     </Card>
   );
