@@ -8,3 +8,7 @@ export { default as Programs } from './Programs/Programs';
 export { default as ProgramsIndicators } from './Programs/ProgramsIndicators';
 export { default as Activities } from './Activities/Activities';
 export { default as ActivitiesIndicators } from './Activities/ActivitiesIndicator';
+export { default as SubActivities } from './SubActivities/SubActivities';
+export { default as SubAcitivitiesIndicators } from './SubActivities/SubActivitiesIndicators';
+export { default as Rkts } from './Rkts/Rkts';
+export { default as DetailRkt } from './Rkts/DetailRkts';

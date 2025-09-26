@@ -7,7 +7,7 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import { flattenLandingLinks } from './utils/landingLink';
 import { Notfound } from './pages/result';
-import { GoalsIndicators, ProgramsIndicators } from './pages/dashboard';
+import { DetailRkt, GoalsIndicators, ProgramsIndicators, SubAcitivitiesIndicators } from './pages/dashboard';
 import AcitivitiesIndicators from './pages/dashboard/Activities/ActivitiesIndicator';
 
 function App() {
@@ -61,7 +61,10 @@ function App() {
             ),
             { path: '/dashboard/goals/:id', element: <GoalsIndicators /> },
             { path: '/dashboard/programs/:id', element: <ProgramsIndicators /> },
-            { path: '/dashboard/activities/:id', element: <AcitivitiesIndicators /> }
+            { path: '/dashboard/activities/:id', element: <AcitivitiesIndicators /> },
+            { path: '/dashboard/activities/:id', element: <AcitivitiesIndicators /> },
+            { path: '/dashboard/subactivities/:id', element: <SubAcitivitiesIndicators /> },
+            { path: '/dashboard/rkts/:id', element: <DetailRkt /> }
           ]
         },
         {

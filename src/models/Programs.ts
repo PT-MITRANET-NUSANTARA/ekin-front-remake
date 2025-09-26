@@ -87,8 +87,8 @@ export default class Programs extends Model {
       },
       Number(apiData.total_anggaran),
       {
-        id: apiData.id,
-        nama: apiData.name
+        id: apiData.tujuan_id.id,
+        nama: apiData.tujuan_id.name
       },
       apiData.indikator_kinerja_id.map((item) => ({
         id: item.id,

@@ -52,13 +52,13 @@ export default function AuthProvider({ children }) {
       try {
         const { code, data: userData } = await getUser(token);
         if (code === HttpStatusCode.UNAUTHORIZED) {
-          setToken('');
+          setToken(null);
           return;
         }
         setUser(userData);
       } catch (error) {
         console.error('Error fetching user:', error);
-        setToken('');
+        setToken(null);
       }
     };
 

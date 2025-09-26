@@ -55,6 +55,12 @@ const Programs = () => {
       sorter: (a, b) => a.total_anggaran.length - b.total_anggaran.length,
       searchable: true,
       render: (record) => rupiahFormat(record, true)
+    },
+    {
+      title: 'Nama Tujuan',
+      dataIndex: ['id_tujuan', 'nama'],
+      sorter: (a, b) => a.id_tujuan.nama.length - b.id_tujuan.nama.length,
+      searchable: true
     }
   ];
 
@@ -70,7 +76,7 @@ const Programs = () => {
               modal.edit({
                 title: `Ubah ${Modul.PROGRAM}`,
                 formFields: programFormFields({ options: { goals: goals } }),
-                data: { ...record, id_tujuan: { label: record.id_tujuan.nama, value: record.id_tujuan.id } },
+                data: { ...record, id_tujuan: record.id_tujuan.id },
                 onSubmit: async (values) => {
                   const { isSuccess, message } = await updatePrograms.execute(record.id, { ...record, ...values, id_unit: record.id_unit.id_simpeg, id_tujuan: values.id_tujuan }, token);
                   if (isSuccess) {

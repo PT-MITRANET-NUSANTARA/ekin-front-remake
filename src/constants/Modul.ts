@@ -4,7 +4,9 @@ enum Modul {
   RENSTRA = 'Rencana Strategi',
   GOAL = 'Tujuan',
   PROGRAM = 'Program',
-  ACTIVITY = 'Kegiatan'
+  ACTIVITY = 'Kegiatan',
+  SUBACTIVITY = 'Sub Kegiatan',
+  RKT = 'Rkt'
 }
 
 export default Modul;

@@ -6,3 +6,4 @@ export { default as GoalsService } from './GoalsService';
 export { default as ProgramsService } from './ProgramsService';
 export { default as ActivitiesService } from './ActivitiesService';
 export { default as SubActivitiesService } from './SubActivitiesService';
+export { default as RktsService } from './RktsService';

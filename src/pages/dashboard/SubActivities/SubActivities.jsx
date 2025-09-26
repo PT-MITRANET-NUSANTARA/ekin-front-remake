@@ -1,30 +1,30 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { ActivitiesService, ProgramsService } from '@/services';
+import { ActivitiesService, SubActivitiesService } from '@/services';
 import { Button, Card, Space } from 'antd';
 import React from 'react';
-import { Activities as ActivityModel } from '@/models';
+import { SubActivities as SubActivityModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
-import { activitiesFormFields } from './FormFields';
+import { subActivitiesFormFields } from './FormFields';
 
-const Activities = () => {
+const SubActivities = () => {
   const { token, user } = useAuth();
   const modal = useCrudModal();
   const { success, error } = useNotification();
-  const { execute, ...getAllActivities } = useService(ActivitiesService.getAll);
-  const { execute: fetchPrograms, ...getAllGoals } = useService(ProgramsService.getAll);
-  const deleteActivity = useService(ActivitiesService.delete);
-  const storeActivity = useService(ActivitiesService.store);
-  const updateActivity = useService(ActivitiesService.update);
+  const { execute, ...getAllSubActivities } = useService(SubActivitiesService.getAll);
+  const { execute: fetchActivities, ...getAllActivities } = useService(ActivitiesService.getAll);
+  const deleteSubActivity = useService(SubActivitiesService.delete);
+  const storeSubActivity = useService(SubActivitiesService.store);
+  const updateSubActivity = useService(SubActivitiesService.update);
   const [filterValues, setFilterValues] = React.useState({ search: '' });
-  const pagination = usePagination({ totalData: getAllActivities.totalData });
+  const pagination = usePagination({ totalData: getAllSubActivities.totalData });
   const navigate = useNavigate();
 
-  const fetchActivities = React.useCallback(() => {
+  const fetchSubActivities = React.useCallback(() => {
     execute({
       token: token,
       page: pagination.page,
@@ -35,16 +35,16 @@ const Activities = () => {
   }, [execute, filterValues.search, pagination.page, pagination.per_page, token, user]);
 
   React.useEffect(() => {
-    fetchActivities();
-    fetchPrograms({ token: token });
-  }, [fetchActivities, fetchPrograms, pagination.page, pagination.per_page, token]);
+    fetchSubActivities();
+    fetchActivities({ token: token });
+  }, [fetchSubActivities, fetchActivities, pagination.page, pagination.per_page, token]);
 
+  const subActivities = getAllSubActivities.data ?? [];
   const activities = getAllActivities.data ?? [];
-  const programs = getAllGoals.data ?? [];
 
   const column = [
     {
-      title: 'Judul Kegiatan',
+      title: 'Judul Sub Kegiatan',
       dataIndex: 'nama',
       sorter: (a, b) => a.nama.length - b.nama.length,
       searchable: true
@@ -57,9 +57,9 @@ const Activities = () => {
       render: (record) => rupiahFormat(record, true)
     },
     {
-      title: 'Nama Program',
-      dataIndex: ['id_program', 'nama'],
-      sorter: (a, b) => a.id_program.nama.length - b.id_program.nama.length,
+      title: 'Nama Kegiatan',
+      dataIndex: ['id_kegiatan', 'nama'],
+      sorter: (a, b) => a.id_kegiatan.nama.length - b.id_kegiatan.nama.length,
       searchable: true
     }
   ];
@@ -70,18 +70,18 @@ const Activities = () => {
       render: (_, record) => (
         <Space size="small">
           <Edit
-            title={`Edit ${Modul.ACTIVITY}`}
-            model={ActivityModel}
+            title={`Edit ${Modul.SUBACTIVITY}`}
+            model={SubActivityModel}
             onClick={() => {
               modal.edit({
-                title: `Ubah ${Modul.ACTIVITY}`,
-                formFields: activitiesFormFields({ options: { programs: programs } }),
-                data: { ...record, id_program: record.id_program.id },
+                title: `Ubah ${Modul.SUBACTIVITY}`,
+                formFields: subActivitiesFormFields({ options: { activities: activities } }),
+                data: { ...record, id_kegiatan: record.id_kegiatan.id },
                 onSubmit: async (values) => {
-                  const { isSuccess, message } = await updateActivity.execute(record.id, { ...record, ...values, id_unit: record.id_unit.id_simpeg }, token);
+                  const { isSuccess, message } = await updateSubActivity.execute(record.id, { ...record, ...values, id_unit: record.id_unit.id_simpeg, id_kegiatan: values.id_kegiatan }, token);
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchActivities({ token: token, page: pagination.page, per_page: pagination.per_page });
+                    fetchSubActivities({ token: token, page: pagination.page, per_page: pagination.per_page });
                   } else {
                     error('Gagal', message);
                   }
@@ -91,17 +91,17 @@ const Activities = () => {
             }}
           />
           <Delete
-            title={`Delete ${Modul.ACTIVITY}`}
-            model={ActivityModel}
+            title={`Delete ${Modul.SUBACTIVITY}`}
+            model={SubActivityModel}
             onClick={() => {
               modal.delete.default({
-                title: `Delete ${Modul.ACTIVITY}`,
+                title: `Delete ${Modul.SUBACTIVITY}`,
                 data: record,
                 onSubmit: async () => {
-                  const { isSuccess, message } = await deleteActivity.execute(record.id, token);
+                  const { isSuccess, message } = await deleteSubActivity.execute(record.id, token);
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchActivities({ token: token, page: pagination.page, per_page: pagination.per_page });
+                    fetchSubActivities({ token: token, page: pagination.page, per_page: pagination.per_page });
                   } else {
                     error('Gagal', message);
                   }
@@ -111,15 +111,15 @@ const Activities = () => {
             }}
           />
           <Detail
-            title={`Detail ${Modul.ACTIVITY}`}
-            model={ActivityModel}
+            title={`Detail ${Modul.SUBACTIVITY}`}
+            model={SubActivityModel}
             onClick={() => {
               modal.show.description({
                 title: 'Detail data kegiatan',
                 data: [
                   {
                     key: 'nama',
-                    label: `Judul ${Modul.ACTIVITY}`,
+                    label: `Judul ${Modul.SUBACTIVITY}`,
                     children: record.nama
                   },
                   {
@@ -144,13 +144,13 @@ const Activities = () => {
 
   const onCreate = () => {
     modal.create({
-      title: `Tambah ${Modul.ACTIVITY}`,
-      formFields: activitiesFormFields({ options: { programs: programs } }),
+      title: `Tambah ${Modul.SUBACTIVITY}`,
+      formFields: subActivitiesFormFields({ options: { activities: activities } }),
       onSubmit: async (values) => {
-        const { isSuccess, message } = await storeActivity.execute({ ...values, id_unit: user?.unor?.id, indikator_kinerja: [] }, token);
+        const { isSuccess, message } = await storeSubActivity.execute({ ...values, id_unit: user?.unor?.id, indikator_kinerja: [] }, token);
         if (isSuccess) {
           success('Berhasil', message);
-          fetchActivities({ token: token, page: pagination.page, per_page: pagination.per_page });
+          fetchSubActivities({ token: token, page: pagination.page, per_page: pagination.per_page });
         } else {
           error('Gagal', message);
         }
@@ -161,12 +161,12 @@ const Activities = () => {
 
   return (
     <Card>
-      <DataTableHeader modul={Modul.ACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader modul={Modul.SUBACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={activities} columns={column} loading={getAllActivities.isLoading} pagination={pagination} />
+        <DataTable data={subActivities} columns={column} loading={getAllSubActivities.isLoading} pagination={pagination} />
       </div>
     </Card>
   );
 };
 
-export default Activities;
+export default SubActivities;
