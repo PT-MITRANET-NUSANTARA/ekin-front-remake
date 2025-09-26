@@ -1,35 +1,35 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
-import { GoalsService } from '@/services';
+import { ProgramsService } from '@/services';
 import { Card, Space } from 'antd';
 import React from 'react';
-import { Goals as GoalModel } from '@/models';
+import { Programs as ProgramModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
 import { indicatorFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
 
-const GoalsIndicators = () => {
+const ProgramsIndicators = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const { token } = useAuth();
   const modal = useCrudModal();
   const { success, error } = useNotification();
-  const { execute: fetchGoalDetail, ...getDetailGoal } = useService(GoalsService.getById);
-  const updateGoals = useService(GoalsService.update);
+  const { execute: fetchProgramDetail, ...getDetailProgram } = useService(ProgramsService.getById);
+  const updatePrograms = useService(ProgramsService.update);
   const [indicators, setIndicators] = React.useState([]);
 
   React.useEffect(() => {
-    fetchGoalDetail(token, id);
-  }, [fetchGoalDetail, id, token]);
+    fetchProgramDetail(token, id);
+  }, [fetchProgramDetail, id, token]);
 
-  const detailGoal = React.useMemo(() => getDetailGoal.data ?? [], [getDetailGoal.data]);
+  const detailProgram = React.useMemo(() => getDetailProgram.data ?? [], [getDetailProgram.data]);
 
   React.useEffect(() => {
-    if (detailGoal) {
-      setIndicators(detailGoal.indikator_kinerja);
+    if (detailProgram) {
+      setIndicators(detailProgram.indikator_kinerja);
     }
-  }, [detailGoal]);
+  }, [detailProgram]);
 
   const column = [
     {
@@ -58,8 +58,8 @@ const GoalsIndicators = () => {
       render: (_, record) => (
         <Space size="small">
           <Edit
-            title={`Edit ${Modul.GOAL}`}
-            model={GoalModel}
+            title={`Edit ${Modul.PROGRAM}`}
+            model={ProgramModel}
             onClick={() => {
               modal.edit({
                 title: `Ubah Indikator`,
@@ -69,17 +69,18 @@ const GoalsIndicators = () => {
                   const updatedIndicators = indicators.map((item) => (item.id === record.id ? { ...item, ...values } : item));
 
                   const payload = {
-                    nama: detailGoal.nama,
-                    id_renstra: detailGoal.renstra.id,
-                    id_unit: detailGoal.id_unit.id_simpeg,
+                    nama: detailProgram.nama,
+                    id_tujuan: detailProgram.id_tujuan.id,
+                    total_anggaran: detailProgram.total_anggaran,
+                    id_unit: detailProgram.id_unit.id_simpeg,
                     indikator_kinerja: updatedIndicators
                   };
 
-                  const { isSuccess, message } = await updateGoals.execute(id, payload, token);
+                  const { isSuccess, message } = await updatePrograms.execute(id, payload, token);
 
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchGoalDetail(token, id);
+                    fetchProgramDetail(token, id);
                   } else {
                     error('Gagal', message);
                   }
@@ -90,8 +91,8 @@ const GoalsIndicators = () => {
             }}
           />
           <Delete
-            title={`Delete ${Modul.GOAL}`}
-            model={GoalModel}
+            title={`Delete ${Modul.PROGRAM}`}
+            model={ProgramModel}
             onClick={() => {
               modal.delete.default({
                 title: `Hapus Indikator`,
@@ -100,17 +101,18 @@ const GoalsIndicators = () => {
                   const updatedIndicators = indicators.filter((item) => item.id !== record.id);
 
                   const payload = {
-                    nama: detailGoal.nama,
-                    id_renstra: detailGoal.renstra.id,
-                    id_unit: detailGoal.id_unit.id_simpeg,
+                    nama: detailProgram.nama,
+                    id_tujuan: detailProgram.id_tujuan.id,
+                    total_anggaran: detailProgram.total_anggaran,
+                    id_unit: detailProgram.id_unit.id_simpeg,
                     indikator_kinerja: updatedIndicators
                   };
 
-                  const { isSuccess, message } = await updateGoals.execute(id, payload, token);
+                  const { isSuccess, message } = await updatePrograms.execute(id, payload, token);
 
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchGoalDetail(token, id);
+                    fetchProgramDetail(token, id);
                   } else {
                     error('Gagal', message);
                   }
@@ -127,21 +129,22 @@ const GoalsIndicators = () => {
 
   const onCreate = () => {
     modal.create({
-      title: `Tambah ${Modul.GOAL}`,
+      title: `Tambah ${Modul.PROGRAM}`,
       formFields: indicatorFormFields(),
       onSubmit: async (values) => {
         const payload = {
-          nama: detailGoal.nama,
-          id_renstra: detailGoal.renstra.id,
-          id_unit: detailGoal.id_unit.id_simpeg,
+          nama: detailProgram.nama,
+          id_tujuan: detailProgram.id_tujuan.id,
+          total_anggaran: detailProgram.total_anggaran,
+          id_unit: detailProgram.id_unit.id_simpeg,
           indikator_kinerja: [...(indicators || []), values]
         };
 
-        const { isSuccess, message } = await updateGoals.execute(id, payload, token);
+        const { isSuccess, message } = await updatePrograms.execute(id, payload, token);
 
         if (isSuccess) {
           success('Berhasil', message);
-          fetchGoalDetail(token, id);
+          fetchProgramDetail(token, id);
         } else {
           error('Gagal', message);
         }
@@ -153,12 +156,12 @@ const GoalsIndicators = () => {
 
   return (
     <Card>
-      <DataTableHeader onStore={onCreate} modul={detailGoal?.nama ?? ''} />
+      <DataTableHeader onStore={onCreate} modul={detailProgram?.nama ?? ''} />
       <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={indicators ?? []} columns={column} loading={getDetailGoal.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
+        <DataTable data={indicators ?? []} columns={column} loading={getDetailProgram.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
       </div>
     </Card>
   );
 };
 
-export default GoalsIndicators;
+export default ProgramsIndicators;

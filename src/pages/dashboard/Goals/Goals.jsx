@@ -3,7 +3,7 @@ import { useAuth, useCrudModal, useNotification, usePagination, useService } fro
 import { GoalsService, RenstrasService } from '@/services';
 import { Button, Card, Space, Tag } from 'antd';
 import React from 'react';
-import { Renstras as RenstraModel } from '@/models';
+import { Goals as GoalModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
@@ -57,7 +57,7 @@ const Goals = () => {
         <Space size="small">
           <Edit
             title={`Edit ${Modul.GOAL}`}
-            model={RenstraModel}
+            model={GoalModel}
             onClick={() => {
               modal.edit({
                 title: `Ubah ${Modul.GOAL}`,
@@ -78,7 +78,7 @@ const Goals = () => {
           />
           <Delete
             title={`Delete ${Modul.GOAL}`}
-            model={RenstraModel}
+            model={GoalModel}
             onClick={() => {
               modal.delete.default({
                 title: `Delete ${Modul.GOAL}`,
@@ -98,7 +98,7 @@ const Goals = () => {
           />
           <Detail
             title={`Detail ${Modul.GOAL}`}
-            model={RenstraModel}
+            model={GoalModel}
             onClick={() => {
               modal.show.description({
                 title: 'Detail data tujua',

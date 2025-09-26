@@ -39,7 +39,9 @@ export const dashboardLink = [
       { path: '/dashboard/visions', label: 'Visi', element: Dashboard.Visions },
       { path: '/dashboard/missions', label: 'Misi', element: Dashboard.Missions },
       { path: '/dashboard/renstras', label: 'Rencana Strategi', element: Dashboard.Renstras },
-      { path: '/dashboard/goals', label: 'Tujuan', element: Dashboard.Goals }
+      { path: '/dashboard/goals', label: 'Tujuan', element: Dashboard.Goals },
+      { path: '/dashboard/programs', label: 'Program', element: Dashboard.Programs },
+      { path: '/dashboard/activities', label: 'Kegiatan', element: Dashboard.Activities }
     ]
   }
 ].map((item) => ({

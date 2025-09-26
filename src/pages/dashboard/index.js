@@ -4,3 +4,7 @@ export { default as Missions } from './Missions/Missions';
 export { default as Renstras } from './Renstras/Renstras';
 export { default as Goals } from './Goals/Goals';
 export { default as GoalsIndicators } from './Goals/GoalsIndicators';
+export { default as Programs } from './Programs/Programs';
+export { default as ProgramsIndicators } from './Programs/ProgramsIndicators';
+export { default as Activities } from './Activities/Activities';
+export { default as ActivitiesIndicators } from './Activities/ActivitiesIndicator';
