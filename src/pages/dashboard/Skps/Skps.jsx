@@ -7,6 +7,7 @@ import { Badge, Button, Card, Descriptions, Skeleton } from 'antd';
 import React from 'react';
 import { formFields } from './FormFields';
 import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 
 const Skps = () => {
   const { token, user } = useAuth();
@@ -18,6 +19,7 @@ const Skps = () => {
   const updateSkp = useService(SkpsService.update);
   const [filterValues, setFilterValues] = React.useState({ search: '' });
   const pagination = usePagination({ totalData: getAllSkps.totalData });
+  const navigate = useNavigate();
 
   const fetchSkps = React.useCallback(() => {
     execute({
@@ -38,7 +40,7 @@ const Skps = () => {
     modal.edit({
       title: `Ubah ${Modul.SKP}`,
       formFields: formFields,
-      data: { ...data, tanggal_mulai: dayjs(data.tanggal_mulai), tanggal_selesai: dayjs(data.tanggal_selesai) },
+      data: { ...data, tanggal_mulai: dayjs(data.periode_start), tanggal_selesai: dayjs(data.periode_end) },
       onSubmit: async (values) => {
         const { isSuccess, message } = await updateSkp.execute(data.id, { ...values, id_user: user.newNip }, token);
         if (isSuccess) {
@@ -95,10 +97,10 @@ const Skps = () => {
             <Card key={item.id}>
               <Descriptions size="default" column={3} bordered>
                 <Descriptions.Item label="Pendekatan">{item.pendekatan}</Descriptions.Item>
-                <Descriptions.Item label="Periode Mulai">{item.tanggal_mulai}</Descriptions.Item>
-                <Descriptions.Item label="Periode Akhir">{item.tanggal_selesai}</Descriptions.Item>
+                <Descriptions.Item label="Periode Mulai">{item.periode_start}</Descriptions.Item>
+                <Descriptions.Item label="Periode Akhir">{item.periode_end}</Descriptions.Item>
                 <Descriptions.Item label="Unit Kerja" span={3}>
-                  {item.unit.nama_unor}
+                  {item.unit_id.nama_unor}
                 </Descriptions.Item>
                 <Descriptions.Item label="Status SKP" span={3}>
                   {(() => {
@@ -116,15 +118,15 @@ const Skps = () => {
                     }
                   })()}
                 </Descriptions.Item>
-                <Descriptions.Item label="Status Pegawai">{item.posjab[0]?.jabatan_status.nama ?? ''}</Descriptions.Item>
+                <Descriptions.Item label="Status Pegawai">{item.posjab?.[0]?.jabatan_status.nama ?? ''}</Descriptions.Item>
                 <Descriptions.Item label="Jabatan" span={2}>
-                  {item.posjab[0]?.nama_jabatan ?? ''}
+                  {item.posjab?.[0]?.nama_jabatan ?? ''}
                 </Descriptions.Item>
-                <Descriptions.Item label="Jenis Pegawai">{item.posjab[0]?.jenis_asn ?? ''}</Descriptions.Item>
+                <Descriptions.Item label="Jenis Pegawai">{item.posjab?.[0]?.jenis_asn ?? ''}</Descriptions.Item>
               </Descriptions>
               <div className="mt-4 flex w-full items-center justify-between">
                 <div className="inline-flex items-center gap-x-2">
-                  <Button variant="filled" color="primary" icon={<InfoCircleOutlined />}>
+                  <Button variant="filled" color="primary" icon={<InfoCircleOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id)}>
                     Detail SKP
                   </Button>
                   <Button variant="filled" color="primary" icon={<TableOutlined />}>
@@ -135,7 +137,7 @@ const Skps = () => {
                   </Button>
                 </div>
                 <div className="inline-flex items-center gap-x-2">
-                  <Button variant="solid" color="primary" icon={<EditOutlined />} onClick={() => onEdit(item)}>
+                  <Button disabled={item.status !== 'DRAFT'} variant="solid" color="primary" icon={<EditOutlined />} onClick={() => onEdit(item)}>
                     Edit
                   </Button>
                   <Button variant="solid" color="danger" icon={<DeleteOutlined />} onClick={() => onDelete(item)}>

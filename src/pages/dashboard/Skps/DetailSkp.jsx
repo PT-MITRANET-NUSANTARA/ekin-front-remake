@@ -1,0 +1,157 @@
+import { useAuth, usePagination, useService } from '@/hooks';
+import { SkpsService } from '@/services';
+import { Badge, Button, Card, Descriptions, Skeleton, Table, Typography } from 'antd';
+import React from 'react';
+import { useParams } from 'react-router-dom';
+
+const DetailSkp = () => {
+  const { token, user } = useAuth();
+  const { id } = useParams();
+  const { execute, ...getAllDetailSkp } = useService(SkpsService.getById);
+  const pagination = usePagination({ totalData: getAllDetailSkp.totalData });
+
+  const fetchDetailSkp = React.useCallback(() => {
+    execute({ token, id, page: pagination.page, per_page: pagination.per_page });
+  }, [execute, id, pagination.page, pagination.per_page, token]);
+
+  React.useEffect(() => {
+    fetchDetailSkp();
+  }, [fetchDetailSkp, token, user?.newNip]);
+
+  const detailSkp = getAllDetailSkp.data ?? {};
+
+  const flattenData = (rhkList) => {
+    const rows = [];
+
+    rhkList.forEach((rhk) => {
+      rhk.aspek.forEach((aspek, idx) => {
+        rows.push({
+          rhkId: rhk.id,
+          rhkDesc: rhk.desc,
+          klasifikasi: rhk.klasifikasi,
+          penugasan: rhk.penugasan,
+          aspekId: aspek.id,
+          aspekDesc: aspek.desc,
+          aspekJenis: aspek.jenis,
+          rhkRowSpan: idx === 0 ? rhk.aspek.length : 0
+        });
+      });
+    });
+
+    return rows;
+  };
+
+  const columns = [
+    {
+      title: 'RHK',
+      dataIndex: 'rhkDesc',
+      render: (value, row) => ({
+        children: value,
+        props: { rowSpan: row.rhkRowSpan }
+      })
+    },
+    {
+      title: 'Klasifikasi',
+      dataIndex: 'klasifikasi',
+      render: (value, row) => ({
+        children: value,
+        props: { rowSpan: row.rhkRowSpan }
+      })
+    },
+    {
+      title: 'Penugasan',
+      dataIndex: 'penugasan',
+      render: (value, row) => ({
+        children: value,
+        props: { rowSpan: row.rhkRowSpan }
+      })
+    },
+    {
+      title: 'Aspek',
+      dataIndex: 'aspekDesc'
+    },
+    {
+      title: 'Jenis Aspek',
+      dataIndex: 'aspekJenis'
+    }
+  ];
+  return (
+    <div className="flex flex-col gap-y-4">
+      <div className="mt-4 flex w-full items-center justify-between">
+        <div className="inline-flex items-center gap-x-2"></div>
+        <div className="inline-flex items-center gap-x-2">
+          <Button variant="solid" color="primary">
+            Ajukan SKP
+          </Button>
+          <Button variant="solid" color="danger">
+            Hapus
+          </Button>
+        </div>
+      </div>
+
+      <Card>
+        <Skeleton loading={getAllDetailSkp.isLoading}>
+          <div className="flex flex-col gap-y-6">
+            <Descriptions size="default" column={3} bordered>
+              <Descriptions.Item label="Pendekatan">{detailSkp.pendekatan}</Descriptions.Item>
+              <Descriptions.Item label="Periode Mulai">{detailSkp.periode_start}</Descriptions.Item>
+              <Descriptions.Item label="Periode Akhir">{detailSkp.periode_end}</Descriptions.Item>
+              <Descriptions.Item label="Unit Kerja" span={3}>
+                {detailSkp?.unit?.nama_unor ?? ''}
+              </Descriptions.Item>
+              <Descriptions.Item label="Status SKP" span={3}>
+                {(() => {
+                  switch (detailSkp.status) {
+                    case 'DRAFT':
+                      return <Badge status="processing" text="Draft" />;
+                    case 'SUBMITTED':
+                      return <Badge status="warning" text="Submitted" />;
+                    case 'REJECTED':
+                      return <Badge status="error" text="Rejected" />;
+                    case 'APPROVED':
+                      return <Badge status="success" text="Approved" />;
+                    default:
+                      return <Badge status="default" text={detailSkp.status} />;
+                  }
+                })()}
+              </Descriptions.Item>
+            </Descriptions>
+            <div className="flex flex-row items-center gap-x-4">
+              <Descriptions title="Pejabat yang dinilai" size="small" column={1} bordered>
+                <Descriptions.Item label="Nama">{detailSkp?.posjab?.[0]?.nama_asn ?? ''}</Descriptions.Item>
+                <Descriptions.Item label="Nip">{detailSkp?.posjab?.[0]?.nip_asn ?? ''}</Descriptions.Item>
+                <Descriptions.Item label="Jabatan">{detailSkp?.posjab?.[0]?.nama_jabatan ?? ''}</Descriptions.Item>
+                <Descriptions.Item label="Unit Kerja">{detailSkp?.unit?.nama_unor ?? ''}</Descriptions.Item>
+              </Descriptions>
+              <Descriptions title="Pejabat penilai kinerja" size="small" column={1} bordered>
+                <Descriptions.Item label="Nama">{detailSkp?.atasan_skp_id ? (detailSkp?.atasan_skp?.[detailSkp.atasan_skp.length - 1]?.posjab?.[0]?.nama_asn ?? '') : detailSkp?.posjab?.[0]?.unor?.atasan?.asn?.nama_atasan}</Descriptions.Item>
+                <Descriptions.Item label="Nip">{detailSkp?.atasan_skp_id ? detailSkp?.atasan_skp?.[detailSkp.atasan_skp.length - 1].posjab?.[0]?.nip_asn : detailSkp?.posjab?.[0]?.unor?.atasan?.asn?.nip_atasan}</Descriptions.Item>
+                <Descriptions.Item label="Jabatan">{detailSkp?.atasan_skp_id ? detailSkp?.atasan_skp?.[detailSkp.atasan_skp.length - 1].posjab?.[0]?.nama_jabatan : detailSkp?.posjab?.[0]?.unor?.atasan?.unor_jabatan}</Descriptions.Item>
+                <Descriptions.Item label="Unit Kerja">{detailSkp?.atasan_skp_id ? detailSkp?.atasan_skp?.[detailSkp.atasan_skp.length - 1].unit?.nama_unor : detailSkp?.unit?.nama_unor}</Descriptions.Item>
+              </Descriptions>
+            </div>
+            <div className="mt-4 flex w-full items-center justify-between">
+              <div className="inline-flex items-center gap-x-2">
+                <Typography.Title level={5}>Rencana Hasil Kerja Utama</Typography.Title>
+              </div>
+              <div className="inline-flex items-center gap-x-2">
+                <Button variant="solid" color="primary">
+                  Tambah Data RHK
+                </Button>
+              </div>
+            </div>
+            <Table columns={columns} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />
+            <div className="mt-4 flex w-full items-center justify-between">
+              <div className="inline-flex items-center gap-x-2">
+                <Typography.Title level={5}>Rencana Hasil Kerja Tambahan</Typography.Title>
+              </div>
+            </div>
+            <Table columns={columns} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />
+          </div>
+        </Skeleton>
+      </Card>
+    </div>
+  );
+};
+
+export default DetailSkp;

@@ -1,7 +1,7 @@
 import * as Auth from '@/pages/auth';
 import * as Dashboard from '@/pages/dashboard';
 import * as Landing from '@/pages/landing';
-import { DashboardOutlined, DatabaseOutlined } from '@ant-design/icons';
+import { CheckSquareOutlined, DashboardOutlined, DatabaseOutlined, FileProtectOutlined } from '@ant-design/icons';
 
 export const landingLink = [
   {
@@ -33,16 +33,28 @@ export const dashboardLink = [
     children: [{ path: '/dashboard', label: 'Dashboard', element: Dashboard.Dashboard }]
   },
   {
-    label: 'Management Data',
+    label: 'Master Data',
     icon: DatabaseOutlined,
     children: [
       { path: '/dashboard/visions', label: 'Visi', element: Dashboard.Visions },
       { path: '/dashboard/missions', label: 'Misi', element: Dashboard.Missions },
       { path: '/dashboard/renstras', label: 'Rencana Strategi', element: Dashboard.Renstras },
       { path: '/dashboard/goals', label: 'Tujuan', element: Dashboard.Goals },
-      { path: '/dashboard/programs', label: 'Program', element: Dashboard.Programs },
+      { path: '/dashboard/programs', label: 'Program', element: Dashboard.Programs }
+    ]
+  },
+  {
+    label: 'Kegiatan',
+    icon: CheckSquareOutlined,
+    children: [
       { path: '/dashboard/activities', label: 'Kegiatan', element: Dashboard.Activities },
-      { path: '/dashboard/subactivities', label: 'Sub Kegiatan', element: Dashboard.SubActivities },
+      { path: '/dashboard/subactivities', label: 'Sub Kegiatan', element: Dashboard.SubActivities }
+    ]
+  },
+  {
+    label: 'SKP',
+    icon: FileProtectOutlined,
+    children: [
       { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts },
       { path: '/dashboard/assessmentperiod', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod },
       { path: '/dashboard/skps', label: 'SKP', element: Dashboard.Skps }
