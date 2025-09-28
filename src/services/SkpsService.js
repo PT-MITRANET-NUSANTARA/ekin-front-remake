@@ -16,7 +16,23 @@ export default class SkpsService {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
     const response = await api.get('/skp', { token, params });
     if (!response.data) return response;
-    return { ...response, data: Skps.fromApiData(response.data) };
+    return { ...response, data: response.data };
+  }
+
+  /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: Goals[];
+   * }>}
+   * */
+  static async getById({ token, id, ...filters }) {
+    const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
+    const response = await api.get(`/skp/${id}`, { token, params });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
   }
 
   /**

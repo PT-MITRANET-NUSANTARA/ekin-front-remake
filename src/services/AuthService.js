@@ -37,6 +37,18 @@ export default class AuthService {
     return { ...response, data: User.fromApiData(response.data, token) };
   }
 
+  static async getDetailProfile(token, nip) {
+    const response = await api.get(`/user/${nip}`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  static async getSubordinate({ token: token, unit: unit_id, unor: unor_id }) {
+    const response = await api.get(`/user/unit/${unit_id}/unor/${unor_id}`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
   static async logout() {
     return await api.post('/auth/logout');
   }

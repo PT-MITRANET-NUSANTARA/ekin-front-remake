@@ -14,3 +14,5 @@ export { default as Rkts } from './Rkts/Rkts';
 export { default as DetailRkt } from './Rkts/DetailRkts';
 export { default as AssessmentPeriod } from './AssessmentPeriods/AssessmentPeriods';
 export { default as Skps } from './Skps/Skps';
+export { default as DetailSkp } from './Skps/DetailSkp';
+export { default as UserProfile } from './UserProfile/UserProfile';
