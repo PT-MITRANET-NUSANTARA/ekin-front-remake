@@ -4,7 +4,8 @@ import { RhkService, RktsService, SkpsService } from '@/services';
 import { Badge, Button, Card, Descriptions, Skeleton, Table, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { rhkFormFields } from './FormFields';
+import { aspekFormFields, rhkFormFields } from './FormFields';
+import { perilakuColumns, RhkColumn } from './Columns';
 
 const DetailSkp = () => {
   const { token, user } = useAuth();
@@ -14,6 +15,8 @@ const DetailSkp = () => {
   const { execute, ...getAllDetailSkp } = useService(SkpsService.getById);
   const { execute: fetchRkts, ...getAllRkts } = useService(RktsService.getAll);
   const storeRhk = useService(RhkService.store);
+  const updateAspek = useService(SkpsService.aspekUpdate);
+  const deleteRhk = useService(RhkService.delete);
   const pagination = usePagination({ totalData: getAllDetailSkp.totalData });
 
   const fetchDetailSkp = React.useCallback(() => {
@@ -41,6 +44,9 @@ const DetailSkp = () => {
           aspekId: aspek.id,
           aspekDesc: aspek.desc,
           aspekJenis: aspek.jenis,
+          indikator_name: aspek.indikator_kinerja?.name ?? '',
+          indikator_target: aspek.indikator_kinerja?.target ?? '',
+          indikator_satuan: aspek.indikator_kinerja?.satuan ?? '',
           rhkRowSpan: idx === 0 ? rhk.aspek.length : 0
         });
       });
@@ -49,40 +55,39 @@ const DetailSkp = () => {
     return rows;
   };
 
-  const columns = [
-    {
-      title: 'RHK',
-      dataIndex: 'rhkDesc',
-      render: (value, row) => ({
-        children: value,
-        props: { rowSpan: row.rhkRowSpan }
-      })
-    },
-    {
-      title: 'Klasifikasi',
-      dataIndex: 'klasifikasi',
-      render: (value, row) => ({
-        children: value,
-        props: { rowSpan: row.rhkRowSpan }
-      })
-    },
-    {
-      title: 'Penugasan',
-      dataIndex: 'penugasan',
-      render: (value, row) => ({
-        children: value,
-        props: { rowSpan: row.rhkRowSpan }
-      })
-    },
-    {
-      title: 'Aspek',
-      dataIndex: 'aspekDesc'
-    },
-    {
-      title: 'Jenis Aspek',
-      dataIndex: 'aspekJenis'
-    }
-  ];
+  const handleUpdateAspek = (record) => {
+    modal.edit({
+      title: `Ubah ${Modul.ASPEK}`,
+      formFields: aspekFormFields,
+      data: { name: record.indikator_name, target: record.indikator_target, satuan: record.indikator_satuan },
+      onSubmit: async (values) => {
+        const { isSuccess, message } = await updateAspek.execute(record.aspekId, { indikator_kinerja: { ...values }, jenis: record.aspekJenis, desc: record.aspekDesc }, token);
+        if (isSuccess) {
+          success('Berhasil', message);
+          fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
+        } else {
+          error('Gagal', message);
+        }
+        return isSuccess;
+      }
+    });
+  };
+
+  const handleDeleteAspek = (record) => {
+    modal.delete.default({
+      title: `Hapus ${Modul.RHK}`,
+      onSubmit: async () => {
+        const { isSuccess, message } = await deleteRhk.execute(record.rhkId, token);
+        if (isSuccess) {
+          success('Berhasil', message);
+          fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
+        } else {
+          error('Gagal', message);
+        }
+        return isSuccess;
+      }
+    });
+  };
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -99,7 +104,7 @@ const DetailSkp = () => {
       </div>
 
       <Card>
-        <Skeleton loading={getAllDetailSkp.isLoading}>
+        <Skeleton loading={!!user?.newNip && getAllDetailSkp.isLoading}>
           <div className="flex flex-col gap-y-6">
             <Descriptions size="default" column={3} bordered>
               <Descriptions.Item label="Pendekatan">{detailSkp.pendekatan}</Descriptions.Item>
@@ -144,37 +149,51 @@ const DetailSkp = () => {
                 <Typography.Title level={5}>Rencana Hasil Kerja Utama</Typography.Title>
               </div>
               <div className="inline-flex items-center gap-x-2">
-                <Button
-                  variant="solid"
-                  color="primary"
-                  onClick={() => {
-                    modal.create({
-                      title: `Tambah ${Modul.RHK}`,
-                      formFields: rhkFormFields({ options: { rkts: rkts } }),
-                      onSubmit: async (values) => {
-                        const { isSuccess, message } = await storeRhk.execute({ ...values, skp_id: detailSkp.id }, token);
-                        if (isSuccess) {
-                          success('Berhasil', message);
-                          fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
-                        } else {
-                          error('Gagal', message);
+                {user?.isJpt && (
+                  <Button
+                    variant="solid"
+                    color="primary"
+                    onClick={() => {
+                      modal.create({
+                        title: `Tambah ${Modul.RHK}`,
+                        formFields: rhkFormFields({ options: { rkts: rkts } }),
+                        onSubmit: async (values) => {
+                          const { isSuccess, message } = await storeRhk.execute({ ...values, skp_id: detailSkp.id }, token);
+                          if (isSuccess) {
+                            success('Berhasil', message);
+                            fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
+                          } else {
+                            error('Gagal', message);
+                          }
+                          return isSuccess;
                         }
-                        return isSuccess;
-                      }
-                    });
-                  }}
-                >
-                  Tambah Data RHK
-                </Button>
+                      });
+                    }}
+                  >
+                    Tambah Data RHK
+                  </Button>
+                )}
               </div>
             </div>
-            <Table columns={columns} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />
+            <Table
+              bordered
+              columns={RhkColumn(handleUpdateAspek, handleDeleteAspek, user?.isJpt ?? false)}
+              dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])}
+              pagination={false}
+              rowKey={(record) => `${record.rhkId}-${record.aspekId}`}
+            />
             <div className="mt-4 flex w-full items-center justify-between">
               <div className="inline-flex items-center gap-x-2">
                 <Typography.Title level={5}>Rencana Hasil Kerja Tambahan</Typography.Title>
               </div>
             </div>
-            <Table columns={columns} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'TAMBAHAN') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />
+            <Table bordered columns={RhkColumn()} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'TAMBAHAN') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />
+            <div className="mt-4 flex w-full items-center justify-between">
+              <div className="inline-flex items-center gap-x-2">
+                <Typography.Title level={5}>Perilaku Kinerja</Typography.Title>
+              </div>
+            </div>
+            <Table bordered columns={perilakuColumns()} dataSource={detailSkp?.perilaku_id ?? []} pagination={false} />
           </div>
         </Skeleton>
       </Card>

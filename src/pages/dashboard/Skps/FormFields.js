@@ -136,3 +136,42 @@ export const rhkFormFields = ({ options }) => [
     }))
   }
 ];
+
+export const aspekFormFields = () => [
+  {
+    label: `Nama Indikator`,
+    name: 'name',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Nama Indikator harus diisi`
+      }
+    ],
+    size: 'large'
+  },
+  {
+    label: `Target Indikator`,
+    name: 'target',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Target harus diisi`
+      }
+    ],
+    size: 'large'
+  },
+  {
+    label: `Satuan`,
+    name: 'satuan',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Satuan harus diisi`
+      }
+    ],
+    size: 'large'
+  }
+];
