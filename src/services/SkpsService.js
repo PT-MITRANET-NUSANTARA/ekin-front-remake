@@ -61,7 +61,7 @@ export default class SkpsService {
    * }>}
    */
   static async update(id, data, token) {
-    return await api.patch(`/skp/${id}`, { body: Skps.toApiData(data), token });
+    return await api.patch(`/skp/${id}`, { body: data, token });
   }
 
   /**

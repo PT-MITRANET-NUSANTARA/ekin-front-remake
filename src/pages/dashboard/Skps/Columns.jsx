@@ -79,3 +79,21 @@ export const perilakuColumns = () => [
     render: (record) => record
   }
 ];
+
+export const lampiranColumn = (deleteLampiran, type) => [
+  {
+    title: 'Nama Lampiran',
+    dataIndex: 'name'
+  },
+  {
+    title: 'Aksi',
+    dataIndex: 'rhkId',
+    render: (_, __, index) => ({
+      children: (
+        <Button className="w-fit" icon={<DeleteOutlined />} variant="solid" color="danger" onClick={() => deleteLampiran(type, index)}>
+          Hapus
+        </Button>
+      )
+    })
+  }
+];

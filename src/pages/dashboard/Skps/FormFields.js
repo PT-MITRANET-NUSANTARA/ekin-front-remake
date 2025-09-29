@@ -175,3 +175,18 @@ export const aspekFormFields = () => [
     size: 'large'
   }
 ];
+
+export const lampiranFormFields = () => [
+  {
+    label: `Nama lampiran`,
+    name: 'name',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Nama lampiran harus diisi`
+      }
+    ],
+    size: 'large'
+  }
+];
