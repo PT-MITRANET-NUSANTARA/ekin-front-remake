@@ -4,8 +4,8 @@ import { RhkService, RktsService, SkpsService } from '@/services';
 import { Badge, Button, Card, Descriptions, Skeleton, Table, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { aspekFormFields, rhkFormFields } from './FormFields';
-import { perilakuColumns, RhkColumn } from './Columns';
+import { aspekFormFields, lampiranFormFields, rhkFormFields } from './FormFields';
+import { lampiranColumn, perilakuColumns, RhkColumn } from './Columns';
 
 const DetailSkp = () => {
   const { token, user } = useAuth();
@@ -14,6 +14,7 @@ const DetailSkp = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllDetailSkp } = useService(SkpsService.getById);
   const { execute: fetchRkts, ...getAllRkts } = useService(RktsService.getAll);
+  const updateSkp = useService(SkpsService.update);
   const storeRhk = useService(RhkService.store);
   const updateAspek = useService(SkpsService.aspekUpdate);
   const deleteRhk = useService(RhkService.delete);
@@ -84,6 +85,65 @@ const DetailSkp = () => {
         } else {
           error('Gagal', message);
         }
+        return isSuccess;
+      }
+    });
+  };
+
+  const handleStoreLampiran = (type) => {
+    modal.create({
+      title: `Tambah ${type.replace('_', ' ')}`,
+      formFields: lampiranFormFields,
+      onSubmit: async (values) => {
+        const prevLampiran = detailSkp?.lampiran ?? {
+          sumber_daya: [],
+          skema: [],
+          konsekuensi: []
+        };
+
+        const newLampiran = {
+          ...prevLampiran,
+          [type]: [...(prevLampiran[type] ?? []), values]
+        };
+
+        const { isSuccess, message } = await updateSkp.execute(detailSkp.id, { lampiran: newLampiran }, token);
+
+        if (isSuccess) {
+          success('Berhasil', message);
+          fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
+        } else {
+          error('Gagal', message);
+        }
+
+        return isSuccess;
+      }
+    });
+  };
+
+  const handleDeleteLampiran = (type, index) => {
+    modal.delete.default({
+      title: `Hapus ${type.replace('_', ' ')}`,
+      onSubmit: async () => {
+        const prevLampiran = detailSkp?.lampiran ?? {
+          sumber_daya: [],
+          skema: [],
+          konsekuensi: []
+        };
+
+        const newLampiran = {
+          ...prevLampiran,
+          [type]: prevLampiran[type].filter((_, i) => i !== index)
+        };
+
+        const { isSuccess, message } = await updateSkp.execute(detailSkp.id, { lampiran: newLampiran }, token);
+
+        if (isSuccess) {
+          success('Berhasil', message);
+          fetchDetailSkp({ token, page: pagination.page, per_page: pagination.per_page });
+        } else {
+          error('Gagal', message);
+        }
+
         return isSuccess;
       }
     });
@@ -194,6 +254,39 @@ const DetailSkp = () => {
               </div>
             </div>
             <Table bordered columns={perilakuColumns()} dataSource={detailSkp?.perilaku_id ?? []} pagination={false} />
+            <div className="mt-4 flex w-full items-center justify-between">
+              <div className="inline-flex items-center gap-x-2">
+                <Typography.Title level={5}>Lampiran Sumber Daya</Typography.Title>
+              </div>
+              <div className="inline-flex items-center gap-x-2">
+                <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('sumber_daya')}>
+                  Tambah Sumber Daya
+                </Button>
+              </div>
+            </div>
+            <Table bordered columns={lampiranColumn(handleDeleteLampiran, 'sumber_daya')} dataSource={detailSkp?.lampiran?.sumber_daya ?? []} pagination={false} />
+            <div className="mt-4 flex w-full items-center justify-between">
+              <div className="inline-flex items-center gap-x-2">
+                <Typography.Title level={5}>Lampiran Skema</Typography.Title>
+              </div>
+              <div className="inline-flex items-center gap-x-2">
+                <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('skema')}>
+                  Tambah Skema
+                </Button>
+              </div>
+            </div>
+            <Table bordered columns={lampiranColumn(handleDeleteLampiran, 'skema')} dataSource={detailSkp?.lampiran?.skema ?? []} pagination={false} />
+            <div className="mt-4 flex w-full items-center justify-between">
+              <div className="inline-flex items-center gap-x-2">
+                <Typography.Title level={5}>Lampiran Konsekuensi</Typography.Title>
+              </div>
+              <div className="inline-flex items-center gap-x-2">
+                <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('konsekuensi')}>
+                  Tambah konsekuensi
+                </Button>
+              </div>
+            </div>
+            <Table bordered columns={lampiranColumn(handleDeleteLampiran, 'konsekuensi')} dataSource={detailSkp?.lampiran?.konsekuensi ?? []} pagination={false} />
           </div>
         </Skeleton>
       </Card>
