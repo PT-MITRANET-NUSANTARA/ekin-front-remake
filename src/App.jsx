@@ -32,36 +32,35 @@ function App() {
         {
           element: <DashboardLayout />,
           children: [
-            ...dashboardLink.flatMap(({ children }) =>
-              children.map(({ permissions, roles, path, element: Element }) => {
-                if (isLoading) {
-                  return {
-                    path,
-                    // TODO: Sekeleton 💀
-                    element: <Skeleton active />
-                  };
-                }
+            ...dashboardLink.flatMap((item) => {
+              if (item.children) {
+                return item.children.map(({ permissions, roles, path, element: Element }) => {
+                  if (isLoading) {
+                    return { path, element: <Skeleton active /> };
+                  }
 
-                const hasPermissions = permissions && permissions.length > 0;
-                const hasRoles = roles && roles.length > 0;
-                const userCantDoAnyOfThat = hasPermissions && (!user || user.cantDoAny(...permissions));
-                const userIsNotInAnyOfThatRole = hasRoles && (!user || !roles.some((role) => user.is(role)));
+                  const hasPermissions = permissions && permissions.length > 0;
+                  const hasRoles = roles && roles.length > 0;
+                  const userCantDoAnyOfThat = hasPermissions && (!user || user.cantDoAny(...permissions));
+                  const userIsNotInAnyOfThatRole = hasRoles && (!user || !roles.some((role) => user.is(role)));
 
-                if (userCantDoAnyOfThat && userIsNotInAnyOfThatRole) {
-                  return {
-                    path,
-                    element: <Result status="403" subTitle="Anda tidak memiliki akses ke halaman ini" title="Forbidden" />
-                  };
+                  if (userCantDoAnyOfThat && userIsNotInAnyOfThatRole) {
+                    return { path, element: <Result status="403" subTitle="Anda tidak memiliki akses ke halaman ini" title="Forbidden" /> };
+                  }
+
+                  return { path, element: <Element /> };
+                });
+              }
+
+              return [
+                {
+                  path: item.path,
+                  element: isLoading ? <Skeleton active /> : <item.element />
                 }
-                return {
-                  path,
-                  element: <Element />
-                };
-              })
-            ),
+              ];
+            }),
             { path: '/dashboard/goals/:id', element: <GoalsIndicators /> },
             { path: '/dashboard/programs/:id', element: <ProgramsIndicators /> },
-            { path: '/dashboard/activities/:id', element: <AcitivitiesIndicators /> },
             { path: '/dashboard/activities/:id', element: <AcitivitiesIndicators /> },
             { path: '/dashboard/subactivities/:id', element: <SubAcitivitiesIndicators /> },
             { path: '/dashboard/rkts/:id', element: <DetailRkt /> },

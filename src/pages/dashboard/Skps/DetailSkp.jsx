@@ -1,13 +1,19 @@
-import { useAuth, usePagination, useService } from '@/hooks';
-import { SkpsService } from '@/services';
+import Modul from '@/constants/Modul';
+import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
+import { RhkService, RktsService, SkpsService } from '@/services';
 import { Badge, Button, Card, Descriptions, Skeleton, Table, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import { rhkFormFields } from './FormFields';
 
 const DetailSkp = () => {
   const { token, user } = useAuth();
   const { id } = useParams();
+  const modal = useCrudModal();
+  const { success, error } = useNotification();
   const { execute, ...getAllDetailSkp } = useService(SkpsService.getById);
+  const { execute: fetchRkts, ...getAllRkts } = useService(RktsService.getAll);
+  const storeRhk = useService(RhkService.store);
   const pagination = usePagination({ totalData: getAllDetailSkp.totalData });
 
   const fetchDetailSkp = React.useCallback(() => {
@@ -16,9 +22,11 @@ const DetailSkp = () => {
 
   React.useEffect(() => {
     fetchDetailSkp();
-  }, [fetchDetailSkp, token, user?.newNip]);
+    fetchRkts({ token: token });
+  }, [fetchDetailSkp, fetchRkts, token, user?.newNip]);
 
   const detailSkp = getAllDetailSkp.data ?? {};
+  const rkts = getAllRkts.data ?? {};
 
   const flattenData = (rhkList) => {
     const rows = [];
@@ -75,6 +83,7 @@ const DetailSkp = () => {
       dataIndex: 'aspekJenis'
     }
   ];
+
   return (
     <div className="flex flex-col gap-y-4">
       <div className="mt-4 flex w-full items-center justify-between">
@@ -135,7 +144,26 @@ const DetailSkp = () => {
                 <Typography.Title level={5}>Rencana Hasil Kerja Utama</Typography.Title>
               </div>
               <div className="inline-flex items-center gap-x-2">
-                <Button variant="solid" color="primary">
+                <Button
+                  variant="solid"
+                  color="primary"
+                  onClick={() => {
+                    modal.create({
+                      title: `Tambah ${Modul.RHK}`,
+                      formFields: rhkFormFields({ options: { rkts: rkts } }),
+                      onSubmit: async (values) => {
+                        const { isSuccess, message } = await storeRhk.execute({ ...values, skp_id: detailSkp.id }, token);
+                        if (isSuccess) {
+                          success('Berhasil', message);
+                          fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
+                        } else {
+                          error('Gagal', message);
+                        }
+                        return isSuccess;
+                      }
+                    });
+                  }}
+                >
                   Tambah Data RHK
                 </Button>
               </div>
@@ -146,7 +174,7 @@ const DetailSkp = () => {
                 <Typography.Title level={5}>Rencana Hasil Kerja Tambahan</Typography.Title>
               </div>
             </div>
-            <Table columns={columns} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />
+            <Table columns={columns} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'TAMBAHAN') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />
           </div>
         </Skeleton>
       </Card>

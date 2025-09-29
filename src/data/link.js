@@ -37,34 +37,49 @@ export const dashboardLink = [
     icon: DatabaseOutlined,
     children: [
       { path: '/dashboard/visions', label: 'Visi', element: Dashboard.Visions },
-      { path: '/dashboard/missions', label: 'Misi', element: Dashboard.Missions },
-      { path: '/dashboard/renstras', label: 'Rencana Strategi', element: Dashboard.Renstras },
-      { path: '/dashboard/goals', label: 'Tujuan', element: Dashboard.Goals },
-      { path: '/dashboard/programs', label: 'Program', element: Dashboard.Programs }
+      { path: '/dashboard/missions', label: 'Misi', element: Dashboard.Missions }
     ]
   },
   {
-    label: 'Kegiatan',
+    label: 'Rencana Kerja',
     icon: CheckSquareOutlined,
     children: [
+      { path: '/dashboard/renstras', label: 'Rencana Strategi', element: Dashboard.Renstras },
+      { path: '/dashboard/goals', label: 'Tujuan', element: Dashboard.Goals },
+      { path: '/dashboard/programs', label: 'Program', element: Dashboard.Programs },
       { path: '/dashboard/activities', label: 'Kegiatan', element: Dashboard.Activities },
       { path: '/dashboard/subactivities', label: 'Sub Kegiatan', element: Dashboard.SubActivities }
     ]
   },
   {
-    label: 'SKP',
+    label: 'Rencana Kerja Tahunan',
     icon: FileProtectOutlined,
     children: [
       { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts },
-      { path: '/dashboard/assessmentperiod', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod },
-      { path: '/dashboard/skps', label: 'SKP', element: Dashboard.Skps }
+      { path: '/dashboard/assessmentperiod', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod }
     ]
+  },
+  {
+    label: 'SKP',
+    icon: FileProtectOutlined,
+    path: '/dashboard/skps',
+    element: Dashboard.Skps
   }
-].map((item) => ({
-  ...item,
-  permissions: item.children.flatMap((child) => child.permissions).filter((permission) => permission),
-  roles: item.children.flatMap((child) => child.roles).filter((role) => role)
-}));
+].map((item) => {
+  if (item.children) {
+    return {
+      ...item,
+      permissions: item.children.flatMap((child) => child.permissions || []).filter(Boolean),
+      roles: item.children.flatMap((child) => child.roles || []).filter(Boolean)
+    };
+  }
+
+  return {
+    ...item,
+    permissions: item.permissions || [],
+    roles: item.roles || []
+  };
+});
 
 export const authLink = [
   {

@@ -8,7 +8,8 @@ enum Modul {
   SUBACTIVITY = 'Sub Kegiatan',
   RKT = 'RKT',
   ASSESSMENTPERIOD = 'Periode Penilaian',
-  SKP = 'SKP'
+  SKP = 'SKP',
+  RHK = 'Rencana Hasil Kerja'
 }
 
 export default Modul;

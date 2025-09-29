@@ -49,51 +49,90 @@ export const formFields = () => [
   }
 ];
 
-export const rhkFormFields = () => [
+export const rhkFormFields = ({ options }) => [
   {
-    label: ``,
-    name: 'tanggal_mulai',
-    type: InputType.DATE,
+    label: `Rencana Hasil Kerja`,
+    name: 'desc',
+    type: InputType.TEXT,
     rules: [
       {
         required: true,
-        message: `Periode mulai harus diisi`
+        message: `Rencana Hasil Kerja harus diisi`
       }
     ],
     size: 'large'
   },
   {
-    label: `Periode Akhir`,
-    name: 'tanggal_selesai',
-    type: InputType.DATE,
+    label: `Jenis RHK`,
+    name: 'jenis',
+    type: InputType.SELECT,
     rules: [
       {
         required: true,
         message: `Periode akhir harus diisi`
       }
     ],
-    size: 'large'
+    size: 'large',
+    options: [
+      {
+        label: 'UTAMA',
+        value: 'UTAMA'
+      },
+      {
+        label: 'TAMBAHAN',
+        value: 'TAMBAHAN'
+      }
+    ]
   },
   {
-    label: `Pendekatan`,
-    name: 'pendekatan',
+    label: `Klasifikasi`,
+    name: 'klasifikasi',
     type: InputType.SELECT,
     rules: [
       {
         required: true,
-        message: `Pendekatan visi harus diisi`
+        message: `Klasifikasi harus diisi`
       }
     ],
     size: 'large',
     options: [
       {
-        label: 'Kuantitatif',
-        value: 'KUANTITATIF'
+        label: 'ORGANISASI',
+        value: 'ORGANISASI'
       },
       {
-        label: 'Kualitatif',
-        value: 'KUALITATIF'
+        label: 'INDIVIDU',
+        value: 'INDIVIDU'
       }
     ]
+  },
+  {
+    label: `Penugasan`,
+    name: 'penugasan',
+    type: InputType.LONGTEXT,
+    rules: [
+      {
+        required: true,
+        message: `Penugasan visi harus diisi`
+      }
+    ],
+    size: 'large'
+  },
+  {
+    label: `Rencana Kerja Tahunan`,
+    name: 'rkts',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Penugasan visi harus diisi`
+      }
+    ],
+    size: 'large',
+    mode: 'multiple',
+    options: options.rkts.map((item) => ({
+      label: item.nama,
+      value: item.id
+    }))
   }
 ];
