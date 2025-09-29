@@ -44,7 +44,7 @@ export default class RhkService {
    * }>}
    */
   static async update(id, data, token) {
-    return await api.patch(`/rhk/edit/${id}`, { body: data, token });
+    return await api.patch(`/rhk/${id}`, { body: data, token });
   }
 
   /**
@@ -57,7 +57,7 @@ export default class RhkService {
    * }>}
    */
   static async delete(id, token) {
-    return await api.delete(`/rhk/delete/${id}`, { token });
+    return await api.delete(`/rhk/${id}`, { token });
   }
 
   /**

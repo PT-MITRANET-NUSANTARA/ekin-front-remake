@@ -66,6 +66,21 @@ export default class SkpsService {
 
   /**
    * @param {number} id
+   * @param {Skps} data
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  errors?: { [key: string]: string[] };
+   * }>}
+   */
+  static async aspekUpdate(id, data, token) {
+    return await api.patch(`/aspek/${id}`, { body: data, token });
+  }
+
+  /**
+   * @param {number} id
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -75,6 +90,19 @@ export default class SkpsService {
    */
   static async delete(id, token) {
     return await api.delete(`/skp/${id}`, { token });
+  }
+
+  /**
+   * @param {number} id
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   * }>}
+   */
+  static async aspekDelete(id, token) {
+    return await api.delete(`/aspek/${id}`, { token });
   }
 
   /**

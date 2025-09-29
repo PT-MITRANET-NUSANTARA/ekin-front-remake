@@ -14,6 +14,9 @@ export interface IncomingApiData {
   };
   foto: string;
   permissions: string[];
+  isAdmin: boolean;
+  isBupati: boolean;
+  isJpt: boolean;
 }
 
 export interface untranslatedIncoming {}
@@ -33,7 +36,10 @@ export default class User extends Model {
       id: number;
       nama: string;
     },
-    public photo: string
+    public photo: string,
+    public isAdmin: boolean,
+    public isBupati: boolean,
+    public isJpt: boolean
     // public permissions: Permission[] = []
   ) {
     super();
@@ -76,7 +82,10 @@ export default class User extends Model {
         id: apiData.unor.id,
         nama: apiData.unor.nama
       },
-      apiData.foto
+      apiData.foto,
+      apiData.isAdmin,
+      apiData.isBupati,
+      apiData.isJpt
     );
   }
 
