@@ -12,9 +12,41 @@ export default class SkpsService {
    *  data?: Skps[];
    * }>}
    * */
-  static async getAll({ token, ...filters }) {
+  static async getAll({ token, user_id, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/skp', { token, params });
+    const response = await api.get(`/skp/user/${user_id}`, { token, params });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
+   * @param {string} token
+   * @returns {Promise<{a
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: Skps[];
+   * }>}
+   * */
+  static async getByAtasan({ token, id, ...filters }) {
+    const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
+    const response = await api.get(`/skp/${id}/bawahan`, { token, params });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: Skps[];
+   * }>}
+   * */
+  static async getMatriks({ token, id, ...filters }) {
+    const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
+    const response = await api.get(`/skp/${id}/matriks`, { token, params });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }
@@ -47,6 +79,20 @@ export default class SkpsService {
    */
   static async store(data, token) {
     return await api.post('/skp', { body: Skps.toApiData(data), token });
+  }
+
+  /**
+   * @param {Skps} data
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  errors?: { [key: string]: string[] };
+   * }}
+   */
+  static async storeBawahan(data, token) {
+    return await api.post('/skp', { body: data, token });
   }
 
   /**

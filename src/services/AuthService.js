@@ -57,8 +57,9 @@ export default class AuthService {
     return await api.post('/auth/verify', { token });
   }
 
-  static async getPhoto(token) {
-    const response = await api.getFile('/auth/profile/foto', token);
+  static async getPhoto(token, options = {}) {
+    const ts = Date.now();
+    const response = await api.getFile(`/auth/profile/foto?ts=${ts}`, token, options);
     return response;
   }
 

@@ -7,7 +7,7 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import { flattenLandingLinks } from './utils/landingLink';
 import { Notfound } from './pages/result';
-import { DetailRkt, DetailSkp, GoalsIndicators, ProgramsIndicators, SubAcitivitiesIndicators, UserProfile } from './pages/dashboard';
+import { DetailRkt, DetailSkp, GoalsIndicators, Mph, ProgramsIndicators, SkpBawahan, SubAcitivitiesIndicators, UserProfile } from './pages/dashboard';
 import AcitivitiesIndicators from './pages/dashboard/Activities/ActivitiesIndicator';
 
 function App() {
@@ -65,6 +65,8 @@ function App() {
             { path: '/dashboard/subactivities/:id', element: <SubAcitivitiesIndicators /> },
             { path: '/dashboard/rkts/:id', element: <DetailRkt /> },
             { path: '/dashboard/skps/:id', element: <DetailSkp /> },
+            { path: '/dashboard/skps/:id/matriks', element: <Mph /> },
+            { path: '/dashboard/skps/:id/skp_bawahan', element: <SkpBawahan /> },
             { path: '/dashboard/user_profile', element: <UserProfile /> }
           ]
         },

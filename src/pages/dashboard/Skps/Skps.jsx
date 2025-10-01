@@ -1,8 +1,8 @@
 import { DataTableHeader } from '@/components';
 import Modul from '@/constants/Modul';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { SkpsService } from '@/services';
-import { CheckSquareOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, TableOutlined } from '@ant-design/icons';
+import { RenstrasService, SkpsService } from '@/services';
+import { CheckSquareOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, TableOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { Badge, Button, Card, Descriptions, Skeleton } from 'antd';
 import React from 'react';
 import { formFields } from './FormFields';
@@ -14,6 +14,7 @@ const Skps = () => {
   const modal = useCrudModal();
   const { success, error } = useNotification();
   const { execute, ...getAllSkps } = useService(SkpsService.getAll);
+  const { execute: fetchRenstras, ...getAllRenstras } = useService(RenstrasService.getAll);
   const deleteSkp = useService(SkpsService.delete);
   const storeSkp = useService(SkpsService.store);
   const updateSkp = useService(SkpsService.update);
@@ -21,20 +22,22 @@ const Skps = () => {
   const pagination = usePagination({ totalData: getAllSkps.totalData });
   const navigate = useNavigate();
 
-  const fetchSkps = React.useCallback(() => {
+  React.useEffect(() => {
+    if (!user?.newNip) return;
+
     execute({
-      token: token,
+      token,
+      user_id: user.newNip,
       page: pagination.page,
       per_page: pagination.per_page,
       search: filterValues.search
     });
-  }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
-  React.useEffect(() => {
-    fetchSkps();
-  }, [fetchSkps, pagination.page, pagination.per_page, token]);
+    fetchRenstras({ token: token });
+  }, [execute, fetchRenstras, filterValues.search, pagination.page, pagination.per_page, token, user.newNip]);
 
   const skps = getAllSkps.data ?? [];
+  const renstras = getAllRenstras.data ?? [];
 
   const onEdit = (data) => {
     modal.edit({
@@ -45,7 +48,13 @@ const Skps = () => {
         const { isSuccess, message } = await updateSkp.execute(data.id, { ...values, id_user: user.newNip }, token);
         if (isSuccess) {
           success('Berhasil', message);
-          fetchSkps({ token: token, page: pagination.page, per_page: pagination.per_page });
+          execute({
+            token,
+            user_id: user.newNip,
+            page: pagination.page,
+            per_page: pagination.per_page,
+            search: filterValues.search
+          });
         } else {
           error('Gagal', message);
         }
@@ -62,7 +71,13 @@ const Skps = () => {
         const { isSuccess, message } = await deleteSkp.execute(data.id, token);
         if (isSuccess) {
           success('Berhasil', message);
-          fetchSkps({ token: token, page: pagination.page, per_page: pagination.per_page });
+          execute({
+            token,
+            user_id: user.newNip,
+            page: pagination.page,
+            per_page: pagination.per_page,
+            search: filterValues.search
+          });
         } else {
           error('Gagal', message);
         }
@@ -74,12 +89,18 @@ const Skps = () => {
   const onCreate = () => {
     modal.create({
       title: `Tambah ${Modul.SKP}`,
-      formFields: formFields,
+      formFields: formFields({ options: { renstras: renstras } }),
       onSubmit: async (values) => {
         const { isSuccess, message } = await storeSkp.execute({ ...values, id_user: user.newNip }, token);
         if (isSuccess) {
           success('Berhasil', message);
-          fetchSkps({ token: token, page: pagination.page, per_page: pagination.per_page });
+          execute({
+            token,
+            user_id: user.newNip,
+            page: pagination.page,
+            per_page: pagination.per_page,
+            search: filterValues.search
+          });
         } else {
           error('Gagal', message);
         }
@@ -90,7 +111,7 @@ const Skps = () => {
 
   return (
     <Card>
-      <DataTableHeader modul={Modul.SKP} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader modul={Modul.SKP} {...(user?.isJpt ? { onStore: onCreate } : {})} onSearch={(values) => setFilterValues({ search: values })} />
       <Skeleton loading={getAllSkps.isLoading}>
         <div className="flex w-full max-w-full flex-col gap-y-6 overflow-x-auto">
           {skps.map((item) => (
@@ -126,13 +147,16 @@ const Skps = () => {
               </Descriptions>
               <div className="mt-4 flex w-full items-center justify-between">
                 <div className="inline-flex items-center gap-x-2">
-                  <Button variant="filled" color="primary" icon={<InfoCircleOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id)}>
+                  <Button size="small" variant="filled" color="primary" icon={<InfoCircleOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id)}>
                     Detail SKP
                   </Button>
-                  <Button variant="filled" color="primary" icon={<TableOutlined />}>
+                  <Button size="small" variant="filled" color="primary" icon={<TableOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/matriks')}>
                     Matriks Peran Hasil
                   </Button>
-                  <Button variant="filled" color="primary" icon={<CheckSquareOutlined />}>
+                  <Button size="small" variant="filled" color="primary" icon={<UserSwitchOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/skp_bawahan')}>
+                    SKP Bawahan
+                  </Button>
+                  <Button size="small" variant="filled" color="primary" icon={<CheckSquareOutlined />}>
                     Penilaian
                   </Button>
                 </div>

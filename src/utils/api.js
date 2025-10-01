@@ -104,15 +104,26 @@ function createCustomFetch(method) {
   };
 }
 
-async function customFetchFile(endpoint, token) {
+async function customFetchFile(endpoint, token, options = {}) {
   const response = await fetch(BASE_URL + endpoint, {
     headers: {
       Authorization: token ? `Bearer ${token}` : ''
-    }
+    },
+    signal: options.signal
   });
+
   const blob = await response.blob();
-  const url = URL.createObjectURL(blob);
-  return { isSuccess: response.ok, data: url };
+  const base64 = await blobToBase64(blob);
+  return { isSuccess: response.ok, data: base64 };
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
 }
 
 export default {

@@ -11,7 +11,8 @@ enum Modul {
   SKP = 'SKP',
   RHK = 'Rencana Hasil Kerja',
   ASPEK = 'Aspek',
-  LAMPIRAN = 'Lampiran'
+  LAMPIRAN = 'Lampiran',
+  SKP_BAWAHAN = 'SKP Bawahan'
 }
 
 export default Modul;

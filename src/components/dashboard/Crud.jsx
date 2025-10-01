@@ -8,13 +8,10 @@ import TextArea from 'antd/es/input/TextArea';
 import Dragger from 'antd/es/upload/Dragger';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
 
 const Crud = ({ formFields, initialData, onSubmit = () => {}, type = '', isLoading }) => {
   const [form] = Form.useForm();
   const [realtimeData, setRealtimeData] = useState(initialData);
-  const naviagte = useNavigate();
-  ('');
 
   const handleEditorChange = (editor) => {
     const content = editor.getContent();
@@ -226,8 +223,8 @@ const Crud = ({ formFields, initialData, onSubmit = () => {}, type = '', isLoadi
       {type !== 'show' && (
         <Form.Item className="mt-2">
           <div className="flex w-full items-center justify-end gap-x-2">
-            <Button type="default" onClick={() => naviagte(-1)}>
-              Batal
+            <Button type="default" htmlType="reset" size="large">
+              Reset
             </Button>
             {type === 'delete' ? (
               <Button type="primary" danger htmlType="submit" loading={isLoading}>

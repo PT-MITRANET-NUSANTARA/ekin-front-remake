@@ -1,7 +1,7 @@
 import Modul from '@/constants/Modul';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { RhkService, RktsService, SkpsService } from '@/services';
-import { Badge, Button, Card, Descriptions, Skeleton, Table, Typography } from 'antd';
+import { Badge, Button, Card, Descriptions, Popconfirm, Skeleton, Table, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { aspekFormFields, lampiranFormFields, rhkFormFields } from './FormFields';
@@ -15,6 +15,7 @@ const DetailSkp = () => {
   const { execute, ...getAllDetailSkp } = useService(SkpsService.getById);
   const { execute: fetchRkts, ...getAllRkts } = useService(RktsService.getAll);
   const updateSkp = useService(SkpsService.update);
+  const deleteSKp = useService(SkpsService.delete);
   const storeRhk = useService(RhkService.store);
   const updateAspek = useService(SkpsService.aspekUpdate);
   const deleteRhk = useService(RhkService.delete);
@@ -149,17 +150,49 @@ const DetailSkp = () => {
     });
   };
 
+  const handleAjukanSkp = async (data) => {
+    const { isSuccess, message } = await updateSkp.execute(data.id, { status: 'SUBMITTED' }, token);
+    if (isSuccess) {
+      success('Berhasil', message);
+      fetchDetailSkp({ token, page: pagination.page, per_page: pagination.per_page });
+    } else {
+      error('Gagal', message);
+    }
+    return isSuccess;
+  };
+
+  const handleDeleteSkp = (data) => {
+    modal.delete.default({
+      title: `Delete ${Modul.SKP_BAWAHAN}`,
+      data: data,
+      onSubmit: async () => {
+        const { isSuccess, message } = await deleteSKp.execute(data.id, token);
+        if (isSuccess) {
+          success('Berhasil', message);
+          fetchDetailSkp({ token, page: pagination.page, per_page: pagination.per_page });
+        } else {
+          error('Gagal', message);
+        }
+        return isSuccess;
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col gap-y-4">
       <div className="mt-4 flex w-full items-center justify-between">
         <div className="inline-flex items-center gap-x-2"></div>
         <div className="inline-flex items-center gap-x-2">
-          <Button variant="solid" color="primary">
-            Ajukan SKP
-          </Button>
-          <Button variant="solid" color="danger">
-            Hapus
-          </Button>
+          <Popconfirm title="Apakah anda yakin ingin mengajukan SKP?" onConfirm={() => handleAjukanSkp(detailSkp)}>
+            <Button variant="solid" color="primary" disabled={detailSkp.status !== 'DRAFT'}>
+              Ajukan SKP
+            </Button>
+          </Popconfirm>
+          <Popconfirm title="Apakah anda yakin ingin menghapus SKP?" onConfirm={() => handleDeleteSkp(detailSkp)}>
+            <Button variant="solid" color="danger">
+              Hapus
+            </Button>
+          </Popconfirm>
         </div>
       </div>
 
@@ -209,7 +242,7 @@ const DetailSkp = () => {
                 <Typography.Title level={5}>Rencana Hasil Kerja Utama</Typography.Title>
               </div>
               <div className="inline-flex items-center gap-x-2">
-                {user?.isJpt && (
+                {user?.isJpt && user?.newNip === detailSkp.user_id && (
                   <Button
                     variant="solid"
                     color="primary"
@@ -237,7 +270,7 @@ const DetailSkp = () => {
             </div>
             <Table
               bordered
-              columns={RhkColumn(handleUpdateAspek, handleDeleteAspek, user?.isJpt ?? false)}
+              columns={RhkColumn(handleUpdateAspek, handleDeleteAspek, user, detailSkp)}
               dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])}
               pagination={false}
               rowKey={(record) => `${record.rhkId}-${record.aspekId}`}
@@ -259,9 +292,11 @@ const DetailSkp = () => {
                 <Typography.Title level={5}>Lampiran Sumber Daya</Typography.Title>
               </div>
               <div className="inline-flex items-center gap-x-2">
-                <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('sumber_daya')}>
-                  Tambah Sumber Daya
-                </Button>
+                {user?.isJpt && user?.newNip === detailSkp.user_id && (
+                  <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('sumber_daya')}>
+                    Tambah Sumber Daya
+                  </Button>
+                )}
               </div>
             </div>
             <Table bordered columns={lampiranColumn(handleDeleteLampiran, 'sumber_daya')} dataSource={detailSkp?.lampiran?.sumber_daya ?? []} pagination={false} />
@@ -270,9 +305,11 @@ const DetailSkp = () => {
                 <Typography.Title level={5}>Lampiran Skema</Typography.Title>
               </div>
               <div className="inline-flex items-center gap-x-2">
-                <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('skema')}>
-                  Tambah Skema
-                </Button>
+                {user?.isJpt && user?.newNip === detailSkp.user_id && (
+                  <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('skema')}>
+                    Tambah Skema
+                  </Button>
+                )}
               </div>
             </div>
             <Table bordered columns={lampiranColumn(handleDeleteLampiran, 'skema')} dataSource={detailSkp?.lampiran?.skema ?? []} pagination={false} />
@@ -281,9 +318,11 @@ const DetailSkp = () => {
                 <Typography.Title level={5}>Lampiran Konsekuensi</Typography.Title>
               </div>
               <div className="inline-flex items-center gap-x-2">
-                <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('konsekuensi')}>
-                  Tambah konsekuensi
-                </Button>
+                {user?.isJpt && user?.newNip === detailSkp.user_id && (
+                  <Button variant="solid" color="primary" onClick={() => handleStoreLampiran('konsekuensi')}>
+                    Tambah konsekuensi
+                  </Button>
+                )}
               </div>
             </div>
             <Table bordered columns={lampiranColumn(handleDeleteLampiran, 'konsekuensi')} dataSource={detailSkp?.lampiran?.konsekuensi ?? []} pagination={false} />

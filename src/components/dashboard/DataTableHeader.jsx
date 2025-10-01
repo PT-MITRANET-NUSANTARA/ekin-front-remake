@@ -124,7 +124,7 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
               )}
             </div>
             {/* {user && user.can(CREATE, model) && onStore && ( */}
-            {user && (
+            {onStore && (
               <Button className="hidden lg:flex" icon={<PlusOutlined />} type="primary" onClick={onStore}>
                 Tambah
               </Button>

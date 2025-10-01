@@ -1,6 +1,6 @@
 import { InputType } from '@/constants';
 
-export const formFields = () => [
+export const formFields = ({ options }) => [
   {
     label: `Periode Mulai`,
     name: 'tanggal_mulai',
@@ -46,6 +46,22 @@ export const formFields = () => [
         value: 'KUALITATIF'
       }
     ]
+  },
+  {
+    label: `Renstra`,
+    name: 'renstra_id',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Rencana Strategi harus diisi`
+      }
+    ],
+    size: 'large',
+    options: options.renstras.map((item) => ({
+      label: `${item.tanggal_mulai} | Hingga |  ${item.tanggal_selesai}`,
+      value: item.id
+    }))
   }
 ];
 
@@ -188,5 +204,113 @@ export const lampiranFormFields = () => [
       }
     ],
     size: 'large'
+  }
+];
+
+export const filterMphFormFields = ({ options }) => [
+  {
+    label: `SKP Bawahan`,
+    name: 'skp_id',
+    type: InputType.SELECT,
+    size: 'large',
+    options: Array.isArray(options.skpBawahan)
+      ? options.skpBawahan.map((item) => ({
+          label: item.posjab[0].nama_asn,
+          value: item.id
+        }))
+      : []
+  }
+];
+
+export const mphFormFields = ({ options }) => [
+  {
+    label: `Rencana Hasil Kerja`,
+    name: 'desc',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Rencana Hasil Kerja harus diisi`
+      }
+    ],
+    size: 'large'
+  },
+  {
+    label: `Jenis RHK`,
+    name: 'jenis',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Periode akhir harus diisi`
+      }
+    ],
+    size: 'large',
+    options: [
+      {
+        label: 'UTAMA',
+        value: 'UTAMA'
+      },
+      {
+        label: 'TAMBAHAN',
+        value: 'TAMBAHAN'
+      }
+    ]
+  },
+  {
+    label: `Klasifikasi`,
+    name: 'klasifikasi',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Klasifikasi harus diisi`
+      }
+    ],
+    size: 'large',
+    options: [
+      {
+        label: 'ORGANISASI',
+        value: 'ORGANISASI'
+      },
+      {
+        label: 'INDIVIDU',
+        value: 'INDIVIDU'
+      }
+    ]
+  },
+  {
+    label: `SKP Bawahan`,
+    name: 'skp_id',
+    type: InputType.SELECT,
+    size: 'large',
+    options: Array.isArray(options.skpBawahan)
+      ? options.skpBawahan.map((item) => ({
+          label: item.posjab[0].nama_asn,
+          value: item.id
+        }))
+      : [],
+    rules: [
+      {
+        required: true,
+        message: `SKP Bawahan harus diisi`
+      }
+    ]
+  },
+  {
+    label: `RHK Atasan`,
+    name: 'rhk_atasan_id',
+    type: InputType.SELECT,
+    size: 'large',
+    options: options.matriksSkp.rhk.map((item) => ({
+      label: item.desc,
+      value: item.id
+    })),
+    rules: [
+      {
+        required: true,
+        message: `RHK Atasan harus diisi`
+      }
+    ]
   }
 ];
