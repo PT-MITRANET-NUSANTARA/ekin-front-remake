@@ -10,6 +10,7 @@ enum Modul {
   ASSESSMENTPERIOD = 'Periode Penilaian',
   SKP = 'SKP',
   RHK = 'Rencana Hasil Kerja',
+  RHK_PENILAIAN = 'RHK Penilaian',
   ASPEK = 'Aspek',
   LAMPIRAN = 'Lampiran',
   SKP_BAWAHAN = 'SKP Bawahan'

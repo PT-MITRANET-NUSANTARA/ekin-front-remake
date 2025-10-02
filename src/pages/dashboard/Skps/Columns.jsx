@@ -2,7 +2,7 @@ import { CheckCircleFilled, CloseCircleFilled, DeleteOutlined, EditOutlined, Inf
 import { Badge, Button, Popconfirm, Tag } from 'antd';
 
 /* eslint-disable react-refresh/only-export-components */
-export const RhkColumn = (udpateAspek, deletAspek, user, detailSkp) => [
+export const RhkColumn = (udpateAspek, deleteRhk, user, detailSkp) => [
   {
     title: 'RHK',
     dataIndex: 'rhkDesc',
@@ -29,7 +29,7 @@ export const RhkColumn = (udpateAspek, deletAspek, user, detailSkp) => [
     render: (_, record) => (
       <div className="flex items-center gap-2">
         <span>{record.aspekDesc}</span>
-        {user?.isJpt && user?.newNip === detailSkp.user_id && <Button icon={<EditOutlined />} variant="link" color="primary" onClick={() => udpateAspek(record)} />}
+        {udpateAspek && user?.isJpt && user?.newNip === detailSkp.user_id && <Button icon={<EditOutlined />} variant="link" color="primary" onClick={() => udpateAspek(record)} />}
       </div>
     )
   },
@@ -51,8 +51,8 @@ export const RhkColumn = (udpateAspek, deletAspek, user, detailSkp) => [
     dataIndex: 'rhkId',
     render: (_, row) => {
       const children =
-        user?.isJpt && user?.newNip === detailSkp.user_id ? (
-          <Button className="w-fit" icon={<DeleteOutlined />} variant="solid" color="danger" onClick={() => deletAspek(row)}>
+        deleteRhk && user?.isJpt && user?.newNip === detailSkp.user_id ? (
+          <Button className="w-fit" icon={<DeleteOutlined />} variant="solid" color="danger" onClick={() => deleteRhk(row)}>
             Hapus
           </Button>
         ) : null;
@@ -87,84 +87,102 @@ export const perilakuColumns = () => [
   }
 ];
 
-export const lampiranColumn = (deleteLampiran, type) => [
-  {
-    title: 'Nama Lampiran',
-    dataIndex: 'name'
-  },
-  {
-    title: 'Aksi',
-    dataIndex: 'rhkId',
-    render: (_, __, index) => ({
-      children: (
+export const lampiranColumn = (deleteLampiran, type) => {
+  const baseColumns = [
+    {
+      title: 'Nama Lampiran',
+      dataIndex: 'name'
+    }
+  ];
+
+  if (deleteLampiran) {
+    baseColumns.push({
+      title: 'Aksi',
+      dataIndex: 'rhkId',
+      render: (_, __, index) => (
         <Button className="w-fit" icon={<DeleteOutlined />} variant="solid" color="danger" onClick={() => deleteLampiran(type, index)}>
           Hapus
         </Button>
       )
-    })
+    });
   }
-];
 
-export const skpBawahanColumns = (deleteSkpBawahan, navigateToDetail, ajukanSkp) => [
-  {
-    title: 'Nama ASN',
-    dataIndex: 'posjab',
-    searchable: true,
-    render: (_, record) => record.posjab?.[0]?.nama_asn ?? '-'
-  },
-  {
-    title: 'Nama ASN',
-    dataIndex: 'posjab',
-    searchable: true,
-    render: (_, record) => record.posjab?.[0]?.nip_asn ?? '-'
-  },
-  {
-    title: 'Pendekatan',
-    dataIndex: 'pendekatan',
-    sorter: (a, b) => a.pendekatan.length - b.pendekatan.length,
-    searchable: true
-  },
-  {
-    title: 'Status SKP',
-    dataIndex: 'status',
-    sorter: (a, b) => a.status.length - b.status.length,
-    searchable: true,
-    render: (record) => {
-      switch (record) {
-        case 'DRAFT':
-          return <Badge status="processing" text="Draft" />;
-        case 'SUBMITTED':
-          return <Badge status="warning" text="Submitted" />;
-        case 'REJECTED':
-          return <Badge status="error" text="Rejected" />;
-        case 'APPROVED':
-          return <Badge status="success" text="Approved" />;
-        default:
-          return <Badge status="default" text={record.status} />;
+  return baseColumns;
+};
+
+export const skpBawahanColumns = (props) => {
+  const { deleteSkpBawahan, navigate, ajukanSkp, navItems } = props ?? {};
+
+  const baseColumns = [
+    {
+      title: 'Nama ASN',
+      dataIndex: 'posjab',
+      render: (_, record) => record.posjab?.[0]?.nama_asn ?? '-'
+    },
+    {
+      title: 'NIP',
+      dataIndex: 'posjab',
+      render: (_, record) => record.posjab?.[0]?.nip_asn ?? '-'
+    },
+    {
+      title: 'Pendekatan',
+      dataIndex: 'pendekatan',
+      sorter: (a, b) => a.pendekatan.length - b.pendekatan.length
+    },
+    {
+      title: 'Status SKP',
+      dataIndex: 'status',
+      render: (status) => {
+        switch (status) {
+          case 'DRAFT':
+            return <Badge status="processing" text="Draft" />;
+          case 'SUBMITTED':
+            return <Badge status="warning" text="Submitted" />;
+          case 'REJECTED':
+            return <Badge status="error" text="Rejected" />;
+          case 'APPROVED':
+            return <Badge status="success" text="Approved" />;
+          default:
+            return <Badge status="default" text={status} />;
+        }
       }
     }
-  },
-  {
+  ];
+
+  const aksiColumn = {
     title: 'Aksi',
-    render: (_, record) => ({
-      children: (
-        <div className="inline-flex items-center gap-x-2">
-          <Button className="w-fit" variant="solid" color="primary" icon={<InfoOutlined />} onClick={() => navigateToDetail(record)}>
-            Detail
-          </Button>
-          <Button className="w-fit" variant="solid" color="danger" icon={<DeleteOutlined />} onClick={() => deleteSkpBawahan(record)}>
+    render: (_, record) => (
+      <div className="inline-flex items-center gap-x-2">
+        {navigate &&
+          navItems?.map((nav, idx) => (
+            <Button key={idx} variant="solid" color={nav.color ?? 'primary'} icon={nav.icon ?? <InfoOutlined />} onClick={() => navigate(nav.path(record))}>
+              {nav.label}
+            </Button>
+          ))}
+
+        {deleteSkpBawahan && (
+          <Button variant="solid" color="danger" icon={<DeleteOutlined />} onClick={() => deleteSkpBawahan(record)}>
             Hapus
           </Button>
+        )}
+
+        {ajukanSkp && (
           <Popconfirm title="Apakah anda yakin ingin mengajukan SKP?" onConfirm={() => ajukanSkp(record)}>
-            <Button className="w-fit" variant="solid" color="primary" icon={<SendOutlined />} disabled={record.status !== 'DRAFT'}>
+            <Button variant="solid" color="primary" icon={<SendOutlined />} disabled={record.status !== 'DRAFT'}>
               Ajukan
             </Button>
           </Popconfirm>
-        </div>
-      )
-    })
+        )}
+      </div>
+    )
+  };
+
+  if (deleteSkpBawahan || navigate || ajukanSkp) {
+    baseColumns.push(aksiColumn);
   }
-];
+
+  return baseColumns;
+};
 
 export const subOrdinateColumn = (storeSkpBawahan, skpBawahan) => [
   {

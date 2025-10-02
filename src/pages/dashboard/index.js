@@ -18,3 +18,6 @@ export { default as DetailSkp } from './Skps/DetailSkp';
 export { default as UserProfile } from './UserProfile/UserProfile';
 export { default as Mph } from './Skps/Mph';
 export { default as SkpBawahan } from './Skps/SkpBawahan';
+export { default as SkpAssessmentPeriod } from './Skps/SkpAssessmentPeriod';
+export { default as Assessment } from './Skps/Assessment';
+export { default as DetailSkpPenilaian } from './Skps/DetailSkpPenilaian';

@@ -114,10 +114,6 @@ const SkpBawahan = () => {
     return isSuccess;
   };
 
-  const navigateToDetail = (record) => {
-    navigate('/dashboard/skps/' + record.id);
-  };
-
   return (
     <Card>
       <DataTableHeader modul={Modul.SKP_BAWAHAN}></DataTableHeader>
@@ -154,10 +150,17 @@ const SkpBawahan = () => {
         <Skeleton loading={getAllSkpBawahan.isLoading}>
           <DataTable
             data={skpBawahan}
-            columns={skpBawahanColumns(handleDeleteSkpBawahan, navigateToDetail, handleAjukanSkp)}
-            loading={getAllSkpBawahan.isLoading}
-            map={(skpBawahan) => ({ key: skpBawahan.id, ...skpBawahan })}
-            pagination={pagination}
+            columns={skpBawahanColumns({
+              ajukanSkp: handleAjukanSkp,
+              deleteSkpBawahan: handleDeleteSkpBawahan,
+              navigate: navigate,
+              navItems: [
+                {
+                  label: 'Detail',
+                  path: (record) => `/dashboard/skps/${record.id}`
+                }
+              ]
+            })}
           />
         </Skeleton>
       </div>

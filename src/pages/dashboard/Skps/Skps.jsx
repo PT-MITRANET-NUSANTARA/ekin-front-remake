@@ -34,7 +34,7 @@ const Skps = () => {
     });
 
     fetchRenstras({ token: token });
-  }, [execute, fetchRenstras, filterValues.search, pagination.page, pagination.per_page, token, user.newNip]);
+  }, [execute, fetchRenstras, filterValues.search, pagination.page, pagination.per_page, token, user?.newNip]);
 
   const skps = getAllSkps.data ?? [];
   const renstras = getAllRenstras.data ?? [];
@@ -156,7 +156,7 @@ const Skps = () => {
                   <Button size="small" variant="filled" color="primary" icon={<UserSwitchOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/skp_bawahan')}>
                     SKP Bawahan
                   </Button>
-                  <Button size="small" variant="filled" color="primary" icon={<CheckSquareOutlined />}>
+                  <Button size="small" variant="filled" color="primary" icon={<CheckSquareOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/assessment_periods')}>
                     Penilaian
                   </Button>
                 </div>

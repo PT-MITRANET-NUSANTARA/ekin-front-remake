@@ -7,8 +7,7 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import { flattenLandingLinks } from './utils/landingLink';
 import { Notfound } from './pages/result';
-import { DetailRkt, DetailSkp, GoalsIndicators, Mph, ProgramsIndicators, SkpBawahan, SubAcitivitiesIndicators, UserProfile } from './pages/dashboard';
-import AcitivitiesIndicators from './pages/dashboard/Activities/ActivitiesIndicator';
+import { ActivitiesIndicators, Assessment, DetailRkt, DetailSkp, DetailSkpPenilaian, GoalsIndicators, Mph, ProgramsIndicators, SkpAssessmentPeriod, SkpBawahan, SubAcitivitiesIndicators, UserProfile } from './pages/dashboard';
 
 function App() {
   const { isLoading, user } = useAuth();
@@ -61,12 +60,15 @@ function App() {
             }),
             { path: '/dashboard/goals/:id', element: <GoalsIndicators /> },
             { path: '/dashboard/programs/:id', element: <ProgramsIndicators /> },
-            { path: '/dashboard/activities/:id', element: <AcitivitiesIndicators /> },
+            { path: '/dashboard/activities/:id', element: <ActivitiesIndicators /> },
             { path: '/dashboard/subactivities/:id', element: <SubAcitivitiesIndicators /> },
             { path: '/dashboard/rkts/:id', element: <DetailRkt /> },
             { path: '/dashboard/skps/:id', element: <DetailSkp /> },
             { path: '/dashboard/skps/:id/matriks', element: <Mph /> },
             { path: '/dashboard/skps/:id/skp_bawahan', element: <SkpBawahan /> },
+            { path: '/dashboard/skps/:id/assessment_periods', element: <SkpAssessmentPeriod /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment', element: <Assessment /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/detail', element: <DetailSkpPenilaian /> },
             { path: '/dashboard/user_profile', element: <UserProfile /> }
           ]
         },

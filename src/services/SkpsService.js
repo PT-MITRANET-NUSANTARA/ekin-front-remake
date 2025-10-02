@@ -68,6 +68,21 @@ export default class SkpsService {
   }
 
   /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: Goals[];
+   * }>}
+   * */
+  static async getDetailSkpByAssessmentPeriod({ token, id, assessment_period_id }) {
+    const response = await api.get(`/skp/${id}/penilaian/${assessment_period_id}`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
    * @param {Skps} data
    * @param {string} token
    * @returns {Promise<{

@@ -1,11 +1,11 @@
 import { Crud } from '@/components';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { RhkService, SkpsService } from '@/services';
-import { CheckCircleFilled, CloseCircleFilled, FilterOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CloseCircleFilled, FilterOutlined, PlusOutlined } from '@ant-design/icons';
 import { Badge, Button, Card, Descriptions, Drawer, List, Popover, Skeleton, Tag, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { filterMphFormFields, mphFormFields } from './FormFields';
+import { aspekFormFields, filterMphFormFields, mphFormFields } from './FormFields';
 import Modul from '@/constants/Modul';
 
 const Mph = () => {
@@ -16,6 +16,7 @@ const Mph = () => {
   const { execute, ...getAllMatriks } = useService(SkpsService.getMatriks);
   const { execute: fetchSkpBawahan, ...getAllSkpBawahan } = useService(SkpsService.getByAtasan);
   const storeRhk = useService(RhkService.store);
+  const updateAspek = useService(SkpsService.aspekUpdate);
   const pagination = usePagination({ totalData: getAllMatriks.totalData });
   const [drawer, setDrawer] = React.useState({ open: false, data: {}, placement: 'right' });
   const [filterValues, setFilterValues] = React.useState({ skp_id: null });
@@ -31,6 +32,25 @@ const Mph = () => {
 
   const matriksSkp = getAllMatriks.data ?? {};
   const skpBawahan = getAllSkpBawahan.data ?? [];
+
+  const handleUpdateAspek = (data) => {
+    modal.edit({
+      title: `Ubah ${Modul.ASPEK}`,
+      formFields: aspekFormFields,
+      data: { name: data.indikator_name, target: data.indikator_target, satuan: data.indikator_satuan },
+      onSubmit: async (values) => {
+        const { isSuccess, message } = await updateAspek.execute(data.id, { indikator_kinerja: { ...values }, jenis: data.jenis, desc: data.desc }, token);
+        if (isSuccess) {
+          success('Berhasil', message);
+          fetchMatriks({ token: token, page: pagination.page, per_page: pagination.per_page, skp_id: filterValues.skp_id });
+          setDrawer({ ...drawer, open: false });
+        } else {
+          error('Gagal', message);
+        }
+        return isSuccess;
+      }
+    });
+  };
 
   return (
     <>
@@ -185,6 +205,9 @@ const Mph = () => {
                     <>
                       <CloseCircleFilled className="text-red-500" />
                       Belum di tambahkan
+                      <Button variant="text" color="primary" icon={<PlusOutlined />} onClick={() => handleUpdateAspek(item)}>
+                        Tambah
+                      </Button>
                     </>
                   )}
                 </div>

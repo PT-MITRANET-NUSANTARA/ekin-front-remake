@@ -75,7 +75,7 @@ const DetailSkp = () => {
     });
   };
 
-  const handleDeleteAspek = (record) => {
+  const handleDeleteRhk = (record) => {
     modal.delete.default({
       title: `Hapus ${Modul.RHK}`,
       onSubmit: async () => {
@@ -270,7 +270,7 @@ const DetailSkp = () => {
             </div>
             <Table
               bordered
-              columns={RhkColumn(handleUpdateAspek, handleDeleteAspek, user, detailSkp)}
+              columns={RhkColumn(handleUpdateAspek, handleDeleteRhk, user, detailSkp)}
               dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])}
               pagination={false}
               rowKey={(record) => `${record.rhkId}-${record.aspekId}`}
