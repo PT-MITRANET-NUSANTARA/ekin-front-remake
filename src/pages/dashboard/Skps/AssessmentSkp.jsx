@@ -6,6 +6,7 @@ import { lampiranColumn, perilakuColumns, RhkColumn } from './Columns';
 import { SkpsService } from '@/services';
 import { InputType } from '@/constants';
 import isSkpBawahan from '@/utils/isSkpAtasan';
+import getPredikat from '@/utils/getPredikat';
 
 const AssessmentSkp = () => {
   const { token, user } = useAuth();
@@ -65,11 +66,11 @@ const AssessmentSkp = () => {
           ],
           size: 'large',
           options: [
-            { label: <Rate value={5} disabled />, value: 5 },
-            { label: <Rate value={4} disabled />, value: 4 },
-            { label: <Rate value={3} disabled />, value: 3 },
-            { label: <Rate value={2} disabled />, value: 2 },
-            { label: <Rate value={1} disabled />, value: 1 }
+            { label: 'SANGAT KURANG', value: 1 },
+            { label: 'KURANG', value: 2 },
+            { label: 'BUTUH PERBAIKAN', value: 3 },
+            { label: 'BAIK', value: 4 },
+            { label: 'ISTIMEWA', value: 5 }
           ]
         }
       ],
@@ -106,7 +107,7 @@ const AssessmentSkp = () => {
             subTitle="SKP ini telah berhasil dilakukan penilaian dengan perolehan nilai"
             extra={
               <div>
-                <Typography.Title level={3}>{parseFloat(detailSkp.penilaian.rating_predikat)}/5</Typography.Title>
+                <Typography.Title level={3}>{getPredikat(detailSkp.penilaian.rating_predikat)}</Typography.Title>
                 <Rate value={parseFloat(detailSkp.penilaian.rating_predikat)} disabled />
               </div>
             }

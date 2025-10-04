@@ -147,119 +147,129 @@ const Skps = () => {
                 </Descriptions.Item>
                 <Descriptions.Item label="Status Pegawai">{item.posjab?.[0]?.jabatan_status.nama ?? ''}</Descriptions.Item>
                 <Descriptions.Item label="Jenis Pegawai">{item.posjab?.[0]?.jenis_asn ?? ''}</Descriptions.Item>
-                <Descriptions.Item label="Perjanjian Kinerja" span={3}>
-                  <div className="flex flex-col gap-y-4">
-                    {item.perjanjian_kinerja.map((pk_item) => (
-                      <div key={pk_item.id} className="inline-flex items-center gap-x-2">
-                        <CheckCircleFilled className="text-green-500" />
-                        <Button
-                          icon={<PaperClipOutlined />}
-                          variant="text"
-                          color="primary"
-                          loading={downloadPerjanjianKinerja.isLoading}
-                          onClick={async () => {
-                            const { isSuccess, message } = await downloadPerjanjianKinerja.execute(token, pk_item.id);
-                            if (isSuccess) {
-                              success('Berhasil', message);
-                              execute({
-                                token,
-                                user_id: user.newNip,
-                                page: pagination.page,
-                                per_page: pagination.per_page,
-                                search: filterValues.search
-                              });
-                            } else {
-                              error('Gagal', message);
-                            }
-                            return isSuccess;
-                          }}
-                        >
-                          {pk_item.id}
-                        </Button>
-                        <Button
-                          variant="text"
-                          color="danger"
-                          icon={<DeleteOutlined />}
-                          onClick={() => {
-                            modal.delete.default({
-                              title: `Delete ${Modul.PERJANJIAN_KINERJA}`,
-                              onSubmit: async () => {
-                                const { isSuccess, message } = await deletePerjanjianKinerja.execute(pk_item.id, token);
-                                if (isSuccess) {
-                                  success('Berhasil', message);
-                                  execute({
-                                    token,
-                                    user_id: user.newNip,
-                                    page: pagination.page,
-                                    per_page: pagination.per_page,
-                                    search: filterValues.search
-                                  });
-                                } else {
-                                  error('Gagal', message);
-                                }
-                                return isSuccess;
+                {user.pimpinan && (
+                  <Descriptions.Item label="Perjanjian Kinerja" span={3}>
+                    <div className="flex flex-col gap-y-4">
+                      {item.perjanjian_kinerja.map((pk_item) => (
+                        <div key={pk_item.id} className="inline-flex items-center gap-x-2">
+                          <CheckCircleFilled className="text-green-500" />
+                          <Button
+                            icon={<PaperClipOutlined />}
+                            variant="text"
+                            color="primary"
+                            loading={downloadPerjanjianKinerja.isLoading}
+                            onClick={async () => {
+                              const { isSuccess, message } = await downloadPerjanjianKinerja.execute(token, pk_item.id);
+                              if (isSuccess) {
+                                success('Berhasil', message);
+                                execute({
+                                  token,
+                                  user_id: user.newNip,
+                                  page: pagination.page,
+                                  per_page: pagination.per_page,
+                                  search: filterValues.search
+                                });
+                              } else {
+                                error('Gagal', message);
                               }
-                            });
-                          }}
-                        />
-                      </div>
-                    ))}
-                    {!item.perjanjian_kinerja.length && <Alert message="Mohon upload perjanjian kinerja terlebih dahulu" type="warning" showIcon />}
-                    <hr />
-                    <Button
-                      className="w-fit"
-                      variant="solid"
-                      color="primary"
-                      onClick={() => {
-                        modal.create({
-                          title: `Tambah ${Modul.PERJANJIAN_KINERJA}`,
-                          formFields: perjanjianKinerjaFormFields,
-                          onSubmit: async (values) => {
-                            const { isSuccess, message } = await storePerjanjianKinerja.execute({ ...values, unit_id: item.posjab[0].unor.induk.id_simpeg, unor_id: item.posjab[0].unor.id, skp_id: item.id }, token, values.file.file);
-                            if (isSuccess) {
-                              success('Berhasil', message);
-                              execute({
-                                token,
-                                user_id: user.newNip,
-                                page: pagination.page,
-                                per_page: pagination.per_page,
-                                search: filterValues.search
+                              return isSuccess;
+                            }}
+                          >
+                            {pk_item.id}
+                          </Button>
+                          <Button
+                            variant="text"
+                            color="danger"
+                            icon={<DeleteOutlined />}
+                            onClick={() => {
+                              modal.delete.default({
+                                title: `Delete ${Modul.PERJANJIAN_KINERJA}`,
+                                onSubmit: async () => {
+                                  const { isSuccess, message } = await deletePerjanjianKinerja.execute(pk_item.id, token);
+                                  if (isSuccess) {
+                                    success('Berhasil', message);
+                                    execute({
+                                      token,
+                                      user_id: user.newNip,
+                                      page: pagination.page,
+                                      per_page: pagination.per_page,
+                                      search: filterValues.search
+                                    });
+                                  } else {
+                                    error('Gagal', message);
+                                  }
+                                  return isSuccess;
+                                }
                               });
-                            } else {
-                              error('Gagal', message);
+                            }}
+                          />
+                        </div>
+                      ))}
+                      {!item.perjanjian_kinerja.length && <Alert message="Mohon upload perjanjian kinerja terlebih dahulu" type="warning" showIcon />}
+                      <hr />
+                      <Button
+                        className="w-fit"
+                        variant="solid"
+                        color="primary"
+                        onClick={() => {
+                          modal.create({
+                            title: `Tambah ${Modul.PERJANJIAN_KINERJA}`,
+                            formFields: perjanjianKinerjaFormFields,
+                            onSubmit: async (values) => {
+                              const { isSuccess, message } = await storePerjanjianKinerja.execute({ ...values, unit_id: item.posjab[0].unor.induk.id_simpeg, unor_id: item.posjab[0].unor.id, skp_id: item.id }, token, values.file.file);
+                              if (isSuccess) {
+                                success('Berhasil', message);
+                                execute({
+                                  token,
+                                  user_id: user.newNip,
+                                  page: pagination.page,
+                                  per_page: pagination.per_page,
+                                  search: filterValues.search
+                                });
+                              } else {
+                                error('Gagal', message);
+                              }
+                              return isSuccess;
                             }
-                            return isSuccess;
-                          }
-                        });
-                      }}
-                    >
-                      Tambah
-                    </Button>
-                  </div>
-                </Descriptions.Item>
+                          });
+                        }}
+                      >
+                        Tambah
+                      </Button>
+                    </div>
+                  </Descriptions.Item>
+                )}
               </Descriptions>
               <div className="mt-4 flex w-full items-center justify-between">
                 <div className="inline-flex items-center gap-x-2">
                   <Button size="small" variant="filled" color="primary" icon={<InfoCircleOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id)}>
                     Detail SKP
                   </Button>
-                  <Button disabled={!item.perjanjian_kinerja.length} size="small" variant="filled" color="primary" icon={<TableOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/matriks')}>
-                    Matriks Peran Hasil
-                  </Button>
-                  <Button disabled={!item.perjanjian_kinerja.length} size="small" variant="filled" color="primary" icon={<UserSwitchOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/skp_bawahan')}>
-                    SKP Bawahan
-                  </Button>
+                  {user?.pimpinan && (
+                    <Button disabled={!item.perjanjian_kinerja.length} size="small" variant="filled" color="primary" icon={<TableOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/matriks')}>
+                      Matriks Peran Hasil
+                    </Button>
+                  )}
+                  {user?.pimpinan && (
+                    <Button disabled={!item.perjanjian_kinerja.length} size="small" variant="filled" color="primary" icon={<UserSwitchOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/skp_bawahan')}>
+                      SKP Bawahan
+                    </Button>
+                  )}
                   <Button disabled={!item.perjanjian_kinerja.length} size="small" variant="filled" color="primary" icon={<CheckSquareOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/assessment_periods')}>
                     Penilaian
                   </Button>
                 </div>
                 <div className="inline-flex items-center gap-x-2">
-                  <Button disabled={item.status !== 'DRAFT'} variant="solid" color="primary" icon={<EditOutlined />} onClick={() => onEdit(item)}>
-                    Edit
-                  </Button>
-                  <Button variant="solid" color="danger" icon={<DeleteOutlined />} onClick={() => onDelete(item)}>
-                    Hapus
-                  </Button>
+                  {user.isJpt && (
+                    <>
+                      <Button disabled={item.status !== 'DRAFT'} variant="solid" color="primary" icon={<EditOutlined />} onClick={() => onEdit(item)}>
+                        Edit
+                      </Button>
+                      <Button variant="solid" color="danger" icon={<DeleteOutlined />} onClick={() => onDelete(item)}>
+                        Hapus
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </Card>

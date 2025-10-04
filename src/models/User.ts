@@ -17,6 +17,25 @@ export interface IncomingApiData {
   isAdmin: boolean;
   isBupati: boolean;
   isJpt: boolean;
+  pimpinan: {
+    id: string;
+    namaUnor: string;
+    namaJabatan: string;
+    eselon: {
+      id: number;
+      nama: string;
+    };
+    asn: {
+      asn_id: string;
+      asn_nama: string;
+    };
+    atasan: string;
+    induk: {
+      id_sapk: string;
+      id_simpeg: number;
+      nama: string;
+    };
+  };
 }
 
 export interface untranslatedIncoming {}
@@ -39,7 +58,26 @@ export default class User extends Model {
     public photo: string,
     public isAdmin: boolean,
     public isBupati: boolean,
-    public isJpt: boolean
+    public isJpt: boolean,
+    public pimpinan: {
+      id: string;
+      unorName: string;
+      jabatanName: string;
+      eselon: {
+        id: number;
+        name: string;
+      };
+      asn: {
+        asn_id: string;
+        asn_name: string;
+      };
+      atasan: string;
+      induk: {
+        id_sapk: string;
+        id_simpeg: number;
+        name: string;
+      };
+    }
     // public permissions: Permission[] = []
   ) {
     super();
@@ -85,7 +123,26 @@ export default class User extends Model {
       apiData.foto,
       apiData.isAdmin,
       apiData.isBupati,
-      apiData.isJpt
+      apiData.isJpt,
+      {
+        id: apiData.pimpinan.id,
+        unorName: apiData.pimpinan.namaUnor,
+        jabatanName: apiData.pimpinan.namaJabatan,
+        eselon: {
+          id: apiData.pimpinan.eselon.id,
+          name: apiData.pimpinan.eselon.nama
+        },
+        asn: {
+          asn_id: apiData.pimpinan.asn.asn_id,
+          asn_name: apiData.pimpinan.asn.asn_nama
+        },
+        atasan: apiData.pimpinan.atasan,
+        induk: {
+          id_sapk: apiData.pimpinan.induk.id_sapk,
+          id_simpeg: apiData.pimpinan.induk.id_simpeg,
+          name: apiData.pimpinan.induk.nama
+        }
+      }
     );
   }
 

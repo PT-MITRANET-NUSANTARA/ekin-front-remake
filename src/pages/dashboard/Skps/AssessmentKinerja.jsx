@@ -1,14 +1,15 @@
 import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
 import { FeedbackKinerjaService, SkpsService } from '@/services';
-import { Badge, Button, Card, Descriptions, Rate, Skeleton, Table, Typography } from 'antd';
+import { Badge, Button, Card, Descriptions, Skeleton, Table, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { RhkColumn } from './Columns';
-import { DeleteOutlined, EditOutlined, PlusOutlined, StarFilled, WarningFilled } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined, WarningFilled } from '@ant-design/icons';
 import { descFormField } from './FormFields';
 import Modul from '@/constants/Modul';
 import { InputType } from '@/constants';
 import isSkpBawahan from '@/utils/isSkpAtasan';
+import getNilai from '@/utils/getNilai';
 
 const AssessmentKinerja = () => {
   const { token, user } = useAuth();
@@ -124,11 +125,9 @@ const AssessmentKinerja = () => {
           ],
           size: 'large',
           options: [
-            { label: <Rate value={5} disabled />, value: 5 },
-            { label: <Rate value={4} disabled />, value: 4 },
-            { label: <Rate value={3} disabled />, value: 3 },
-            { label: <Rate value={2} disabled />, value: 2 },
-            { label: <Rate value={1} disabled />, value: 1 }
+            { label: 'DIBAWAH EKSPEKTASI', value: 1 },
+            { label: 'SESUAI EKSPEKTASI', value: 2 },
+            { label: 'DIATAS EKSPEKTASI', value: 3 }
           ]
         }
       ],
@@ -172,7 +171,7 @@ const AssessmentKinerja = () => {
           return (
             <Card>
               <div>
-                Kinerja dalam SKP ini telah dilakukan penilaian, dengan perolehan nilai <StarFilled className="text-yellow-400" /> <b>{rating}/5</b>
+                Kinerja dalam SKP ini telah dilakukan penilaian, dengan perolehan nilai <b>{getNilai(rating)}</b>
               </div>
             </Card>
           );
@@ -236,16 +235,17 @@ const AssessmentKinerja = () => {
               columns={[
                 ...RhkColumn(),
                 {
-                  title: 'Feedback',
+                  title: 'Umpan Balik Berdasarkan Bukti Dukung',
                   dataIndex: 'rhkId',
+                  width: '30%',
                   render: (_, record) => (
                     <div className="flex flex-col gap-y-2">
                       {record.feedback_aspek ? (
                         <p>{record.feedback_aspek}</p>
                       ) : (
-                        <div className="inline-flex items-center gap-x-2">
-                          <WarningFilled className="text-yellow-500" />
-                          Feedback Belum Di Tambahkan !
+                        <div className="inline-flex items-start gap-x-2">
+                          <WarningFilled className="mt-1 text-yellow-500" />
+                          Umpan Balik Berdasarkan Bukti Dukung Belum Di Tambahkan !
                         </div>
                       )}
                       {isSkpBawahan(detailSkp, user) && (
