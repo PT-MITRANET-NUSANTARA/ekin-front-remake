@@ -11,3 +11,7 @@ export { default as AssessmentPeriodService } from './AssessmentPeriodService';
 export { default as SkpsService } from './SkpsService';
 export { default as RhkService } from './RhkService';
 export { default as RhkPenilaianService } from './RhkPenilaianService';
+export { default as PerjanjianKinerjaService } from './PerjanjianKinerjaService';
+export { default as RencanaAksiService } from './RencanaAksiService';
+export { default as FeedbackPerilakuService } from './FeedbackPerilakuService';
+export { default as FeedbackKinerjaService } from './FeedbackKinerjaService';

@@ -83,6 +83,21 @@ export default class SkpsService {
   }
 
   /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: Goals[];
+   * }>}
+   * */
+  static async getDetailSkpAssessment({ token, id, assessment_period_id }) {
+    const response = await api.get(`/skp/${id}/penilaian/${assessment_period_id}/nilai`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
    * @param {Skps} data
    * @param {string} token
    * @returns {Promise<{
@@ -94,6 +109,20 @@ export default class SkpsService {
    */
   static async store(data, token) {
     return await api.post('/skp', { body: Skps.toApiData(data), token });
+  }
+
+  /**
+   * @param {Skps} data
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  errors?: { [key: string]: string[] };
+   * }}
+   */
+  static async storePenilaianSkp(data, token) {
+    return await api.post('/penilaian/predikat', { body: data, token });
   }
 
   /**

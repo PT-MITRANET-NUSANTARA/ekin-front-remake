@@ -5,6 +5,7 @@ export interface IncomingApiData {
   periode_start: string;
   periode_end: string;
   unit_id: number;
+  renstra_id: string;
   name: string;
   createdAt: string;
   updatedAt: string;
@@ -15,6 +16,7 @@ export interface OutgoingApiData {
   periode_start: string;
   periode_end: string;
   unit_id: number;
+  renstra_id: string;
 }
 
 interface FormValue {
@@ -22,6 +24,7 @@ interface FormValue {
   tanggal_mulai: string;
   tanggal_selesai: string;
   id_unit: number;
+  id_renstra: string;
 }
 
 type ReturnType<S, From, To> = S extends From[] ? To[] : To;
@@ -32,6 +35,7 @@ export default class AssessmentPeriod extends Model {
     public tanggal_mulai: string,
     public tanggal_selesai: string,
     public id_unit: number,
+    public id_renstra: string,
     public nama: string,
     public created_at: string,
     public updated_at: string
@@ -41,7 +45,7 @@ export default class AssessmentPeriod extends Model {
 
   public static fromApiData<T extends IncomingApiData | IncomingApiData[]>(apiData: T): ReturnType<T, IncomingApiData, AssessmentPeriod> {
     if (Array.isArray(apiData)) return apiData.map((object) => this.fromApiData(object)) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
-    return new AssessmentPeriod(apiData.id, apiData.periode_start, apiData.periode_end, apiData.unit_id, apiData.name, apiData.createdAt, apiData.updatedAt) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
+    return new AssessmentPeriod(apiData.id, apiData.periode_start, apiData.periode_end, apiData.unit_id, apiData.renstra_id, apiData.name, apiData.createdAt, apiData.updatedAt) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
   }
 
   public static toApiData<T extends FormValue | FormValue[]>(assessmentPeriod: T): ReturnType<T, FormValue, OutgoingApiData> {
@@ -50,7 +54,8 @@ export default class AssessmentPeriod extends Model {
       name: assessmentPeriod.nama,
       periode_start: assessmentPeriod.tanggal_selesai,
       periode_end: assessmentPeriod.tanggal_selesai,
-      unit_id: assessmentPeriod.id_unit
+      unit_id: assessmentPeriod.id_unit,
+      renstra_id: assessmentPeriod.id_renstra
     };
 
     return apiData as ReturnType<T, FormValue, OutgoingApiData>;

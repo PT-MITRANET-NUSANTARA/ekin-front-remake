@@ -13,7 +13,11 @@ enum Modul {
   RHK_PENILAIAN = 'RHK Penilaian',
   ASPEK = 'Aspek',
   LAMPIRAN = 'Lampiran',
-  SKP_BAWAHAN = 'SKP Bawahan'
+  SKP_BAWAHAN = 'SKP Bawahan',
+  PERJANJIAN_KINERJA = 'Perjanjian Kinerja',
+  RENCANA_AKSI = 'Rencana Aksi',
+  FEEDBACK_PERILAKU = 'Feedback Perilaku',
+  FEEDBACK_KINERJA = 'Feedback Kinerja'
 }
 
 export default Modul;

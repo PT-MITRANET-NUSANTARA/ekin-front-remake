@@ -21,3 +21,7 @@ export { default as SkpBawahan } from './Skps/SkpBawahan';
 export { default as SkpAssessmentPeriod } from './Skps/SkpAssessmentPeriod';
 export { default as Assessment } from './Skps/Assessment';
 export { default as DetailSkpPenilaian } from './Skps/DetailSkpPenilaian';
+export { default as RencanaAksi } from './Skps/RencanaAksi';
+export { default as AssessmentPerilaku } from './Skps/AssessmentPerilaku';
+export { default as AssessmentKinerja } from './Skps/AssessmentKinerja';
+export { default as AssessmentSkp } from './Skps/AssessmentSkp';

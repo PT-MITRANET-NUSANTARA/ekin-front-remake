@@ -1,7 +1,7 @@
 import { Crud } from '@/components';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { RhkService, SkpsService } from '@/services';
-import { CheckCircleFilled, CloseCircleFilled, FilterOutlined, PlusOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CloseCircleFilled, EditOutlined, FilterOutlined, PlusOutlined } from '@ant-design/icons';
 import { Badge, Button, Card, Descriptions, Drawer, List, Popover, Skeleton, Tag, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -37,7 +37,7 @@ const Mph = () => {
     modal.edit({
       title: `Ubah ${Modul.ASPEK}`,
       formFields: aspekFormFields,
-      data: { name: data.indikator_name, target: data.indikator_target, satuan: data.indikator_satuan },
+      data: { name: data?.indikator_kinerja?.name, target: data?.indikator_kinerja?.target, satuan: data?.indikator_kinerja?.satuan },
       onSubmit: async (values) => {
         const { isSuccess, message } = await updateAspek.execute(data.id, { indikator_kinerja: { ...values }, jenis: data.jenis, desc: data.desc }, token);
         if (isSuccess) {
@@ -168,7 +168,7 @@ const Mph = () => {
           </div>
         </Skeleton>
       </Card>
-      <Drawer title={drawer.data.desc} closable onClose={() => setDrawer((prev) => ({ ...prev, open: false }))} open={drawer.open} placement={drawer.placement} width={900}>
+      <Drawer title={drawer.data.desc} closable onClose={() => setDrawer((prev) => ({ ...prev, open: false }))} open={drawer.open} placement={drawer.placement} width={900} zIndex={900}>
         <Typography.Title level={5} style={{ margin: 0 }}>
           Detail RHK
         </Typography.Title>
@@ -199,7 +199,8 @@ const Mph = () => {
                   {item.indikator_kinerja ? (
                     <>
                       <CheckCircleFilled className="text-green-500" />
-                      {item.indikator_kinerja.name} {item.indikator_kinerja.satuan} {item.indikator_kinerja.target}
+                      {item.indikator_kinerja.name} {item.indikator_kinerja.target} {item.indikator_kinerja.satuan}
+                      <Button variant="text" color="primary" icon={<EditOutlined />} onClick={() => handleUpdateAspek(item)} />
                     </>
                   ) : (
                     <>

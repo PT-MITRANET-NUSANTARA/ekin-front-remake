@@ -1,21 +1,19 @@
-import Modul from '@/constants/Modul';
-import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { RhkPenilaianService, RhkService, SkpsService } from '@/services';
-import { Badge, Button, Card, Descriptions, Skeleton, Table, Typography } from 'antd';
+import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
+import { Badge, Button, Card, Descriptions, Rate, Result, Skeleton, Table, Typography } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { lampiranColumn, perilakuColumns, RhkColumn } from './Columns';
+import { SkpsService } from '@/services';
 import { InputType } from '@/constants';
+import isSkpBawahan from '@/utils/isSkpAtasan';
 
-const DetailSkpPenilaian = () => {
+const AssessmentSkp = () => {
   const { token, user } = useAuth();
   const { id, assessment_periode_id } = useParams();
-  const modal = useCrudModal();
   const { success, error } = useNotification();
-  const { execute, ...getAllDetailSkp } = useService(SkpsService.getDetailSkpByAssessmentPeriod);
-  const { execute: fetchRhks, ...getAllRhks } = useService(RhkService.getBySkp);
-  const storeRhkPenilaian = useService(RhkPenilaianService.store);
-  const pagination = usePagination({ totalData: getAllDetailSkp.totalData });
+  const modal = useCrudModal();
+  const { execute, ...getAllDetailSkp } = useService(SkpsService.getDetailSkpAssessment);
+  const storePredikat = useService(SkpsService.storePenilaianSkp);
 
   const fetchDetailSkp = React.useCallback(() => {
     execute({ token: token, id: id, assessment_period_id: assessment_periode_id });
@@ -23,11 +21,9 @@ const DetailSkpPenilaian = () => {
 
   React.useEffect(() => {
     fetchDetailSkp();
-    fetchRhks({ token: token, skp_id: id });
-  }, [fetchDetailSkp, fetchRhks, id, token, user?.newNip]);
+  }, [fetchDetailSkp]);
 
   const detailSkp = getAllDetailSkp.data ?? {};
-  const rhks = getAllRhks.data ?? {};
 
   const flattenData = (rhkList) => {
     const rows = [];
@@ -53,8 +49,70 @@ const DetailSkpPenilaian = () => {
     return rows;
   };
 
+  const handleCreatePenilaian = () => {
+    modal.create({
+      title: `Buat Penilaian SKP`,
+      formFields: [
+        {
+          label: `Penilaian SKP`,
+          name: 'rating_predikat',
+          type: InputType.SELECT,
+          rules: [
+            {
+              required: true,
+              message: `Penilaian SKP harus diisi`
+            }
+          ],
+          size: 'large',
+          options: [
+            { label: <Rate value={5} disabled />, value: 5 },
+            { label: <Rate value={4} disabled />, value: 4 },
+            { label: <Rate value={3} disabled />, value: 3 },
+            { label: <Rate value={2} disabled />, value: 2 },
+            { label: <Rate value={1} disabled />, value: 1 }
+          ]
+        }
+      ],
+      onSubmit: async (values) => {
+        const { isSuccess, message } = await storePredikat.execute({ ...values, skp_dinilai_id: detailSkp.id, skp_penilai_id: detailSkp.atasan_skp[0].id, periode_penilaian_id: assessment_periode_id }, token);
+        if (isSuccess) {
+          success('Berhasil', message);
+          fetchDetailSkp({ token: token, id: id, assessment_period_id: assessment_periode_id });
+        } else {
+          error('Gagal', message);
+        }
+        return isSuccess;
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col gap-y-4">
+      <div className="mt-4 flex w-full items-center justify-between">
+        <div className="inline-flex items-center gap-x-2"></div>
+        <div className="inline-flex items-center gap-x-2">
+          {isSkpBawahan(detailSkp, user) && (
+            <Button variant="solid" color="primary" onClick={handleCreatePenilaian}>
+              {!detailSkp?.penilaian || !detailSkp.penilaian.rating_predikat || parseFloat(detailSkp.penilaian.rating_predikat) <= 0 ? 'Tambah Penilaian SKP' : 'Ubah Nilai'}
+            </Button>
+          )}
+        </div>
+      </div>
+      <Card>
+        {!!detailSkp?.penilaian && parseFloat(detailSkp?.penilaian?.rating_predikat || '0') > 0 && (
+          <Result
+            status="success"
+            title="SKP Telah Dinilai"
+            subTitle="SKP ini telah berhasil dilakukan penilaian dengan perolehan nilai"
+            extra={
+              <div>
+                <Typography.Title level={3}>{parseFloat(detailSkp.penilaian.rating_predikat)}/5</Typography.Title>
+                <Rate value={parseFloat(detailSkp.penilaian.rating_predikat)} disabled />
+              </div>
+            }
+          />
+        )}
+      </Card>
       <Card>
         <Skeleton loading={!!user?.newNip && getAllDetailSkp.isLoading}>
           <div className="flex flex-col gap-y-6">
@@ -100,49 +158,7 @@ const DetailSkpPenilaian = () => {
               <div className="inline-flex items-center gap-x-2">
                 <Typography.Title level={5}>Rencana Hasil Kerja Utama</Typography.Title>
               </div>
-              <div className="inline-flex items-center gap-x-2">
-                {user?.newNip === detailSkp.user_id && (
-                  <Button
-                    variant="solid"
-                    color="primary"
-                    onClick={() => {
-                      modal.create({
-                        title: `Tambah ${Modul.RHK_PENILAIAN}`,
-                        formFields: [
-                          {
-                            label: `RHK`,
-                            name: 'rhk_id',
-                            type: InputType.SELECT,
-                            rules: [
-                              {
-                                required: true,
-                                message: `Rencana hasil kerja harus diisi`
-                              }
-                            ],
-                            size: 'large',
-                            options: rhks.map((item) => ({
-                              label: item.desc,
-                              value: item.id
-                            }))
-                          }
-                        ],
-                        onSubmit: async (values) => {
-                          const { isSuccess, message } = await storeRhkPenilaian.execute({ ...values, skp_id: id, periode_penilaian_id: assessment_periode_id }, token);
-                          if (isSuccess) {
-                            success('Berhasil', message);
-                            fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
-                          } else {
-                            error('Gagal', message);
-                          }
-                          return isSuccess;
-                        }
-                      });
-                    }}
-                  >
-                    Tambah RHK Penilaian
-                  </Button>
-                )}
-              </div>
+              <div className="inline-flex items-center gap-x-2"></div>
             </div>
             <Table bordered columns={RhkColumn()} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />
             <div className="mt-4 flex w-full items-center justify-between">
@@ -185,4 +201,4 @@ const DetailSkpPenilaian = () => {
   );
 };
 
-export default DetailSkpPenilaian;
+export default AssessmentSkp;

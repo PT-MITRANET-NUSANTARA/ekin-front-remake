@@ -7,7 +7,24 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import { flattenLandingLinks } from './utils/landingLink';
 import { Notfound } from './pages/result';
-import { ActivitiesIndicators, Assessment, DetailRkt, DetailSkp, DetailSkpPenilaian, GoalsIndicators, Mph, ProgramsIndicators, SkpAssessmentPeriod, SkpBawahan, SubAcitivitiesIndicators, UserProfile } from './pages/dashboard';
+import {
+  ActivitiesIndicators,
+  Assessment,
+  AssessmentKinerja,
+  AssessmentPerilaku,
+  AssessmentSkp,
+  DetailRkt,
+  DetailSkp,
+  DetailSkpPenilaian,
+  GoalsIndicators,
+  Mph,
+  ProgramsIndicators,
+  RencanaAksi,
+  SkpAssessmentPeriod,
+  SkpBawahan,
+  SubAcitivitiesIndicators,
+  UserProfile
+} from './pages/dashboard';
 
 function App() {
   const { isLoading, user } = useAuth();
@@ -69,6 +86,10 @@ function App() {
             { path: '/dashboard/skps/:id/assessment_periods', element: <SkpAssessmentPeriod /> },
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment', element: <Assessment /> },
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/detail', element: <DetailSkpPenilaian /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/rencana_aksi', element: <RencanaAksi /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/penilaian_kinerja', element: <AssessmentKinerja /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/penilaian_perilaku', element: <AssessmentPerilaku /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/predikat', element: <AssessmentSkp /> },
             { path: '/dashboard/user_profile', element: <UserProfile /> }
           ]
         },

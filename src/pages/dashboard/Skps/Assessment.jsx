@@ -5,6 +5,7 @@ import { Badge, Button, Card, Descriptions, Skeleton } from 'antd';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { skpBawahanColumns } from './Columns';
+import { CheckSquareOutlined } from '@ant-design/icons';
 
 const Assessment = () => {
   const { token } = useAuth();
@@ -29,13 +30,13 @@ const Assessment = () => {
       <Card>
         <Skeleton loading={getAllDetailSkp.isLoading}>
           <div className="mb-6 flex gap-x-2">
-            <Button variant="solid" color="primary">
+            <Button variant="solid" color="primary" onClick={() => navigate(window.location.pathname + '/penilaian_kinerja')}>
               Penilaian Kinerja
             </Button>
-            <Button variant="solid" color="primary">
+            <Button variant="solid" color="primary" onClick={() => navigate(window.location.pathname + '/penilaian_perilaku')}>
               Penilaian Perilaku
             </Button>
-            <Button variant="solid" color="primary">
+            <Button variant="solid" color="primary" onClick={() => navigate(window.location.pathname + '/rencana_aksi')}>
               Rencana Aksi
             </Button>
             <Button variant="solid" color="primary" onClick={() => navigate(window.location.pathname + '/detail')}>
@@ -71,7 +72,7 @@ const Assessment = () => {
             <Descriptions.Item label="Periode Mulai">{assessmentPeriods.tanggal_mulai}</Descriptions.Item>
             <Descriptions.Item label="Periode Akhir">{assessmentPeriods.tanggal_selesai}</Descriptions.Item>
           </Descriptions>
-          <div className="mb-12 flex flex-row items-center gap-x-4">
+          <div className="mb-12 flex flex-row gap-x-4">
             <Descriptions title="Pejabat yang dinilai" size="small" column={1} bordered>
               <Descriptions.Item label="Nama">{detailSkp?.posjab?.[0]?.nama_asn ?? ''}</Descriptions.Item>
               <Descriptions.Item label="Nip">{detailSkp?.posjab?.[0]?.nip_asn ?? ''}</Descriptions.Item>
@@ -96,6 +97,23 @@ const Assessment = () => {
                 {
                   label: 'Detail',
                   path: (record) => `/dashboard/skps/${record.id}/assessment_periods/${assessment_periode_id}/assessment/detail`
+                },
+                {
+                  label: 'Rencana Aksi',
+                  path: (record) => `/dashboard/skps/${record.id}/assessment_periods/${assessment_periode_id}/assessment/rencana_aksi`,
+                  icon: <CheckSquareOutlined />
+                },
+                {
+                  label: 'Kinerja',
+                  path: (record) => `/dashboard/skps/${record.id}/assessment_periods/${assessment_periode_id}/assessment/penilaian_kinerja`
+                },
+                {
+                  label: 'Perilaku',
+                  path: (record) => `/dashboard/skps/${record.id}/assessment_periods/${assessment_periode_id}/assessment/penilaian_perilaku`
+                },
+                {
+                  label: 'Predikat',
+                  path: (record) => `/dashboard/skps/${record.id}/assessment_periods/${assessment_periode_id}/assessment/predikat`
                 }
               ]
             })}

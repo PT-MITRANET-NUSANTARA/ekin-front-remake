@@ -2,7 +2,7 @@ import { CheckCircleFilled, CloseCircleFilled, DeleteOutlined, EditOutlined, Inf
 import { Badge, Button, Popconfirm, Tag } from 'antd';
 
 /* eslint-disable react-refresh/only-export-components */
-export const RhkColumn = (udpateAspek, deleteRhk, user, detailSkp) => [
+export const RhkColumn = ({ updateAspek, user, detailSkp } = {}) => [
   {
     title: 'RHK',
     dataIndex: 'rhkDesc',
@@ -10,9 +10,13 @@ export const RhkColumn = (udpateAspek, deleteRhk, user, detailSkp) => [
       children: (
         <div className="flex flex-col gap-y-2">
           <span>{value}</span>
-          <Tag color="blue" className="w-fit">
-            {row.klasifikasi}
-          </Tag>
+
+          {row.klasifikasi && (
+            <Tag color="blue" className="w-fit">
+              {row.klasifikasi}
+            </Tag>
+          )}
+
           {row.penugasan && (
             <Tag color="geekblue" className="w-fit">
               {row.penugasan}
@@ -26,12 +30,16 @@ export const RhkColumn = (udpateAspek, deleteRhk, user, detailSkp) => [
   {
     title: 'Aspek',
     dataIndex: 'aspekDesc',
-    render: (_, record) => (
-      <div className="flex items-center gap-2">
-        <span>{record.aspekDesc}</span>
-        {udpateAspek && user?.isJpt && user?.newNip === detailSkp.user_id && <Button icon={<EditOutlined />} variant="link" color="primary" onClick={() => udpateAspek(record)} />}
-      </div>
-    )
+    render: (_, record) => {
+      const canEdit = updateAspek && user?.isJpt && user?.newNip === detailSkp?.user_id;
+
+      return (
+        <div className="flex items-center gap-2">
+          <span>{record.aspekDesc}</span>
+          {canEdit && <Button icon={<EditOutlined />} type="link" onClick={() => updateAspek(record)} />}
+        </div>
+      );
+    }
   },
   {
     title: 'Jenis Aspek',
@@ -41,27 +49,10 @@ export const RhkColumn = (udpateAspek, deleteRhk, user, detailSkp) => [
     title: 'Target Tahunan',
     dataIndex: 'indikator_name',
     render: (_, record) => (
-      <>
+      <span>
         {record.indikator_name} {record.indikator_target} {record.indikator_satuan}
-      </>
+      </span>
     )
-  },
-  {
-    title: 'Aksi',
-    dataIndex: 'rhkId',
-    render: (_, row) => {
-      const children =
-        deleteRhk && user?.isJpt && user?.newNip === detailSkp.user_id ? (
-          <Button className="w-fit" icon={<DeleteOutlined />} variant="solid" color="danger" onClick={() => deleteRhk(row)}>
-            Hapus
-          </Button>
-        ) : null;
-
-      return {
-        children,
-        props: { rowSpan: row.rhkRowSpan }
-      };
-    }
   }
 ];
 
@@ -151,8 +142,9 @@ export const skpBawahanColumns = (props) => {
 
   const aksiColumn = {
     title: 'Aksi',
+    width: '30%',
     render: (_, record) => (
-      <div className="inline-flex items-center gap-x-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
         {navigate &&
           navItems?.map((nav, idx) => (
             <Button key={idx} variant="solid" color={nav.color ?? 'primary'} icon={nav.icon ?? <InfoOutlined />} onClick={() => navigate(nav.path(record))}>
