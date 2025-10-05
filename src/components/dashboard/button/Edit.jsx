@@ -18,6 +18,6 @@ export default function Edit({ title = strings('edit'), onClick }) {
 Edit.propTypes = {
   title: PropTypes.string,
   onClick: PropTypes.func.isRequired,
-  model: PropTypes.func.isRequired,
+  model: PropTypes.func,
   action: PropTypes.oneOf(Object.values(Action))
 };

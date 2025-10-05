@@ -15,3 +15,5 @@ export { default as PerjanjianKinerjaService } from './PerjanjianKinerjaService'
 export { default as RencanaAksiService } from './RencanaAksiService';
 export { default as FeedbackPerilakuService } from './FeedbackPerilakuService';
 export { default as FeedbackKinerjaService } from './FeedbackKinerjaService';
+export { default as UmpegService } from './UmpegService';
+export { default as UnitKerjaService } from './UnitKerjaService';

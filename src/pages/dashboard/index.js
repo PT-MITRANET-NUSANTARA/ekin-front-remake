@@ -25,3 +25,5 @@ export { default as RencanaAksi } from './Skps/RencanaAksi';
 export { default as AssessmentPerilaku } from './Skps/AssessmentPerilaku';
 export { default as AssessmentKinerja } from './Skps/AssessmentKinerja';
 export { default as AssessmentSkp } from './Skps/AssessmentSkp';
+export { default as Umpegs } from './Umpegs/Umpegs';
+export { default as JabatanUmpeg } from './Umpegs/JabatanUmpeg';

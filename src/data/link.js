@@ -64,6 +64,12 @@ export const dashboardLink = [
     icon: FileProtectOutlined,
     path: '/dashboard/skps',
     element: Dashboard.Skps
+  },
+  {
+    label: 'Umpeg',
+    icon: FileProtectOutlined,
+    path: '/dashboard/umpegs',
+    element: Dashboard.Umpegs
   }
 ].map((item) => {
   if (item.children) {

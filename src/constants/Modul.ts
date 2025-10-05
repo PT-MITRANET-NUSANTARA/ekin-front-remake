@@ -17,7 +17,8 @@ enum Modul {
   PERJANJIAN_KINERJA = 'Perjanjian Kinerja',
   RENCANA_AKSI = 'Rencana Aksi',
   FEEDBACK_PERILAKU = 'Feedback Perilaku',
-  FEEDBACK_KINERJA = 'Feedback Kinerja'
+  FEEDBACK_KINERJA = 'Feedback Kinerja',
+  UMPEG = 'UMPEG'
 }
 
 export default Modul;
