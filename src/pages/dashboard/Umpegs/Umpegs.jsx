@@ -75,7 +75,7 @@ const Umpegs = () => {
                 formFields: unorFormFields({ options: { unors: unitKerja } }),
                 data: { ...record },
                 onSubmit: async (values) => {
-                  const { isSuccess, message } = await updateUmpeg.execute(record.id, { ...values, ...record }, token);
+                  const { isSuccess, message } = await updateUmpeg.execute(record.id, { ...values }, token);
                   if (isSuccess) {
                     success('Berhasil', message);
                     fetchUmpegs({ token: token, page: pagination.page, per_page: pagination.per_page });

@@ -70,6 +70,12 @@ export const dashboardLink = [
     icon: FileProtectOutlined,
     path: '/dashboard/umpegs',
     element: Dashboard.Umpegs
+  },
+  {
+    label: 'Verificator',
+    icon: FileProtectOutlined,
+    path: '/dashboard/varificator',
+    element: Dashboard.Verificators
   }
 ].map((item) => {
   if (item.children) {

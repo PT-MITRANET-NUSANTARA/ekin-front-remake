@@ -18,6 +18,7 @@ import {
   DetailSkpPenilaian,
   GoalsIndicators,
   JabatanUmpeg,
+  JabatanVerificators,
   Mph,
   ProgramsIndicators,
   RencanaAksi,
@@ -92,7 +93,8 @@ function App() {
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/penilaian_perilaku', element: <AssessmentPerilaku /> },
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/predikat', element: <AssessmentSkp /> },
             { path: '/dashboard/user_profile', element: <UserProfile /> },
-            { path: '/dashboard/umpegs/:id', element: <JabatanUmpeg /> }
+            { path: '/dashboard/umpegs/:id', element: <JabatanUmpeg /> },
+            { path: '/dashboard/verificator/:id/:unit_id/jabatan/:unor_id', element: <JabatanVerificators /> }
           ]
         },
         {

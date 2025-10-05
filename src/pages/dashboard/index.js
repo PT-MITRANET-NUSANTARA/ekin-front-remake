@@ -27,3 +27,5 @@ export { default as AssessmentKinerja } from './Skps/AssessmentKinerja';
 export { default as AssessmentSkp } from './Skps/AssessmentSkp';
 export { default as Umpegs } from './Umpegs/Umpegs';
 export { default as JabatanUmpeg } from './Umpegs/JabatanUmpeg';
+export { default as Verificators } from './Verificators/Verificators';
+export { default as JabatanVerificators } from './Verificators/JabatanVerificator';

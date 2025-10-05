@@ -18,7 +18,8 @@ enum Modul {
   RENCANA_AKSI = 'Rencana Aksi',
   FEEDBACK_PERILAKU = 'Feedback Perilaku',
   FEEDBACK_KINERJA = 'Feedback Kinerja',
-  UMPEG = 'UMPEG'
+  UMPEG = 'UMPEG',
+  VERIFICATOR = 'Verificator'
 }
 
 export default Modul;
