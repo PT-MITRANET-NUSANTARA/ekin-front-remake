@@ -64,6 +64,12 @@ export const dashboardLink = [
     icon: FileProtectOutlined,
     path: '/dashboard/skps',
     element: Dashboard.Skps
+  },
+  {
+    label: 'Absensi',
+    icon: FileProtectOutlined,
+    path: '/dashboard/absence',
+    element: Dashboard.Absence
   }
 ].map((item) => {
   if (item.children) {

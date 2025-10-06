@@ -10,3 +10,4 @@ export { default as RktsService } from './RktsService';
 export { default as AssessmentPeriodService } from './AssessmentPeriodService';
 export { default as SkpsService } from './SkpsService';
 export { default as RhkService } from './RhkService';
+export { default as AbsenceService } from './AbsenceService';

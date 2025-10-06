@@ -11,3 +11,4 @@ export { default as SubActivities } from './SubActivities';
 export { default as Rkts } from './Rkts';
 export { default as AssessmentPeriod } from './AssessmentPeriod';
 export { default as Skps } from './Skps';
+export { default as Absence } from './Absence';
