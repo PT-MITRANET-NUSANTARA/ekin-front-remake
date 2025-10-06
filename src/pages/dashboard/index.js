@@ -29,3 +29,4 @@ export { default as Umpegs } from './Umpegs/Umpegs';
 export { default as JabatanUmpeg } from './Umpegs/JabatanUmpeg';
 export { default as Verificators } from './Verificators/Verificators';
 export { default as JabatanVerificators } from './Verificators/JabatanVerificator';
+export { default as PerjanjianKinerjas } from './PerjanjianKinerjas/PerjanjianKinerja';

@@ -34,6 +34,21 @@ export default class UnitKerjaService {
   }
 
   /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: UnitKerja[];
+   * }>}
+   * */
+  static async getAllHirarchy(token, unit_id) {
+    const response = await api.get(`/unit-kerja/${unit_id}/unor-hierarchy`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
    * @param {UnitKerja} data
    * @param {string} token
    * @returns {Promise<{

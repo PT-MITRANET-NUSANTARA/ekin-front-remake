@@ -76,7 +76,9 @@ const Umpegs = () => {
       title: `Tambah Jabatan`,
       formFields: jabatanFormFields({ options: { jabatans: availableJabatans } }),
       onSubmit: async (values) => {
-        const updatedJabatan = [...(detailUmpeg.jabatan ?? []), ...(Array.isArray(values.jabatan) ? values.jabatan : [values.jabatan])];
+        const newJabatans = Array.isArray(values.jabatan) ? values.jabatan : [values.jabatan];
+
+        const updatedJabatan = [...(detailUmpeg.jabatan ?? []), ...newJabatans];
 
         const { isSuccess, message } = await updateUmpeg.execute(id, { ...detailUmpeg, jabatan: updatedJabatan }, token);
 
