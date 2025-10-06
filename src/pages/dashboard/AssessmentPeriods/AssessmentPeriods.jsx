@@ -1,6 +1,6 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { AssessmentPeriodService } from '@/services';
+import { AssessmentPeriodService, RenstrasService } from '@/services';
 import { Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { AssessmentPeriod as AssessmentPeriodModel } from '@/models';
@@ -14,6 +14,7 @@ const AssessmentPeriods = () => {
   const modal = useCrudModal();
   const { success, error } = useNotification();
   const { execute, ...getAllAssessmentPeriods } = useService(AssessmentPeriodService.getAll);
+  const { execute: fetchRenstras, ...getAllRenstras } = useService(RenstrasService.getAll);
   const deleteAssessmentPeriod = useService(AssessmentPeriodService.delete);
   const storeAssessmentPeriod = useService(AssessmentPeriodService.store);
   const updateAssessmentPeriod = useService(AssessmentPeriodService.update);
@@ -31,9 +32,11 @@ const AssessmentPeriods = () => {
 
   React.useEffect(() => {
     fetchAssessmentPeriods();
-  }, [fetchAssessmentPeriods, pagination.page, pagination.per_page, token]);
+    fetchRenstras({ token: token });
+  }, [fetchAssessmentPeriods, fetchRenstras, pagination.page, pagination.per_page, token]);
 
   const assessmentPeriods = getAllAssessmentPeriods.data ?? [];
+  const renstras = getAllRenstras.data ?? [];
 
   const column = [
     {
@@ -67,8 +70,8 @@ const AssessmentPeriods = () => {
             onClick={() => {
               modal.edit({
                 title: `Ubah ${Modul.ASSESSMENTPERIOD}`,
-                formFields: formFields(),
-                data: { ...record, tanggal_mulai: dayjs(record.tanggal_mulai), tanggal_selesai: dayjs(record.tanggal_selesai) },
+                formFields: formFields({ options: { renstras: renstras } }),
+                data: { ...record, tanggal_mulai: dayjs(record.tanggal_mulai), tanggal_selesai: dayjs(record.tanggal_selesai), id_renstra: record.id_renstra },
                 onSubmit: async (values) => {
                   const { isSuccess, message } = await updateAssessmentPeriod.execute(record.id, values, token);
                   if (isSuccess) {
@@ -110,7 +113,7 @@ const AssessmentPeriods = () => {
   const onCreate = () => {
     modal.create({
       title: `Tambah ${Modul.ASSESSMENTPERIOD}`,
-      formFields: formFields(),
+      formFields: formFields({ options: { renstras: renstras } }),
       onSubmit: async (values) => {
         const { isSuccess, message } = await storeAssessmentPeriod.execute({ ...values, id_unit: user.unor.id }, token);
         if (isSuccess) {

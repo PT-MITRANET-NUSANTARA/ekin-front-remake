@@ -1,14 +1,15 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { MissionsService, RenstrasService } from '@/services';
+import { MissionsService, RenstrasService, UnitKerjaService } from '@/services';
 import { Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Renstras as RenstraModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
-import { formFields } from './FormFields';
+import { formFields, renstraFilterFields } from './FormFields';
 import dayjs from 'dayjs';
 import { CheckCircleFilled } from '@ant-design/icons';
+import { InputType } from '@/constants';
 
 const Renstras = () => {
   const { token, user } = useAuth();
@@ -16,6 +17,7 @@ const Renstras = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllRenstras } = useService(RenstrasService.getAll);
   const { execute: fetchMissions, ...getAllMissions } = useService(MissionsService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
   const deleteRenstras = useService(RenstrasService.delete);
   const storeRenstras = useService(RenstrasService.store);
   const updateRenstras = useService(RenstrasService.update);
@@ -28,17 +30,19 @@ const Renstras = () => {
       page: pagination.page,
       per_page: pagination.per_page,
       search: filterValues.search,
-      unit_id: user ? user.unor.id : ''
+      unit_id: user?.isAdmin ? filterValues.unit_id : user?.unor.id
     });
-  }, [execute, filterValues.search, pagination.page, pagination.per_page, token, user]);
+  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.unor.id]);
 
   React.useEffect(() => {
     fetchRenstras();
     fetchMissions({ token: token });
-  }, [fetchMissions, fetchRenstras, pagination.page, pagination.per_page, token]);
+    fetchUnitKerja({ token: token });
+  }, [fetchMissions, fetchRenstras, fetchUnitKerja, pagination.page, pagination.per_page, token]);
 
   const renstras = getAllRenstras.data ?? [];
   const missions = getAllMissions.data ?? [];
+  const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
     {
@@ -162,9 +166,38 @@ const Renstras = () => {
     });
   };
 
+  const filter = {
+    formFields: [
+      ...renstraFilterFields(),
+      ...(user?.isAdmin
+        ? [
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: unitKerja.map((item) => ({
+                label: item.nama_unor,
+                value: item.id_simpeg
+              }))
+            }
+          ]
+        : [])
+    ],
+    initialData: {
+      ...(user?.isAdmin ? { unit_id: filterValues.unit_id } : { unit_id: user?.unor.id })
+    },
+    isLoading: getAllRenstras.isLoading,
+    onSubmit: (values) => {
+      setFilterValues({
+        ...(user?.isAdmin ? { unit_id: values.unit_id } : { unit_id: user?.unor.id })
+      });
+    }
+  };
+
   return (
     <Card>
-      <DataTableHeader modul={Modul.RENSTRA} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader modul={Modul.RENSTRA} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllRenstras.isLoading}>
           <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} />

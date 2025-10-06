@@ -1,6 +1,6 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { ActivitiesService, SubActivitiesService } from '@/services';
+import { ActivitiesService, SubActivitiesService, UnitKerjaService } from '@/services';
 import { Button, Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { SubActivities as SubActivityModel } from '@/models';
@@ -9,7 +9,8 @@ import { DataTable, DataTableHeader } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
-import { subActivitiesFormFields } from './FormFields';
+import { subActivitiesFilterFields, subActivitiesFormFields } from './FormFields';
+import { InputType } from '@/constants';
 
 const SubActivities = () => {
   const { token, user } = useAuth();
@@ -17,6 +18,7 @@ const SubActivities = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllSubActivities } = useService(SubActivitiesService.getAll);
   const { execute: fetchActivities, ...getAllActivities } = useService(ActivitiesService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
   const deleteSubActivity = useService(SubActivitiesService.delete);
   const storeSubActivity = useService(SubActivitiesService.store);
   const updateSubActivity = useService(SubActivitiesService.update);
@@ -30,17 +32,19 @@ const SubActivities = () => {
       page: pagination.page,
       per_page: pagination.per_page,
       search: filterValues.search,
-      unit_id: user ? user.unor.id : ''
+      unit_id: user?.isAdmin ? filterValues.unit_id : user?.unor.id
     });
-  }, [execute, filterValues.search, pagination.page, pagination.per_page, token, user]);
+  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.unor.id]);
 
   React.useEffect(() => {
     fetchSubActivities();
     fetchActivities({ token: token });
-  }, [fetchSubActivities, fetchActivities, pagination.page, pagination.per_page, token]);
+    fetchUnitKerja({ token: token });
+  }, [fetchSubActivities, fetchActivities, pagination.page, pagination.per_page, token, fetchUnitKerja]);
 
   const subActivities = getAllSubActivities.data ?? [];
   const activities = getAllActivities.data ?? [];
+  const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
     {
@@ -159,9 +163,38 @@ const SubActivities = () => {
     });
   };
 
+  const filter = {
+    formFields: [
+      ...subActivitiesFilterFields(),
+      ...(user?.isAdmin
+        ? [
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: unitKerja.map((item) => ({
+                label: item.nama_unor,
+                value: item.id_simpeg
+              }))
+            }
+          ]
+        : [])
+    ],
+    initialData: {
+      ...(user?.isAdmin ? { unit_id: filterValues.unit_id } : { unit_id: user?.unor.id })
+    },
+    isLoading: getAllSubActivities.isLoading,
+    onSubmit: (values) => {
+      setFilterValues({
+        ...(user?.isAdmin ? { unit_id: values.unit_id } : { unit_id: user?.unor.id })
+      });
+    }
+  };
+
   return (
     <Card>
-      <DataTableHeader modul={Modul.SUBACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader filter={filter} modul={Modul.SUBACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllSubActivities.isLoading}>
           <DataTable data={subActivities} columns={column} loading={getAllSubActivities.isLoading} pagination={pagination} />

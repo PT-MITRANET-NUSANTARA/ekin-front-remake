@@ -28,7 +28,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 export default function AuthProvider({ children }) {
   const { execute: loginService, isLoading: loginIsLoading } = useService(AuthService.login);
-  const { execute: logoutService, isLoading: logoutIsLoading } = useService(AuthService.logout);
   const { execute: getPhotoService, isLoading: getPhotoServiceLoading } = useService(AuthService.getPhoto);
   const { execute: forgotService, isLoading: forgotIsLoading } = useService(AuthService.forgot);
   const { execute: resetService, isLoading: resetIsLoading } = useService(AuthService.reset);
@@ -45,6 +44,7 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     if (!token) {
       setUser(null);
+      setPhotoProfile(null);
       return;
     }
 
@@ -66,21 +66,32 @@ export default function AuthProvider({ children }) {
   }, [getUser, setToken, token]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setPhotoProfile(null);
+      return;
+    }
+
+    const controller = new AbortController();
 
     const fetchPhoto = async () => {
       try {
-        const res = await getPhotoService(token);
+        const res = await getPhotoService(token, { signal: controller.signal });
         if (res?.data) {
+          if (photoProfile) URL.revokeObjectURL(photoProfile);
           setPhotoProfile(res.data);
         }
       } catch (error) {
+        if (error.name === 'CanceledError') return;
         console.error('Error fetching photo profile:', error);
       }
     };
 
     fetchPhoto();
-  }, [getPhotoService, token]);
+
+    return () => {
+      controller.abort();
+    };
+  }, [getPhotoService, photoProfile, token]);
 
   const login = useCallback(
     /**
@@ -138,9 +149,8 @@ export default function AuthProvider({ children }) {
   );
 
   const logout = useCallback(() => {
-    setToken('');
-    logoutService(token);
-  }, [logoutService, setToken, token]);
+    setToken(null);
+  }, [setToken]);
 
   const onUnauthorized = useCallback(() => logout(), [logout]);
 
@@ -154,7 +164,7 @@ export default function AuthProvider({ children }) {
         token,
         user,
         photoProfile,
-        isLoading: loginIsLoading || logoutIsLoading || getUserIsLoading || forgotIsLoading || resetIsLoading || getPhotoServiceLoading,
+        isLoading: loginIsLoading || getUserIsLoading || forgotIsLoading || resetIsLoading || getPhotoServiceLoading,
         onUnauthorized
       }}
     >

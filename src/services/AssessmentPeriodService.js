@@ -20,6 +20,21 @@ export default class AssessmentPeriodService {
   }
 
   /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: AssessmentPeriod[];
+   * }>}
+   * */
+  static async getById(token, id) {
+    const response = await api.get(`/periode-penilaian/${id}`, { token });
+    if (!response.data) return response;
+    return { ...response, data: AssessmentPeriod.fromApiData(response.data) };
+  }
+
+  /**
    * @param {AssessmentPeriod} data
    * @param {string} token
    * @returns {Promise<{

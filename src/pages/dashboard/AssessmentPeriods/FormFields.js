@@ -1,7 +1,7 @@
 import { InputType } from '@/constants';
 import Modul from '@/constants/Modul';
 
-export const formFields = () => [
+export const formFields = ({ options }) => [
   {
     label: `Nama ${Modul.ASSESSMENTPERIOD}`,
     name: 'nama',
@@ -36,5 +36,21 @@ export const formFields = () => [
       }
     ],
     size: 'large'
+  },
+  {
+    label: `Rencana Strategi`,
+    name: 'id_renstra',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Tanggal selesai harus diisi`
+      }
+    ],
+    size: 'large',
+    options: options.renstras.map((item) => ({
+      label: `${item.tanggal_mulai} | Hingga | ${item.tanggal_selesai}`,
+      value: item.id
+    }))
   }
 ];

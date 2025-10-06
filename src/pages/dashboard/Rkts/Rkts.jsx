@@ -1,6 +1,6 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { RenstrasService, RktsService, SubActivitiesService } from '@/services';
+import { RenstrasService, RktsService, SubActivitiesService, UnitKerjaService } from '@/services';
 import { Button, Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Rkts as RktModel } from '@/models';
@@ -9,7 +9,8 @@ import { DataTable, DataTableHeader } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
-import { rktFormFields } from './FormFields';
+import { rktFormFields, rktsFilterFields } from './FormFields';
+import { InputType } from '@/constants';
 
 const SubActivities = () => {
   const { token, user } = useAuth();
@@ -18,6 +19,7 @@ const SubActivities = () => {
   const { execute, ...getAllRkts } = useService(RktsService.getAll);
   const { execute: fetchRenstras, ...getAllRenstras } = useService(RenstrasService.getAll);
   const { execute: fetchSubActivities, ...getAllSubActivities } = useService(SubActivitiesService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
   const deleteRkt = useService(RktsService.delete);
   const storeRkt = useService(RktsService.store);
   const updateRkt = useService(RktsService.update);
@@ -31,19 +33,21 @@ const SubActivities = () => {
       page: pagination.page,
       per_page: pagination.per_page,
       search: filterValues.search,
-      unit_id: user ? user.unor.id : ''
+      unit_id: user?.isAdmin ? filterValues.unit_id : user?.unor.id
     });
-  }, [execute, filterValues.search, pagination.page, pagination.per_page, token, user]);
+  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.unor.id]);
 
   React.useEffect(() => {
     fetchRkts();
     fetchRenstras({ token: token });
     fetchSubActivities({ token: token });
-  }, [fetchRkts, fetchRenstras, pagination.page, pagination.per_page, token, fetchSubActivities]);
+    fetchUnitKerja({ token: token });
+  }, [fetchRkts, fetchRenstras, pagination.page, pagination.per_page, token, fetchSubActivities, fetchUnitKerja]);
 
   const rkts = getAllRkts.data ?? [];
   const renstras = getAllRenstras.data ?? [];
   const subActivities = getAllSubActivities.data ?? [];
+  const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
     {
@@ -77,7 +81,7 @@ const SubActivities = () => {
 
               modal.edit({
                 title: `Ubah ${Modul.RKT}`,
-                formFields: rktFormFields({ options: { renstras, subActivities } }),
+                formFields: rktFormFields({ options: { renstras: renstras, subActivities: subActivities } }),
                 data: formData,
                 onSubmit: async (values) => {
                   const payload = {
@@ -175,9 +179,38 @@ const SubActivities = () => {
     });
   };
 
+  const filter = {
+    formFields: [
+      ...rktsFilterFields(),
+      ...(user?.isAdmin
+        ? [
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: unitKerja.map((item) => ({
+                label: item.nama_unor,
+                value: item.id_simpeg
+              }))
+            }
+          ]
+        : [])
+    ],
+    initialData: {
+      ...(user?.isAdmin ? { unit_id: filterValues.unit_id } : { unit_id: user?.unor.id })
+    },
+    isLoading: rktsFilterFields.isLoading,
+    onSubmit: (values) => {
+      setFilterValues({
+        ...(user?.isAdmin ? { unit_id: values.unit_id } : { unit_id: user?.unor.id })
+      });
+    }
+  };
+
   return (
     <Card>
-      <DataTableHeader modul={Modul.RKT} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader filter={filter} modul={Modul.RKT} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllRkts.isLoading}>
           <DataTable data={rkts} columns={column} loading={getAllRkts.isLoading} pagination={pagination} />

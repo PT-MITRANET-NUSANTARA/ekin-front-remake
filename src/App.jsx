@@ -7,8 +7,26 @@ import { RouterProvider } from 'react-router';
 import './index.css';
 import { flattenLandingLinks } from './utils/landingLink';
 import { Notfound } from './pages/result';
-import { DetailRkt, DetailSkp, GoalsIndicators, ProgramsIndicators, SubAcitivitiesIndicators, UserProfile } from './pages/dashboard';
-import AcitivitiesIndicators from './pages/dashboard/Activities/ActivitiesIndicator';
+import {
+  ActivitiesIndicators,
+  Assessment,
+  AssessmentKinerja,
+  AssessmentPerilaku,
+  AssessmentSkp,
+  DetailRkt,
+  DetailSkp,
+  DetailSkpPenilaian,
+  GoalsIndicators,
+  JabatanUmpeg,
+  JabatanVerificators,
+  Mph,
+  ProgramsIndicators,
+  RencanaAksi,
+  SkpAssessmentPeriod,
+  SkpBawahan,
+  SubAcitivitiesIndicators,
+  UserProfile
+} from './pages/dashboard';
 
 function App() {
   const { isLoading, user } = useAuth();
@@ -61,11 +79,22 @@ function App() {
             }),
             { path: '/dashboard/goals/:id', element: <GoalsIndicators /> },
             { path: '/dashboard/programs/:id', element: <ProgramsIndicators /> },
-            { path: '/dashboard/activities/:id', element: <AcitivitiesIndicators /> },
+            { path: '/dashboard/activities/:id', element: <ActivitiesIndicators /> },
             { path: '/dashboard/subactivities/:id', element: <SubAcitivitiesIndicators /> },
             { path: '/dashboard/rkts/:id', element: <DetailRkt /> },
             { path: '/dashboard/skps/:id', element: <DetailSkp /> },
-            { path: '/dashboard/user_profile', element: <UserProfile /> }
+            { path: '/dashboard/skps/:id/matriks', element: <Mph /> },
+            { path: '/dashboard/skps/:id/skp_bawahan', element: <SkpBawahan /> },
+            { path: '/dashboard/skps/:id/assessment_periods', element: <SkpAssessmentPeriod /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment', element: <Assessment /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/detail', element: <DetailSkpPenilaian /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/rencana_aksi', element: <RencanaAksi /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/penilaian_kinerja', element: <AssessmentKinerja /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/penilaian_perilaku', element: <AssessmentPerilaku /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/predikat', element: <AssessmentSkp /> },
+            { path: '/dashboard/user_profile', element: <UserProfile /> },
+            { path: '/dashboard/umpegs/:id', element: <JabatanUmpeg /> },
+            { path: '/dashboard/verificator/:id/:unit_id/jabatan/:unor_id', element: <JabatanVerificators /> }
           ]
         },
         {

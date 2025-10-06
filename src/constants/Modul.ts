@@ -10,7 +10,16 @@ enum Modul {
   ASSESSMENTPERIOD = 'Periode Penilaian',
   SKP = 'SKP',
   RHK = 'Rencana Hasil Kerja',
+  RHK_PENILAIAN = 'RHK Penilaian',
   ASPEK = 'Aspek',
+  LAMPIRAN = 'Lampiran',
+  SKP_BAWAHAN = 'SKP Bawahan',
+  PERJANJIAN_KINERJA = 'Perjanjian Kinerja',
+  RENCANA_AKSI = 'Rencana Aksi',
+  FEEDBACK_PERILAKU = 'Feedback Perilaku',
+  FEEDBACK_KINERJA = 'Feedback Kinerja',
+  UMPEG = 'UMPEG',
+  VERIFICATOR = 'Verificator'
   LAMPIRAN = 'Lampiran',
   ABSENCE = 'Absensi'
 }

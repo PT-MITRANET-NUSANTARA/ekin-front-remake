@@ -22,4 +22,13 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
   }
+
+  @layer components {
+    .rct-header-root {
+      @apply bg-[#5e9ea0] font-bold text-white !important;
+    }
+    .rct-dateHeader {
+      @apply border-[#bcbcbc] bg-[#5e9ea0] text-white !important;
+    }
+  }
 }

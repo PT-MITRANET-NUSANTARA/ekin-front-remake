@@ -18,6 +18,6 @@ export default function Delete({ title = strings('delete'), onClick }) {
 Delete.propTypes = {
   title: PropTypes.string,
   onClick: PropTypes.func.isRequired,
-  model: PropTypes.func.isRequired,
+  model: PropTypes.func,
   action: PropTypes.oneOf(Object.values(Action))
 };

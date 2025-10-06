@@ -1,6 +1,6 @@
 import { InputType } from '@/constants';
 
-export const formFields = () => [
+export const formFields = ({ options }) => [
   {
     label: `Periode Mulai`,
     name: 'tanggal_mulai',
@@ -46,6 +46,22 @@ export const formFields = () => [
         value: 'KUALITATIF'
       }
     ]
+  },
+  {
+    label: `Renstra`,
+    name: 'renstra_id',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Rencana Strategi harus diisi`
+      }
+    ],
+    size: 'large',
+    options: options.renstras.map((item) => ({
+      label: `${item.tanggal_mulai} | Hingga |  ${item.tanggal_selesai}`,
+      value: item.id
+    }))
   }
 ];
 
@@ -190,3 +206,202 @@ export const lampiranFormFields = () => [
     size: 'large'
   }
 ];
+
+export const filterMphFormFields = ({ options }) => [
+  {
+    label: `SKP Bawahan`,
+    name: 'skp_id',
+    type: InputType.SELECT,
+    size: 'large',
+    options: Array.isArray(options.skpBawahan)
+      ? options.skpBawahan.map((item) => ({
+          label: item.posjab[0].nama_asn,
+          value: item.id
+        }))
+      : []
+  }
+];
+
+export const mphFormFields = ({ options }) => [
+  {
+    label: `Rencana Hasil Kerja`,
+    name: 'desc',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Rencana Hasil Kerja harus diisi`
+      }
+    ],
+    size: 'large'
+  },
+  {
+    label: `Jenis RHK`,
+    name: 'jenis',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Periode akhir harus diisi`
+      }
+    ],
+    size: 'large',
+    options: [
+      {
+        label: 'UTAMA',
+        value: 'UTAMA'
+      },
+      {
+        label: 'TAMBAHAN',
+        value: 'TAMBAHAN'
+      }
+    ]
+  },
+  {
+    label: `Klasifikasi`,
+    name: 'klasifikasi',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Klasifikasi harus diisi`
+      }
+    ],
+    size: 'large',
+    options: [
+      {
+        label: 'ORGANISASI',
+        value: 'ORGANISASI'
+      },
+      {
+        label: 'INDIVIDU',
+        value: 'INDIVIDU'
+      }
+    ]
+  },
+  {
+    label: `SKP Bawahan`,
+    name: 'skp_id',
+    type: InputType.SELECT,
+    size: 'large',
+    options: Array.isArray(options.skpBawahan)
+      ? options.skpBawahan.map((item) => ({
+          label: item.posjab[0].nama_asn,
+          value: item.id
+        }))
+      : [],
+    rules: [
+      {
+        required: true,
+        message: `SKP Bawahan harus diisi`
+      }
+    ]
+  },
+  {
+    label: `RHK Atasan`,
+    name: 'rhk_atasan_id',
+    type: InputType.SELECT,
+    size: 'large',
+    options: options.matriksSkp.rhk.map((item) => ({
+      label: item.desc,
+      value: item.id
+    })),
+    rules: [
+      {
+        required: true,
+        message: `RHK Atasan harus diisi`
+      }
+    ]
+  }
+];
+
+export const perjanjianKinerjaFormFields = () => [
+  {
+    label: `Upload Perjanjian Kinerja`,
+    name: 'file',
+    type: InputType.UPLOAD,
+    max: 1,
+    beforeUpload: () => {
+      return false;
+    },
+    getFileList: (data) => {
+      return [
+        {
+          url: data?.file,
+          name: data?.id
+        }
+      ];
+    },
+    accept: ['.pdf', '.jpg', '.png'],
+    rules: [{ required: true, message: 'File Perjanjian Kinerja harus diisi' }]
+  }
+];
+
+export const rencanaAksiFormFields = ({ options }) => [
+  {
+    label: `Rencana Aksi`,
+    name: 'desc',
+    type: InputType.TEXT,
+    rules: [{ required: true, message: 'Rencana aksi harus diisi' }]
+  },
+  {
+    label: `Tanggal Mulai`,
+    name: 'periode_start',
+    type: InputType.DATE,
+    rules: [{ required: true, message: 'Tanggal mulai harus diisi' }]
+  },
+  {
+    label: `Tanggal Berakhir`,
+    name: 'periode_end',
+    type: InputType.DATE,
+    rules: [{ required: true, message: 'Tanggal selesai harus diisi' }]
+  },
+  {
+    label: `Rencana Hasil Kerja`,
+    name: 'rhk_id',
+    type: InputType.SELECT,
+    size: 'large',
+    options: options.rhks.map((item) => ({
+      label: item.desc,
+      value: item.id
+    })),
+    rules: [
+      {
+        required: true,
+        message: `RHK harus diisi`
+      }
+    ]
+  }
+];
+
+export const descFormField = () => [
+  {
+    label: `Feedback`,
+    name: 'desc',
+    type: InputType.LONGTEXT,
+    rules: [
+      {
+        required: true,
+        message: `Feedback harus diisi`
+      }
+    ],
+    size: 'large'
+  }
+];
+
+export const ratingFormFields = () => [
+  {
+    label: `Feedback`,
+    name: 'desc',
+    type: InputType.LONGTEXT,
+    rules: [
+      {
+        required: true,
+        message: `Feedback harus diisi`
+      }
+    ],
+    size: 'large'
+  }
+];
+
+export const skpFilterFields = () => [];

@@ -37,12 +37,12 @@ const UserProfile = () => {
             </Skeleton>
           </div>
         </Card>
-        {subordinate?.slice(1).map((item) => (
-          <Card key={item.id}>
-            <Skeleton loading={getAllSubOrdinate.isLoading} avatar>
+        <Skeleton loading={getAllSubOrdinate.isLoading} avatar>
+          {(user?.isJpt ? subordinate : subordinate?.slice(1))?.map((item) => (
+            <Card key={item.id}>
               <div className="inline-flex gap-x-4">
                 <div className="h-fit w-fit rounded-full bg-white p-1 shadow-md">
-                  <Avatar size={'large'} className="shadow-md">
+                  <Avatar size="large" className="shadow-md">
                     U
                   </Avatar>
                 </div>
@@ -54,9 +54,9 @@ const UserProfile = () => {
                   <p className="text-xs">{item?.nama_jabatan}</p>
                 </div>
               </div>
-            </Skeleton>
-          </Card>
-        ))}
+            </Card>
+          ))}
+        </Skeleton>
       </div>
       <div className="col-span-12 flex flex-col gap-y-4 lg:col-span-8">
         <Card>
