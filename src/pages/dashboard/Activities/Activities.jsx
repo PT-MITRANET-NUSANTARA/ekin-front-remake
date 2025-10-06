@@ -1,6 +1,6 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { ActivitiesService, ProgramsService } from '@/services';
+import { ActivitiesService, ProgramsService, UnitKerjaService } from '@/services';
 import { Button, Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Activities as ActivityModel } from '@/models';
@@ -9,7 +9,8 @@ import { DataTable, DataTableHeader } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
-import { activitiesFormFields } from './FormFields';
+import { activiesFilterFields, activitiesFormFields } from './FormFields';
+import { InputType } from '@/constants';
 
 const Activities = () => {
   const { token, user } = useAuth();
@@ -17,6 +18,7 @@ const Activities = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllActivities } = useService(ActivitiesService.getAll);
   const { execute: fetchPrograms, ...getAllGoals } = useService(ProgramsService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
   const deleteActivity = useService(ActivitiesService.delete);
   const storeActivity = useService(ActivitiesService.store);
   const updateActivity = useService(ActivitiesService.update);
@@ -37,10 +39,12 @@ const Activities = () => {
   React.useEffect(() => {
     fetchActivities();
     fetchPrograms({ token: token });
-  }, [fetchActivities, fetchPrograms, pagination.page, pagination.per_page, token]);
+    fetchUnitKerja({ token: token });
+  }, [fetchActivities, fetchPrograms, fetchUnitKerja, pagination.page, pagination.per_page, token]);
 
   const activities = getAllActivities.data ?? [];
   const programs = getAllGoals.data ?? [];
+  const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
     {
@@ -159,9 +163,38 @@ const Activities = () => {
     });
   };
 
+  const filter = {
+    formFields: [
+      ...activiesFilterFields(),
+      ...(user?.isAdmin
+        ? [
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: unitKerja.map((item) => ({
+                label: item.nama_unor,
+                value: item.id_simpeg
+              }))
+            }
+          ]
+        : [])
+    ],
+    initialData: {
+      ...(user?.isAdmin ? { unit_id: filterValues.unit_id } : { unit_id: user?.unor.id })
+    },
+    isLoading: getAllActivities.isLoading,
+    onSubmit: (values) => {
+      setFilterValues({
+        ...(user?.isAdmin ? { unit_id: values.unit_id } : { unit_id: user?.unor.id })
+      });
+    }
+  };
+
   return (
     <Card>
-      <DataTableHeader modul={Modul.ACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader filter={filter} modul={Modul.ACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllActivities.isLoading}>
           <DataTable data={activities} columns={column} loading={getAllActivities.isLoading} pagination={pagination} />

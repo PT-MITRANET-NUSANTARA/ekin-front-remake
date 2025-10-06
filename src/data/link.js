@@ -1,7 +1,7 @@
 import * as Auth from '@/pages/auth';
 import * as Dashboard from '@/pages/dashboard';
 import * as Landing from '@/pages/landing';
-import { CheckSquareOutlined, ClusterOutlined, DashboardOutlined, DatabaseOutlined, FileDoneOutlined, FileProtectOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { CheckSquareOutlined, ClusterOutlined, DashboardOutlined, DatabaseOutlined, FileProtectOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 
 export const landingLink = [
   {
@@ -57,12 +57,7 @@ export const dashboardLink = [
     children: [
       { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts },
       { path: '/dashboard/assessmentperiod', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod },
-      {
-        label: 'Perjanjian Kinerja',
-        icon: FileDoneOutlined,
-        path: '/dashboard/perjanjian_kinerja',
-        element: Dashboard.PerjanjianKinerjas
-      }
+      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas }
     ]
   },
   {

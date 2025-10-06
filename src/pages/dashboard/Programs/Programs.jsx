@@ -1,6 +1,6 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { GoalsService, ProgramsService } from '@/services';
+import { GoalsService, ProgramsService, UnitKerjaService } from '@/services';
 import { Button, Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Programs as ProgramModel } from '@/models';
@@ -9,7 +9,8 @@ import { DataTable, DataTableHeader } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
-import { programFormFields } from './FormFields';
+import { programFormFields, programsFilterFields } from './FormFields';
+import { InputType } from '@/constants';
 
 const Programs = () => {
   const { token, user } = useAuth();
@@ -17,6 +18,7 @@ const Programs = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllPrograms } = useService(ProgramsService.getAll);
   const { execute: fetchGoals, ...getAllGoals } = useService(GoalsService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
   const deletePrograms = useService(ProgramsService.delete);
   const storePrograms = useService(ProgramsService.store);
   const updatePrograms = useService(ProgramsService.update);
@@ -30,17 +32,19 @@ const Programs = () => {
       page: pagination.page,
       per_page: pagination.per_page,
       search: filterValues.search,
-      unit_id: user ? user.unor.id : ''
+      unit_id: user?.isAdmin ? filterValues.unit_id : user?.unor.id
     });
-  }, [execute, filterValues.search, pagination.page, pagination.per_page, token, user]);
+  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.unor.id]);
 
   React.useEffect(() => {
     fetchPrograms();
     fetchGoals({ token: token });
-  }, [fetchPrograms, fetchGoals, pagination.page, pagination.per_page, token]);
+    fetchUnitKerja({ token: token });
+  }, [fetchPrograms, fetchGoals, pagination.page, pagination.per_page, token, fetchUnitKerja]);
 
   const programs = getAllPrograms.data ?? [];
   const goals = getAllGoals.data ?? [];
+  const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
     {
@@ -159,9 +163,38 @@ const Programs = () => {
     });
   };
 
+  const filter = {
+    formFields: [
+      ...programsFilterFields(),
+      ...(user?.isAdmin
+        ? [
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: unitKerja.map((item) => ({
+                label: item.nama_unor,
+                value: item.id_simpeg
+              }))
+            }
+          ]
+        : [])
+    ],
+    initialData: {
+      ...(user?.isAdmin ? { unit_id: filterValues.unit_id } : { unit_id: user?.unor.id })
+    },
+    isLoading: getAllPrograms.isLoading,
+    onSubmit: (values) => {
+      setFilterValues({
+        ...(user?.isAdmin ? { unit_id: values.unit_id } : { unit_id: user?.unor.id })
+      });
+    }
+  };
+
   return (
     <Card>
-      <DataTableHeader modul={Modul.PROGRAM} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader filter={filter} modul={Modul.PROGRAM} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllPrograms.isLoading}>
           <DataTable data={programs} columns={column} loading={getAllPrograms.isLoading} pagination={pagination} />

@@ -403,3 +403,5 @@ export const ratingFormFields = () => [
     size: 'large'
   }
 ];
+
+export const skpFilterFields = () => [];

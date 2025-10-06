@@ -2,27 +2,32 @@ import { useAuth, useNotification, useService } from '@/hooks';
 import { PerjanjianKinerjaService, SkpsService, UnitKerjaService } from '@/services';
 import capitalizeWords from '@/utils/CapitalizeWord';
 import { CheckCircleFilled, DownOutlined, PaperClipOutlined, UserOutlined } from '@ant-design/icons';
-import { Button, Card, Descriptions, Result, Skeleton, Tree } from 'antd';
+import { Button, Card, Descriptions, Result, Select, Skeleton, Tree } from 'antd';
 import React from 'react';
 
 const PerjanjianKinerja = () => {
   const { token, user } = useAuth();
   const { success, error } = useNotification();
   const { execute, ...getAllHierarchy } = useService(UnitKerjaService.getAllHirarchy);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
   const { execute: fetchSkp, ...getSkp } = useService(SkpsService.getAll);
   const downloadPerjanjianKinerja = useService(PerjanjianKinerjaService.download);
   const [selectedData, setSelectedData] = React.useState(null);
+  const [selectedUnor, setSelectedUnor] = React.useState(user?.isAdmin ? null : user?.unor?.id);
 
   const fetchHierarchy = React.useCallback(() => {
-    if (!user?.unor.id) return;
-    execute(token, user.unor.id);
-  }, [execute, token, user?.unor.id]);
+    const unorId = user?.isAdmin ? selectedUnor : user?.unor?.id;
+    if (!unorId) return;
+    execute(token, unorId);
+  }, [execute, token, selectedUnor, user?.isAdmin, user?.unor?.id]);
 
   React.useEffect(() => {
     fetchHierarchy();
-  }, [fetchHierarchy, token]);
+    fetchUnitKerja({ token: token });
+  }, [fetchHierarchy, fetchUnitKerja, token]);
 
   const hierarchy = getAllHierarchy.data ?? null;
+  const unitKerja = getAllUnitKerja.data ?? null;
 
   const mapToTreeData = React.useCallback(
     (node) => ({
@@ -65,6 +70,17 @@ const PerjanjianKinerja = () => {
   return (
     <div className="grid w-full grid-cols-12 gap-4">
       <Card className="col-span-4 h-fit">
+        {user?.isAdmin && (
+          <Skeleton className="mb-4" loading={getAllUnitKerja.isLoading}>
+            <Select placeholder="Pilih Unit Kerja" className="mb-4 w-full" value={selectedUnor} onChange={(value) => setSelectedUnor(value)}>
+              {unitKerja?.map((item) => (
+                <Select.Option key={item.id_simpeg} value={item.id_simpeg}>
+                  {item.nama_unor}
+                </Select.Option>
+              ))}
+            </Select>
+          </Skeleton>
+        )}
         <Skeleton loading={getAllHierarchy.isLoading}>
           <div>
             <Tree showLine switcherIcon={<DownOutlined />} defaultExpandedKeys={['0-0-0']} onSelect={onSelect} treeData={treeData} />

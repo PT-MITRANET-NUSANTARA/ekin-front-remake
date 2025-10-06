@@ -1,13 +1,14 @@
 import { DataTableHeader } from '@/components';
 import Modul from '@/constants/Modul';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { PerjanjianKinerjaService, RenstrasService, SkpsService } from '@/services';
+import { PerjanjianKinerjaService, RenstrasService, SkpsService, UnitKerjaService } from '@/services';
 import { CheckCircleFilled, CheckSquareOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, PaperClipOutlined, TableOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { Alert, Badge, Button, Card, Descriptions, Skeleton } from 'antd';
 import React from 'react';
-import { formFields, perjanjianKinerjaFormFields } from './FormFields';
+import { formFields, perjanjianKinerjaFormFields, skpFilterFields } from './FormFields';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
+import { InputType } from '@/constants';
 
 const Skps = () => {
   const { token, user } = useAuth();
@@ -15,6 +16,7 @@ const Skps = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllSkps } = useService(SkpsService.getAll);
   const { execute: fetchRenstras, ...getAllRenstras } = useService(RenstrasService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
   const deleteSkp = useService(SkpsService.delete);
   const downloadPerjanjianKinerja = useService(PerjanjianKinerjaService.download);
   const storePerjanjianKinerja = useService(PerjanjianKinerjaService.store);
@@ -33,14 +35,17 @@ const Skps = () => {
       user_id: user.newNip,
       page: pagination.page,
       per_page: pagination.per_page,
-      search: filterValues.search
+      search: filterValues.search,
+      unit_id: user?.isAdmin ? filterValues.unit_id : user?.unor.id
     });
 
     fetchRenstras({ token: token });
-  }, [execute, fetchRenstras, filterValues.search, pagination.page, pagination.per_page, token, user?.newNip]);
+    fetchUnitKerja({ token: token });
+  }, [execute, fetchRenstras, fetchUnitKerja, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.newNip, user?.unor.id]);
 
   const skps = getAllSkps.data ?? [];
   const renstras = getAllRenstras.data ?? [];
+  const unitKerja = getAllUnitKerja.data ?? [];
 
   const onEdit = (data) => {
     modal.edit({
@@ -112,9 +117,38 @@ const Skps = () => {
     });
   };
 
+  const filter = {
+    formFields: [
+      ...skpFilterFields(),
+      ...(user?.isAdmin
+        ? [
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: unitKerja.map((item) => ({
+                label: item.nama_unor,
+                value: item.id_simpeg
+              }))
+            }
+          ]
+        : [])
+    ],
+    initialData: {
+      ...(user?.isAdmin ? { unit_id: filterValues.unit_id } : { unit_id: user?.unor.id })
+    },
+    isLoading: getAllSkps.isLoading,
+    onSubmit: (values) => {
+      setFilterValues({
+        ...(user?.isAdmin ? { unit_id: values.unit_id } : { unit_id: user?.unor.id })
+      });
+    }
+  };
+
   return (
     <Card>
-      <DataTableHeader modul={Modul.SKP} {...(user?.isJpt ? { onStore: onCreate } : {})} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader filter={filter} modul={Modul.SKP} {...(user?.isJpt ? { onStore: onCreate } : {})} onSearch={(values) => setFilterValues({ search: values })} />
       <Skeleton loading={getAllSkps.isLoading}>
         <div className="flex w-full max-w-full flex-col gap-y-6 overflow-x-auto">
           {skps.map((item) => (

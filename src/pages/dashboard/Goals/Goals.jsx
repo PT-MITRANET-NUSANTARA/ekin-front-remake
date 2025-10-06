@@ -1,14 +1,15 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { GoalsService, RenstrasService } from '@/services';
+import { GoalsService, RenstrasService, UnitKerjaService } from '@/services';
 import { Button, Card, Skeleton, Space, Tag } from 'antd';
 import React from 'react';
 import { Goals as GoalModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
-import { goalFormFields } from './FormFields';
+import { goalFormFields, goalsFilterFields } from './FormFields';
 import { useNavigate } from 'react-router-dom';
+import { InputType } from '@/constants';
 
 const Goals = () => {
   const { token, user } = useAuth();
@@ -16,6 +17,8 @@ const Goals = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllGoals } = useService(GoalsService.getAll);
   const { execute: fetchRenstras, ...getAllRenstras } = useService(RenstrasService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
+
   const deleteGoals = useService(GoalsService.delete);
   const storeGoals = useService(GoalsService.store);
   const updateGoals = useService(GoalsService.update);
@@ -29,17 +32,19 @@ const Goals = () => {
       page: pagination.page,
       per_page: pagination.per_page,
       search: filterValues.search,
-      unit_id: user ? user.unor.id : ''
+      unit_id: user?.isAdmin ? filterValues.unit_id : user?.unor.id
     });
-  }, [execute, filterValues.search, pagination.page, pagination.per_page, token, user]);
+  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.unor.id]);
 
   React.useEffect(() => {
     fetchGoals();
     fetchRenstras({ token: token });
-  }, [fetchGoals, fetchRenstras, pagination.page, pagination.per_page, token]);
+    fetchUnitKerja({ token: token });
+  }, [fetchGoals, fetchRenstras, fetchUnitKerja, pagination.page, pagination.per_page, token]);
 
   const goals = getAllGoals.data ?? [];
   const renstras = getAllRenstras.data ?? [];
+  const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
     {
@@ -145,9 +150,38 @@ const Goals = () => {
     });
   };
 
+  const filter = {
+    formFields: [
+      ...goalsFilterFields(),
+      ...(user?.isAdmin
+        ? [
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: unitKerja.map((item) => ({
+                label: item.nama_unor,
+                value: item.id_simpeg
+              }))
+            }
+          ]
+        : [])
+    ],
+    initialData: {
+      ...(user?.isAdmin ? { unit_id: filterValues.unit_id } : { unit_id: user?.unor.id })
+    },
+    isLoading: getAllGoals.isLoading,
+    onSubmit: (values) => {
+      setFilterValues({
+        ...(user?.isAdmin ? { unit_id: values.unit_id } : { unit_id: user?.unor.id })
+      });
+    }
+  };
+
   return (
     <Card>
-      <DataTableHeader modul={Modul.GOAL} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader modul={Modul.GOAL} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllGoals.isLoading}>
           <DataTable data={goals} columns={column} loading={getAllGoals.isLoading} pagination={pagination} />

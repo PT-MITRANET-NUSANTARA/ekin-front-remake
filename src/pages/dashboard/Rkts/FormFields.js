@@ -124,3 +124,5 @@ export const indicatorFormFields = () => [
     size: 'large'
   }
 ];
+
+export const rktsFilterFields = () => [];

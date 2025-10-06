@@ -43,3 +43,5 @@ export const formFields = ({ options }) => [
     size: 'large'
   }
 ];
+
+export const renstraFilterFields = () => [];
