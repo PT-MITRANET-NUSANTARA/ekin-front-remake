@@ -1,13 +1,15 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { AbsenceService, UserService } from '@/services';
-import { Card, List, Skeleton, Space, Tag } from 'antd';
+import { AbsenceService, UserService, HarianService } from '@/services';
+import { Card, List, Skeleton, Space, Tag, Button } from 'antd';
+import { CalendarOutlined } from '@ant-design/icons';
 import React from 'react';
 import { Absence as AbsenceModel } from '@/models';
 import { DataTable, DataTableHeader } from '@/components';
 import { formFields } from './FormFields';
 import dayjs from 'dayjs';
 import { AbsenceStatus } from '@/constants/AbsenceStatus';
+import { useNavigate } from 'react-router-dom';
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -32,6 +34,7 @@ const Absence = () => {
   const { token, user } = useAuth();
   const modal = useCrudModal();
   const { success, error } = useNotification();
+  const navigate = useNavigate();
   const { execute, ...getAllAbsence } = useService(AbsenceService.getAll);
   const deleteAbsence = useService(AbsenceService.delete);
   const storeAbsence = useService(AbsenceService.store);
@@ -40,6 +43,12 @@ const Absence = () => {
   const [filterValues, setFilterValues] = React.useState({ search: '' });
   const pagination = usePagination({ totalData: getAllAbsence.totalData });
   const [users, setUsers] = React.useState([]);
+  
+  // Fungsi untuk navigasi ke halaman data harian
+  const navigateToHarian = (userId, date) => {
+    // Navigasi ke halaman data harian dengan parameter user_id dan date
+    navigate(`/dashboard/harian?user_id=${userId}&date=${date}`);
+  };
 
   const fetchAbsence = React.useCallback(() => {
     execute({
@@ -184,6 +193,13 @@ const Absence = () => {
                 ]
               });
             }}
+          />
+          <Button 
+            type="text" 
+            size="small"
+            icon={<CalendarOutlined />}
+            title="Aksi Harian"
+            onClick={() => navigateToHarian(record.id_user, record.tanggal)}
           />
         </Space>
       )

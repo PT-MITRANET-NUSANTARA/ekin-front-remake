@@ -3,6 +3,9 @@ import api from '@/utils/api';
 export default class HarianService {
   /**
    * @param {string} token
+   * @param {Object} params - Optional parameters for filtering
+   * @param {string} [params.user_id] - Filter by user_id
+   * @param {string} [params.date] - Filter by date (YYYY-MM-DD)
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;
@@ -10,8 +13,14 @@ export default class HarianService {
    *  data?: any[];
    * }>}
    * */
-  static async getAll(token) {
-    const response = await api.get('/harian', { token });
+  static async getAll(token, params = {}) {
+    const queryParams = {};
+    
+    // Add user_id and date to query params if they exist
+    if (params.user_id) queryParams.user_id = params.user_id;
+    if (params.date) queryParams.date = params.date;
+    
+    const response = await api.get('/harian', { token, params: queryParams });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }

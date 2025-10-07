@@ -166,7 +166,7 @@ const Dashboard = () => {
         progress: values.progress,
         name: values.name,
         desc: values.desc,
-        user_id: dashboardData?.profile?.nip_asn,
+        user_id: dashboardData?.profile?.nipBaru,
         rencana_aksi_ids: values.rencana_aksi_ids || [], // Kirim sebagai array, bukan string
         skp_id: values.skp_id,
         rhk_id: values.rhk_id

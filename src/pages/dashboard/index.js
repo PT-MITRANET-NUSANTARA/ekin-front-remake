@@ -17,6 +17,7 @@ export { default as Skps } from './Skps/Skps';
 export { default as DetailSkp } from './Skps/DetailSkp';
 export { default as UserProfile } from './UserProfile/UserProfile';
 export { default as Absence } from './Absence/Absence';
+export { default as Harian } from './Harian/Harian';
 export { default as Mph } from './Skps/Mph';
 export { default as SkpBawahan } from './Skps/SkpBawahan';
 export { default as SkpAssessmentPeriod } from './Skps/SkpAssessmentPeriod';

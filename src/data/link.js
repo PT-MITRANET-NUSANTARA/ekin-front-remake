@@ -83,6 +83,12 @@ export const dashboardLink = [
     icon: FileProtectOutlined,
     path: '/dashboard/absence',
     element: Dashboard.Absence
+  },
+  {
+    label: 'Harian',
+    icon: FileProtectOutlined,
+    path: '/dashboard/harian',
+    element: Dashboard.Harian
   }
 ].map((item) => {
   if (item.children) {
