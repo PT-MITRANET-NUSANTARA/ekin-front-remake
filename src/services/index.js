@@ -20,4 +20,5 @@ export { default as UmpegService } from './UmpegService';
 export { default as UnitKerjaService } from './UnitKerjaService';
 export { default as UserService } from './UserService';
 export { default as VerificatorService } from './VerificatorService';
+export { default as WebSettingsService } from './WebSettingsService';
 export { default as HarianService } from './HarianService';

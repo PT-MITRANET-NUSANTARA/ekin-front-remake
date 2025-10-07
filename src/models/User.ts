@@ -36,13 +36,19 @@ export interface IncomingApiData {
       nama: string;
     };
   };
+  umpegs: {
+    id: string;
+    unit_id: number;
+    jabatan: string[];
+    created_at: string;
+    updated_at: string;
+    unit: {
+      id_sapk: string;
+      id_simpeg: number;
+      nama_unor: string;
+    };
+  }[];
 }
-
-export interface untranslatedIncoming {}
-
-// interface OutgoingApiData {
-//   email: IncomingApiData['email'];
-// }
 
 export default class User extends Model {
   constructor(
@@ -77,39 +83,71 @@ export default class User extends Model {
         id_simpeg: number;
         name: string;
       };
-    }
-    // public permissions: Permission[] = []
+    },
+    public permissions: string[] = [],
+    public umpegs: {
+      id: string;
+      unit_id: number;
+      jabatan: string[];
+      created_at: string;
+      updated_at: string;
+      unit: {
+        id_sapk: string;
+        id_simpeg: number;
+        nama_unor: string;
+      };
+    }[]
   ) {
     super();
   }
 
-  // is(role: Role) {
-  //   return this.role === role;
-  // }
-
-  // can(action: Action, model: ModelChildren) {
-  //   return this.permissions.some((permission) => permission.can(action, model));
-  // }
-
-  // cant(action: Action, model: ModelChildren) {
-  //   return !this.can(action, model);
-  // }
-
-  // eitherCan(...permissions: [Action, ModelChildren][]) {
-  //   return permissions.some(([action, model]) => this.can(action, model));
-  // }
-
-  // cantDoAny(...permissions: [Action, ModelChildren][]) {
-  //   return !this.eitherCan(...permissions);
-  // }
-
   static fromApiData(apiData: IncomingApiData, token: string): User {
-    const roles = {
-      admin: Role.ADMIN,
-      opd_provinsi: Role.PEGAWAI
-    };
-    // const role = roles[apiData.role.name as keyof typeof roles] || null;
-    // const permissions = Permission.fromApiData([...apiData.role.permissions, ...apiData.permissions]);
+    const adminPermissions = [
+      'lihat_dashboard',
+      'manage_visi',
+      'manage_misi',
+      'manage_renstra',
+      'manage_goals',
+      'manage_skp',
+      'manage_umpegs',
+      'manage_verificator',
+      'manage_kegiatan',
+      'manage_subkegiatan',
+      'manage_rkts',
+      'manage_assessment_period',
+      'manage_perjanjian_kinerja',
+      'manage_settings',
+      'manage_verificate'
+    ];
+
+    const umpegPermission = ['lihat_dashboard', 'manage_renstra', 'manage_goals', 'manage_skp', 'manage_kegiatan', 'manage_subkegiatan', 'manage_rkts', 'manage_assessment_period', 'manage_perjanjian_kinerja', 'manage_settings'];
+
+    const jptPermissions = ['lihat_dashboard', 'manage_skp'];
+
+    // Prioritas: Admin > Bupati > JPT
+    let permissions: string[] = [];
+    if (apiData.isAdmin) {
+      permissions = adminPermissions;
+    } else if (apiData.umpegs) {
+      permissions = umpegPermission;
+    } else if (apiData.isJpt) {
+      permissions = jptPermissions;
+    }
+
+    const mappedUmpegs =
+      apiData.umpegs?.map((item) => ({
+        id: item.id,
+        unit_id: item.unit_id,
+        jabatan: item.jabatan,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        unit: {
+          id_sapk: item.unit.id_sapk,
+          id_simpeg: item.unit.id_simpeg,
+          nama_unor: item.unit.nama_unor
+        }
+      })) || [];
+
     return new User(
       apiData.idASN,
       apiData.nipBaru,
@@ -142,7 +180,9 @@ export default class User extends Model {
           id_simpeg: apiData.pimpinan.induk.id_simpeg,
           name: apiData.pimpinan.induk.nama
         }
-      }
+      },
+      permissions,
+      mappedUmpegs
     );
   }
 
@@ -152,5 +192,3 @@ export default class User extends Model {
   //   };
   // }
 }
-
-Model.children.pengguna = User;

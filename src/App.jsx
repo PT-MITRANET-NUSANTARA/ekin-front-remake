@@ -1,4 +1,4 @@
-import { Result, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import { authLink, dashboardLink, landingLink } from './data/link';
 import { useAuth } from './hooks';
 import { AuthLayout, DashboardLayout, LandingLayout } from './layouts';
@@ -27,9 +27,10 @@ import {
   SubAcitivitiesIndicators,
   UserProfile
 } from './pages/dashboard';
+import RequirePermission from './components/dashboard/RequirePermission';
 
 function App() {
-  const { isLoading, user } = useAuth();
+  const { isLoading } = useAuth();
   const flatLandingLinks = flattenLandingLinks(landingLink);
 
   return (
@@ -38,7 +39,6 @@ function App() {
         {
           element: <LandingLayout />,
           children: [
-            // Tambahkan route dari landingLink
             ...flatLandingLinks.map(({ path, element: Element }) => ({
               path,
               element: <Element />
@@ -52,31 +52,32 @@ function App() {
           children: [
             ...dashboardLink.flatMap((item) => {
               if (item.children) {
-                return item.children.map(({ permissions, roles, path, element: Element }) => {
-                  if (isLoading) {
-                    return { path, element: <Skeleton active /> };
-                  }
-
-                  const hasPermissions = permissions && permissions.length > 0;
-                  const hasRoles = roles && roles.length > 0;
-                  const userCantDoAnyOfThat = hasPermissions && (!user || user.cantDoAny(...permissions));
-                  const userIsNotInAnyOfThatRole = hasRoles && (!user || !roles.some((role) => user.is(role)));
-
-                  if (userCantDoAnyOfThat && userIsNotInAnyOfThatRole) {
-                    return { path, element: <Result status="403" subTitle="Anda tidak memiliki akses ke halaman ini" title="Forbidden" /> };
-                  }
-
-                  return { path, element: <Element /> };
-                });
+                return item.children.map(({ path, element: Element, permissions = [] }) => ({
+                  path,
+                  element: isLoading ? (
+                    <Skeleton active />
+                  ) : (
+                    <RequirePermission required={permissions}>
+                      <Element />
+                    </RequirePermission>
+                  )
+                }));
               }
 
               return [
                 {
                   path: item.path,
-                  element: isLoading ? <Skeleton active /> : <item.element />
+                  element: isLoading ? (
+                    <Skeleton active />
+                  ) : (
+                    <RequirePermission required={item.permissions || []}>
+                      <item.element />
+                    </RequirePermission>
+                  )
                 }
               ];
             }),
+
             { path: '/dashboard/goals/:id', element: <GoalsIndicators /> },
             { path: '/dashboard/programs/:id', element: <ProgramsIndicators /> },
             { path: '/dashboard/activities/:id', element: <ActivitiesIndicators /> },

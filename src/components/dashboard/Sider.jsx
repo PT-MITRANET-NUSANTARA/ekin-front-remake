@@ -1,90 +1,70 @@
 import { dashboardLink } from '@/data/link';
 import { useAuth } from '@/hooks';
-import { Drawer, Grid, Image, Menu, Tooltip } from 'antd';
+import { Drawer, Grid, Menu, Tooltip } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const DashboardSider = ({ collapsed, onCloseMenu }) => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const { user } = useAuth();
+  const { pathname } = useLocation();
   const breakpoints = Grid.useBreakpoint();
 
   const isDesktop = breakpoints.lg || breakpoints.xl || breakpoints.xxl;
 
+  // Tidak ada filter permission — semua item tampil
   const menuItems = dashboardLink
-    .filter(({ permissions, roles }) => {
-      if (!user) return false;
+    .filter((item) => {
+      // Jika ada children → cek permission anak
+      if (item.children && item.children.length > 0) {
+        return item.children.some((child) => {
+          if (!child.permissions || child.permissions.length === 0) return true;
+          return child.permissions.some((perm) => user?.permissions?.includes(perm));
+        });
+      }
 
-      const hasPermission = permissions && permissions.length > 0;
-      const hasRole = roles && roles.length > 0;
+      // Jika tidak ada children → cek permission parent
+      if (item.permissions && item.permissions.length > 0) {
+        return item.permissions.some((perm) => user?.permissions?.includes(perm));
+      }
 
-      const isPublicPage = !hasPermission && !hasRole;
-      if (isPublicPage) return true;
-
-      const roleSpecific = hasRole && !hasPermission;
-      if (roleSpecific) return user.eitherIs(...roles);
-
-      const permissionSpecific = hasPermission && !hasRole;
-      if (permissionSpecific) return user.eitherCan(...permissions);
-
-      return user.eitherCan(...permissions) || user.eitherIs(...roles);
+      // Tidak ada permission → tampilkan
+      return true;
     })
-    .map(({ label, children, icon: Icon, path }) => {
-      if (children) {
-        return {
-          key: label,
+    .map(({ label, children, icon: Icon, path }) => ({
+      key: path || label,
+      label: (
+        <Tooltip title={label} placement="right" color="blue">
+          <span>{label}</span>
+        </Tooltip>
+      ),
+      icon: Icon && (
+        <Tooltip title={label} placement="right" color="blue">
+          <Icon />
+        </Tooltip>
+      ),
+      children: children
+        ?.filter((child) => {
+          if (!child.permissions || child.permissions.length === 0) return true;
+          return child.permissions.some((perm) => user?.permissions?.includes(perm));
+        })
+        .map(({ path, label }) => ({
+          key: path,
           label: (
             <Tooltip title={label} placement="right" color="blue">
               <span>{label}</span>
             </Tooltip>
           ),
-          icon: (
-            <Tooltip title={label} placement="right" color="blue">
-              <Icon />
-            </Tooltip>
-          ),
-          children: children
-            .filter(({ permissions, roles }) => {
-              const hasPermission = !permissions || user?.eitherCan(...permissions);
-              const hasRole = !roles || user?.eitherIs(...roles);
-              return hasPermission && hasRole;
-            })
-            .map(({ path, label }) => ({
-              key: path,
-              label: (
-                <Tooltip title={label} placement="right" color="blue">
-                  <span>{label}</span>
-                </Tooltip>
-              ),
-              onClick: () => navigate(path)
-            }))
-        };
-      }
-
-      return {
-        key: path,
-        label: (
-          <Tooltip title={label} placement="right" color="blue">
-            <span>{label}</span>
-          </Tooltip>
-        ),
-        icon: (
-          <Tooltip title={label} placement="right" color="blue">
-            <Icon />
-          </Tooltip>
-        ),
-        onClick: () => navigate(path)
-      };
-    });
+          onClick: () => path && navigate(path)
+        })),
+      onClick: !children || children.length === 0 ? () => path && navigate(path) : undefined
+    }));
 
   return isDesktop ? (
     <Sider theme="light" className="p-4" width={230} collapsed={collapsed}>
       <Link to="/">
-        <div className="mb-4 flex w-full items-center justify-center">
-          <Image width={40} preview={false} src={''} />
-        </div>
+        <div className="mb-4 flex w-full items-center justify-center"></div>
       </Link>
       <Menu className="w-full !border-none font-semibold" theme="light" mode="inline" defaultSelectedKeys={[pathname]} items={menuItems} />
     </Sider>
@@ -97,9 +77,7 @@ const DashboardSider = ({ collapsed, onCloseMenu }) => {
       onClose={onCloseMenu}
       title={
         <Link to="/">
-          <div className="flex w-full items-center justify-center">
-            <Image width={40} preview={false} src={''} />
-          </div>
+          <div className="flex w-full items-center justify-center"></div>
         </Link>
       }
     >
