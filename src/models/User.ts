@@ -37,19 +37,18 @@ export interface IncomingApiData {
     };
   };
   umpegs: {
-    id: string,
-    unit_id: number,
-    jabatan: string[],
-    created_at: string,
-    updated_at: string,
+    id: string;
+    unit_id: number;
+    jabatan: string[];
+    created_at: string;
+    updated_at: string;
     unit: {
-      id_sapk: string,
-      id_simpeg: number,
-      nama_unor: string
-    }
+      id_sapk: string;
+      id_simpeg: number;
+      nama_unor: string;
+    };
   }[];
 }
-
 
 export default class User extends Model {
   constructor(
@@ -87,21 +86,20 @@ export default class User extends Model {
     },
     public permissions: string[] = [],
     public umpegs: {
-      id: string,
-      unit_id: number,
-      jabatan: string[],
-      created_at: string,
-      updated_at: string,
+      id: string;
+      unit_id: number;
+      jabatan: string[];
+      created_at: string;
+      updated_at: string;
       unit: {
-        id_sapk: string,
-        id_simpeg: number,
-        nama_unor: string
-      }
+        id_sapk: string;
+        id_simpeg: number;
+        nama_unor: string;
+      };
     }[]
   ) {
     super();
   }
-
 
   static fromApiData(apiData: IncomingApiData, token: string): User {
     const adminPermissions = [
@@ -119,25 +117,12 @@ export default class User extends Model {
       'manage_assessment_period',
       'manage_perjanjian_kinerja',
       'manage_settings',
+      'manage_verificate'
     ];
 
-    const umpegPermission = [
-      'lihat_dashboard',
-      'manage_renstra',
-      'manage_goals',
-      'manage_skp',
-      'manage_kegiatan',
-      'manage_subkegiatan',
-      'manage_rkts',
-      'manage_assessment_period',
-      'manage_perjanjian_kinerja',
-      'manage_settings',
-    ];
+    const umpegPermission = ['lihat_dashboard', 'manage_renstra', 'manage_goals', 'manage_skp', 'manage_kegiatan', 'manage_subkegiatan', 'manage_rkts', 'manage_assessment_period', 'manage_perjanjian_kinerja', 'manage_settings'];
 
-    const jptPermissions = [
-      'lihat_dashboard',
-      'manage_skp',
-    ];
+    const jptPermissions = ['lihat_dashboard', 'manage_skp'];
 
     // Prioritas: Admin > Bupati > JPT
     let permissions: string[] = [];
@@ -149,18 +134,19 @@ export default class User extends Model {
       permissions = jptPermissions;
     }
 
-    const mappedUmpegs = apiData.umpegs?.map((item) => ({
-      id: item.id,
-      unit_id: item.unit_id,
-      jabatan: item.jabatan,
-      created_at: item.created_at,
-      updated_at: item.updated_at,
-      unit: {
-        id_sapk: item.unit.id_sapk,
-        id_simpeg: item.unit.id_simpeg,
-        nama_unor: item.unit.nama_unor
-      }
-    })) || []
+    const mappedUmpegs =
+      apiData.umpegs?.map((item) => ({
+        id: item.id,
+        unit_id: item.unit_id,
+        jabatan: item.jabatan,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        unit: {
+          id_sapk: item.unit.id_sapk,
+          id_simpeg: item.unit.id_simpeg,
+          nama_unor: item.unit.nama_unor
+        }
+      })) || [];
 
     return new User(
       apiData.idASN,
@@ -170,7 +156,7 @@ export default class User extends Model {
       apiData.status_asn,
       {
         id: apiData.unor.id,
-        nama: apiData.unor.nama,
+        nama: apiData.unor.nama
       },
       apiData.foto,
       apiData.isAdmin,
@@ -182,25 +168,23 @@ export default class User extends Model {
         jabatanName: apiData.pimpinan.namaJabatan,
         eselon: {
           id: apiData.pimpinan.eselon.id,
-          name: apiData.pimpinan.eselon.nama,
+          name: apiData.pimpinan.eselon.nama
         },
         asn: {
           asn_id: apiData.pimpinan.asn.asn_id,
-          asn_name: apiData.pimpinan.asn.asn_nama,
+          asn_name: apiData.pimpinan.asn.asn_nama
         },
         atasan: apiData.pimpinan.atasan,
         induk: {
           id_sapk: apiData.pimpinan.induk.id_sapk,
           id_simpeg: apiData.pimpinan.induk.id_simpeg,
-          name: apiData.pimpinan.induk.nama,
-        },
+          name: apiData.pimpinan.induk.nama
+        }
       },
       permissions,
       mappedUmpegs
     );
   }
-
-
 
   // static toApiData(user: User): OutgoingApiData {
   //   return {

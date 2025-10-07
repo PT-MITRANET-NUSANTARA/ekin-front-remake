@@ -43,6 +43,12 @@ export default class AuthService {
     return { ...response, data: response.data };
   }
 
+  static async getUserInUnit(token, unit_id, unor_id) {
+    const response = await api.get(`/user/unit/${unit_id}/unor/${unor_id}`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
   static async getSubordinate({ token: token, unit: unit_id, unor: unor_id }) {
     const response = await api.get(`/user/unit/${unit_id}/unor/${unor_id}`, { token });
     if (!response.data) return response;

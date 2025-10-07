@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const DashboardSider = ({ collapsed, onCloseMenu }) => {
   const navigate = useNavigate();
-  const { user } = useAuth()
+  const { user } = useAuth();
   const { pathname } = useLocation();
   const breakpoints = Grid.useBreakpoint();
 
@@ -56,7 +56,7 @@ const DashboardSider = ({ collapsed, onCloseMenu }) => {
               <span>{label}</span>
             </Tooltip>
           ),
-          onClick: () => path && navigate(path),
+          onClick: () => path && navigate(path)
         })),
       onClick: !children || children.length === 0 ? () => path && navigate(path) : undefined
     }));
@@ -66,13 +66,7 @@ const DashboardSider = ({ collapsed, onCloseMenu }) => {
       <Link to="/">
         <div className="mb-4 flex w-full items-center justify-center"></div>
       </Link>
-      <Menu
-        className="w-full !border-none font-semibold"
-        theme="light"
-        mode="inline"
-        defaultSelectedKeys={[pathname]}
-        items={menuItems}
-      />
+      <Menu className="w-full !border-none font-semibold" theme="light" mode="inline" defaultSelectedKeys={[pathname]} items={menuItems} />
     </Sider>
   ) : (
     <Drawer
@@ -87,13 +81,7 @@ const DashboardSider = ({ collapsed, onCloseMenu }) => {
         </Link>
       }
     >
-      <Menu
-        className="w-full !border-none font-semibold"
-        theme="light"
-        mode="inline"
-        defaultSelectedKeys={[pathname]}
-        items={menuItems}
-      />
+      <Menu className="w-full !border-none font-semibold" theme="light" mode="inline" defaultSelectedKeys={[pathname]} items={menuItems} />
     </Drawer>
   );
 };

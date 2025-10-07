@@ -54,22 +54,28 @@ function App() {
               if (item.children) {
                 return item.children.map(({ path, element: Element, permissions = [] }) => ({
                   path,
-                  element: isLoading
-                    ? <Skeleton active />
-                    : <RequirePermission required={permissions}>
-                        <Element />
-                      </RequirePermission>
+                  element: isLoading ? (
+                    <Skeleton active />
+                  ) : (
+                    <RequirePermission required={permissions}>
+                      <Element />
+                    </RequirePermission>
+                  )
                 }));
               }
-            
-              return [{
-                path: item.path,
-                element: isLoading
-                  ? <Skeleton active />
-                  : <RequirePermission required={item.permissions || []}>
+
+              return [
+                {
+                  path: item.path,
+                  element: isLoading ? (
+                    <Skeleton active />
+                  ) : (
+                    <RequirePermission required={item.permissions || []}>
                       <item.element />
                     </RequirePermission>
-              }];
+                  )
+                }
+              ];
             }),
 
             { path: '/dashboard/goals/:id', element: <GoalsIndicators /> },

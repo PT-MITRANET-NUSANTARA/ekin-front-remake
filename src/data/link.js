@@ -90,7 +90,7 @@ export const dashboardLink = [
         label: 'Sub Kegiatan',
         element: Dashboard.SubActivities,
         permissions: ['manage_sub_kegiatan']
-      },
+      }
     ]
   },
   {
@@ -98,8 +98,9 @@ export const dashboardLink = [
     icon: ClusterOutlined,
     children: [
       { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts, permissions: ['manage_rkts'] },
-      { path: '/dashboard/assessment_periods',  label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod, permissions: ['manage_assessment_period'] },
-      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas, permissions: ['manage_perjanjian_kinerja'] }
+      { path: '/dashboard/assessment_periods', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod, permissions: ['manage_assessment_period'] },
+      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas, permissions: ['manage_perjanjian_kinerja'] },
+      { label: 'Verifikasi', path: '/dashboard/verificate_perjanjian_kinerja', element: Dashboard.VerificatePerjanjianKinerjas, permissions: ['manage_verificate'] }
     ]
   },
   {

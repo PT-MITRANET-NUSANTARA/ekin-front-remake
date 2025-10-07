@@ -140,22 +140,22 @@ const AssessmentPeriods = () => {
       ...assessmentPeriodFilterFields(),
       ...(user?.isAdmin || user?.umpegs?.length
         ? [
-          {
-            label: `Nama Unit`,
-            name: 'unit_id',
-            type: InputType.SELECT,
-            mode: 'multiple',
-            options: user?.isAdmin
-              ? unitKerja.map((item) => ({
-                label: item.nama_unor,
-                value: item.id_simpeg
-              }))
-              : user.umpegs.map((item) => ({
-                label: item.unit.nama_unor,
-                value: item.unit.id_simpeg
-              }))
-          }
-        ]
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: user?.isAdmin
+                ? unitKerja.map((item) => ({
+                    label: item.nama_unor,
+                    value: item.id_simpeg
+                  }))
+                : user.umpegs.map((item) => ({
+                    label: item.unit.nama_unor,
+                    value: item.unit.id_simpeg
+                  }))
+            }
+          ]
         : [])
     ],
     initialData: {

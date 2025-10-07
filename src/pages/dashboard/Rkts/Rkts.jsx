@@ -37,7 +37,6 @@ const SubActivities = () => {
       per_page: pagination.per_page,
       search: filterValues.search,
       unit_id: user?.isAdmin || user?.umpegs ? filterValues.unit_id : user?.unor.id
-
     });
   }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.umpegs, user?.unor.id]);
 
@@ -188,22 +187,22 @@ const SubActivities = () => {
       ...rktsFilterFields(),
       ...(user?.isAdmin || user?.umpegs?.length
         ? [
-          {
-            label: `Nama Unit`,
-            name: 'unit_id',
-            type: InputType.SELECT,
-            mode: 'multiple',
-            options: user?.isAdmin
-              ? unitKerja.map((item) => ({
-                label: item.nama_unor,
-                value: item.id_simpeg
-              }))
-              : user.umpegs.map((item) => ({
-                label: item.unit.nama_unor,
-                value: item.unit.id_simpeg
-              }))
-          }
-        ]
+            {
+              label: `Nama Unit`,
+              name: 'unit_id',
+              type: InputType.SELECT,
+              mode: 'multiple',
+              options: user?.isAdmin
+                ? unitKerja.map((item) => ({
+                    label: item.nama_unor,
+                    value: item.id_simpeg
+                  }))
+                : user.umpegs.map((item) => ({
+                    label: item.unit.nama_unor,
+                    value: item.unit.id_simpeg
+                  }))
+            }
+          ]
         : [])
     ],
     initialData: {

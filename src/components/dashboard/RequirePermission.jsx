@@ -7,7 +7,7 @@ const RequirePermission = ({ required = [], children }) => {
 
   const isAllowed =
     required.length === 0 || // publik kalau tidak ada permission
-    required.some(p => userPermissions.includes(p));
+    required.some((p) => userPermissions.includes(p));
 
   if (!isAllowed) {
     // Bisa redirect ke dashboard atau render pesan

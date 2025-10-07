@@ -32,4 +32,3 @@ export default class Skps extends Model {
     return apiData as ReturnType<T, FormValue, OutgoingApiData>;
   }
 }
-

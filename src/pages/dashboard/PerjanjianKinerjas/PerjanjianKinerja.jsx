@@ -1,7 +1,7 @@
 import { useAuth, useNotification, useService } from '@/hooks';
 import { PerjanjianKinerjaService, SkpsService, UnitKerjaService } from '@/services';
 import capitalizeWords from '@/utils/CapitalizeWord';
-import { CheckCircleFilled, DownOutlined, PaperClipOutlined, UserOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CloseCircleFilled, DownOutlined, PaperClipOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Descriptions, Result, Select, Skeleton, Tree } from 'antd';
 import React from 'react';
 
@@ -67,6 +67,8 @@ const PerjanjianKinerja = () => {
 
   const skpByUser = getSkp.data ?? [];
 
+  const hasEmptyPerjanjian = skpByUser.some((item) => Array.isArray(item.perjanjian_kinerja) && item.perjanjian_kinerja.length === 0);
+
   return (
     <div className="grid w-full grid-cols-12 gap-4">
       <Card className="col-span-4 h-fit">
@@ -105,41 +107,53 @@ const PerjanjianKinerja = () => {
               ) : (
                 <>
                   <Skeleton loading={getSkp.isLoading}>
-                    <Result status="success" title="Perjanjian Kinerja Sudah di Upload" subTitle="Perjanjian kinerja pada seluruh daftar skp oleh user ini telah berhasil di upload" />
-                    {skpByUser.map((item) => (
-                      <Descriptions key={item.id} bordered column={2}>
-                        <Descriptions.Item label="Pendekatan">{item.pendekatan}</Descriptions.Item>
-                        <Descriptions.Item label="Periode Mulai">{item.periode_start}</Descriptions.Item>
-                        <Descriptions.Item label="Periode Berakhir">{item.periode_end}</Descriptions.Item>
-                        <Descriptions.Item label="Periode Berakhir">{item.periode_end}</Descriptions.Item>
-                        <Descriptions.Item label="Perjanjian Kinerja" span={3}>
-                          <div className="flex flex-col gap-y-4">
-                            {item.perjanjian_kinerja.map((pk_item) => (
-                              <div key={pk_item.id} className="inline-flex items-center gap-x-2">
-                                <CheckCircleFilled className="text-green-500" />
-                                <Button
-                                  icon={<PaperClipOutlined />}
-                                  variant="text"
-                                  color="primary"
-                                  loading={downloadPerjanjianKinerja.isLoading}
-                                  onClick={async () => {
-                                    const { isSuccess, message } = await downloadPerjanjianKinerja.execute(token, pk_item.id);
-                                    if (isSuccess) {
-                                      success('Berhasil', message);
-                                    } else {
-                                      error('Gagal', message);
-                                    }
-                                    return isSuccess;
-                                  }}
-                                >
-                                  {pk_item.id}
-                                </Button>
+                    {skpByUser.length === 0 ? (
+                      <Result status="warning" title="SKP Kosong" subTitle="Tidak ada data SKP yang tersedia untuk user ini." />
+                    ) : (
+                      <>
+                        <Result
+                          status={hasEmptyPerjanjian ? 'error' : 'success'}
+                          title={hasEmptyPerjanjian ? 'Ada perjanjian kinerja kosong!' : 'Semua perjanjian kinerja lengkap'}
+                          subTitle={hasEmptyPerjanjian ? 'Mohon lengkapi data yang kosong' : 'Semua data sudah siap'}
+                        />
+                        {skpByUser.map((item) => (
+                          <Descriptions key={item.id} bordered column={2}>
+                            <Descriptions.Item label="Pendekatan">{item.pendekatan}</Descriptions.Item>
+                            <Descriptions.Item label="Periode Mulai">{item.periode_start}</Descriptions.Item>
+                            <Descriptions.Item label="Periode Berakhir">{item.periode_end}</Descriptions.Item>
+                            <Descriptions.Item label="Perjanjian Kinerja" span={3}>
+                              <div className="flex flex-col gap-y-4">
+                                {Array.isArray(item.perjanjian_kinerja) && item.perjanjian_kinerja.length > 0 ? (
+                                  item.perjanjian_kinerja.map((pk_item) => (
+                                    <div key={pk_item.id} className="inline-flex items-center gap-x-2">
+                                      <CheckCircleFilled className="text-green-500" />
+                                      <Button
+                                        icon={<PaperClipOutlined />}
+                                        variant="text"
+                                        color="primary"
+                                        loading={downloadPerjanjianKinerja.isLoading}
+                                        onClick={async () => {
+                                          const { isSuccess, message } = await downloadPerjanjianKinerja.execute(token, pk_item.id);
+                                          if (isSuccess) success('Berhasil', message);
+                                          else error('Gagal', message);
+                                        }}
+                                      >
+                                        {pk_item.id}
+                                      </Button>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="inline-flex items-center gap-x-2">
+                                    <CloseCircleFilled className="text-red-500" />
+                                    <p>Perjanjian Kinerja Kosong</p>
+                                  </div>
+                                )}
                               </div>
-                            ))}
-                          </div>
-                        </Descriptions.Item>
-                      </Descriptions>
-                    ))}
+                            </Descriptions.Item>
+                          </Descriptions>
+                        ))}
+                      </>
+                    )}
                   </Skeleton>
                 </>
               )}
