@@ -121,9 +121,39 @@ const AssessmentPeriods = () => {
   const onCreate = () => {
     modal.create({
       title: `Tambah ${Modul.ASSESSMENTPERIOD}`,
-      formFields: formFields({ options: { renstras: renstras } }),
+      formFields: [
+        ...formFields({ options: { renstras: renstras } }),
+        ...(user?.isAdmin || user?.umpegs?.length
+          ? [
+              {
+                label: `Nama Unit`,
+                name: 'unit_id',
+                type: InputType.SELECT,
+                rules: [
+                  {
+                    required: true,
+                    message: `Nama Unit harus diisi`
+                  }
+                ],
+                options: user?.isAdmin
+                  ? unitKerja.map((item) => ({
+                      label: item.nama_unor,
+                      value: item.id_simpeg
+                    }))
+                  : user.umpegs.map((item) => ({
+                      label: item.unit.nama_unor,
+                      value: item.unit.id_simpeg
+                    }))
+              }
+            ]
+          : [])
+      ],
       onSubmit: async (values) => {
-        const { isSuccess, message } = await storeAssessmentPeriod.execute({ ...values, id_unit: user.unor.id }, token);
+        const payload = {
+          ...values,
+          id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
+        };
+        const { isSuccess, message } = await storeAssessmentPeriod.execute(payload, token);
         if (isSuccess) {
           success('Berhasil', message);
           fetchAssessmentPeriods({ token: token, page: pagination.page, per_page: pagination.per_page });

@@ -1,7 +1,7 @@
 import * as Auth from '@/pages/auth';
 import * as Dashboard from '@/pages/dashboard';
 import * as Landing from '@/pages/landing';
-import { CheckSquareOutlined, ClusterOutlined, DashboardOutlined, DatabaseOutlined, FileProtectOutlined, SettingOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CheckSquareOutlined, ClusterOutlined, DashboardOutlined, DatabaseOutlined, FileProtectOutlined, SettingOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 
 export const landingLink = [
   {
@@ -99,8 +99,7 @@ export const dashboardLink = [
     children: [
       { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts, permissions: ['manage_rkts'] },
       { path: '/dashboard/assessment_periods', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod, permissions: ['manage_assessment_period'] },
-      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas, permissions: ['manage_perjanjian_kinerja'] },
-      { label: 'Verifikasi', path: '/dashboard/verificate_perjanjian_kinerja', element: Dashboard.VerificatePerjanjianKinerjas, permissions: ['manage_verificate'] }
+      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas, permissions: ['manage_perjanjian_kinerja'] }
     ]
   },
   {
@@ -130,6 +129,13 @@ export const dashboardLink = [
     path: '/dashboard/web_settings',
     element: Dashboard.WebSettings,
     permissions: ['manage_settings']
+  },
+  {
+    label: 'Verifikasi',
+    icon: CheckCircleOutlined,
+    path: '/dashboard/verificate_perjanjian_kinerja',
+    element: Dashboard.VerificatePerjanjianKinerjas,
+    permissions: ['manage_verificate']
   }
 ];
 

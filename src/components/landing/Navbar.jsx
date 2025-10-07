@@ -42,9 +42,9 @@ const Navbar = () => {
               </div>
             ) : (
               <>
-                <Image width={40} preview={false} src={''} />
+                <Image width={40} preview={false} src={'/image_asset/ekin_logo.png'} />
                 <b>
-                  <span className="text-blue-500">App Name</span>{' '}
+                  <span className="text-[#5e9ea0]">E-Kinerja</span>{' '}
                 </b>
               </>
             )}

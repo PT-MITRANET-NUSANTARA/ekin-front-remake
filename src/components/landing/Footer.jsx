@@ -40,7 +40,7 @@ const Footer = () => {
             </div>
           </div>
           <div className="col-span-6 flex items-center justify-center border-t-2 py-6">
-            <small className="text-gray-500">Design And Develop by Rafiq Daud</small>
+            <small className="text-gray-500">Design And Develop by Ekin Team</small>
           </div>
         </div>
       </div>

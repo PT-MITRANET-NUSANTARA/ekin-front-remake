@@ -59,6 +59,12 @@ const Renstras = () => {
       dataIndex: 'tanggal_selesai',
       sorter: (a, b) => a.tanggal_selesai.length - b.tanggal_selesai.length,
       searchable: true
+    },
+    {
+      title: 'Unit ',
+      dataIndex: ['id_unit', 'nama_unor'],
+      sorter: (a, b) => a.id_unit.nama_unor.length - b.id_unit.nama_unor.length,
+      searchable: true
     }
   ];
 
@@ -116,6 +122,11 @@ const Renstras = () => {
                 title: 'Detail data rencana strategi',
                 data: [
                   {
+                    key: 'id_unit',
+                    label: `Unit Kerja`,
+                    children: record.id_unit.nama_unor
+                  },
+                  {
                     key: 'tanggal_mulai',
                     label: `Periode Mulai ${Modul.RENSTRA}`,
                     children: record.tanggal_mulai
@@ -155,9 +166,39 @@ const Renstras = () => {
   const onCreate = () => {
     modal.create({
       title: `Tambah ${Modul.RENSTRA}`,
-      formFields: formFields({ options: { missions: missions } }),
+      formFields: [
+        ...formFields({ options: { missions: missions } }),
+        ...(user?.isAdmin || user?.umpegs?.length
+          ? [
+              {
+                label: `Nama Unit`,
+                name: 'unit_id',
+                type: InputType.SELECT,
+                rules: [
+                  {
+                    required: true,
+                    message: `Nama Unit harus diisi`
+                  }
+                ],
+                options: user?.isAdmin
+                  ? unitKerja.map((item) => ({
+                      label: item.nama_unor,
+                      value: item.id_simpeg
+                    }))
+                  : user.umpegs.map((item) => ({
+                      label: item.unit.nama_unor,
+                      value: item.unit.id_simpeg
+                    }))
+              }
+            ]
+          : [])
+      ],
       onSubmit: async (values) => {
-        const { isSuccess, message } = await storeRenstras.execute({ ...values, id_unit: user.unor.id }, token);
+        const payload = {
+          ...values,
+          id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
+        };
+        const { isSuccess, message } = await storeRenstras.execute(payload, token);
         if (isSuccess) {
           success('Berhasil', message);
           fetchRenstras({ token: token, page: pagination.page, per_page: pagination.per_page });
@@ -178,7 +219,6 @@ const Renstras = () => {
               label: `Nama Unit`,
               name: 'unit_id',
               type: InputType.SELECT,
-              mode: 'multiple',
               options: user?.isAdmin
                 ? unitKerja.map((item) => ({
                     label: item.nama_unor,

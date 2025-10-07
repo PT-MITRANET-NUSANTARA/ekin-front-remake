@@ -136,6 +136,11 @@ const SubActivities = () => {
                 title: 'Detail data RKT',
                 data: [
                   {
+                    key: 'id_unit',
+                    label: `Unit Kerja`,
+                    children: record.id_unit.nama_unor
+                  },
+                  {
                     key: 'nama',
                     label: `Judul ${Modul.RKT}`,
                     children: record.nama
@@ -168,9 +173,42 @@ const SubActivities = () => {
   const onCreate = () => {
     modal.create({
       title: `Tambah ${Modul.RKT}`,
-      formFields: rktFormFields({ options: { renstras: renstras, subActivities: subActivities } }),
+      formFields: [
+        ...rktFormFields({ options: { renstras: renstras, subActivities: subActivities } }),
+        ...(user?.isAdmin || user?.umpegs?.length
+          ? [
+              {
+                label: `Nama Unit`,
+                name: 'unit_id',
+                type: InputType.SELECT,
+                rules: [
+                  {
+                    required: true,
+                    message: `Nama Unit harus diisi`
+                  }
+                ],
+                options: user?.isAdmin
+                  ? unitKerja.map((item) => ({
+                      label: item.nama_unor,
+                      value: item.id_simpeg
+                    }))
+                  : user.umpegs.map((item) => ({
+                      label: item.unit.nama_unor,
+                      value: item.unit.id_simpeg
+                    }))
+              }
+            ]
+          : [])
+      ],
       onSubmit: async (values) => {
-        const { isSuccess, message } = await storeRkt.execute({ ...values, id_unit: user?.unor?.id, input_indikator_kinerja: [], output_indikator_kinerja: [], outcome_indikator_kinerja: [] }, token);
+        const payload = {
+          ...values,
+          input_indikator_kinerja: [],
+          output_indikator_kinerja: [],
+          outcome_indikator_kinerja: [],
+          id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
+        };
+        const { isSuccess, message } = await storeRkt.execute(payload, token);
         if (isSuccess) {
           success('Berhasil', message);
           fetchRkts({ token: token, page: pagination.page, per_page: pagination.per_page });
