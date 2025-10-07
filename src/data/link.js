@@ -30,69 +30,100 @@ export const dashboardLink = [
   {
     label: 'Overview',
     icon: DashboardOutlined,
-    children: [{ path: '/dashboard', label: 'Dashboard', element: Dashboard.Dashboard }]
+    children: [
+      {
+        path: '/dashboard',
+        label: 'Dashboard',
+        element: Dashboard.Dashboard,
+        permissions: ['lihat_dashboard'] // ✅ ini publik
+      }
+    ]
   },
   {
     label: 'Master Data',
     icon: DatabaseOutlined,
     children: [
-      { path: '/dashboard/visions', label: 'Visi', element: Dashboard.Visions },
-      { path: '/dashboard/missions', label: 'Misi', element: Dashboard.Missions }
+      {
+        path: '/dashboard/visions',
+        label: 'Visi',
+        element: Dashboard.Visions,
+        permissions: ['manage_visi']
+      },
+      {
+        path: '/dashboard/missions',
+        label: 'Misi',
+        element: Dashboard.Missions,
+        permissions: ['manage_misi']
+      }
     ]
   },
   {
     label: 'Rencana Kerja',
     icon: CheckSquareOutlined,
     children: [
-      { path: '/dashboard/renstras', label: 'Rencana Strategi', element: Dashboard.Renstras },
-      { path: '/dashboard/goals', label: 'Tujuan', element: Dashboard.Goals },
-      { path: '/dashboard/programs', label: 'Program', element: Dashboard.Programs },
-      { path: '/dashboard/activities', label: 'Kegiatan', element: Dashboard.Activities },
-      { path: '/dashboard/subactivities', label: 'Sub Kegiatan', element: Dashboard.SubActivities }
+      {
+        path: '/dashboard/renstras',
+        label: 'Rencana Strategi',
+        element: Dashboard.Renstras,
+        permissions: ['manage_renstra']
+      },
+      {
+        path: '/dashboard/goals',
+        label: 'Tujuan',
+        element: Dashboard.Goals,
+        permissions: ['manage_goals']
+      },
+      {
+        path: '/dashboard/programs',
+        label: 'Program',
+        element: Dashboard.Programs,
+        permissions: ['manage_program']
+      },
+      {
+        path: '/dashboard/activities',
+        label: 'Kegiatan',
+        element: Dashboard.Activities,
+        permissions: ['manage_kegiatan']
+      },
+      {
+        path: '/dashboard/subactivities',
+        label: 'Sub Kegiatan',
+        element: Dashboard.SubActivities,
+        permissions: ['manage_sub_kegiatan']
+      },
     ]
   },
   {
     label: 'Rencana Kerja Tahunan',
     icon: ClusterOutlined,
     children: [
-      { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts },
-      { path: '/dashboard/assessmentperiod', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod },
-      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas }
+      { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts, permissions: ['manage_rkts'] },
+      { path: '/dashboard/assessment_periods',  label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod, permissions: ['manage_assessment_period'] },
+      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas, permissions: ['manage_perjanjian_kinerja'] }
     ]
   },
   {
     label: 'SKP',
     icon: FileProtectOutlined,
     path: '/dashboard/skps',
-    element: Dashboard.Skps
+    element: Dashboard.Skps,
+    permissions: ['manage_skp']
   },
   {
     label: 'Umpeg',
     icon: UsergroupAddOutlined,
     path: '/dashboard/umpegs',
-    element: Dashboard.Umpegs
+    element: Dashboard.Umpegs,
+    permissions: ['manage_umpegs']
   },
   {
     label: 'Verificator',
     icon: UsergroupAddOutlined,
     path: '/dashboard/varificator',
-    element: Dashboard.Verificators
+    element: Dashboard.Verificators,
+    permissions: ['manage_verificator']
   }
-].map((item) => {
-  if (item.children) {
-    return {
-      ...item,
-      permissions: item.children.flatMap((child) => child.permissions || []).filter(Boolean),
-      roles: item.children.flatMap((child) => child.roles || []).filter(Boolean)
-    };
-  }
-
-  return {
-    ...item,
-    permissions: item.permissions || [],
-    roles: item.roles || []
-  };
-});
+];
 
 export const authLink = [
   {

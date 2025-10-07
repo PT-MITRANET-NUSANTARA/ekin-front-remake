@@ -118,3 +118,4 @@ export default class SubActivities extends Model {
     return apiData as ReturnType<T, FormValue, OutgoingApiData>;
   }
 }
+

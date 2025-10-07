@@ -54,3 +54,5 @@ export const formFields = ({ options }) => [
     }))
   }
 ];
+
+export const assessmentPeriodFilterFields = () => [];
