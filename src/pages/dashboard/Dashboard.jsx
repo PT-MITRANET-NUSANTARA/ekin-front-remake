@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Spin, Alert, Form, Input, DatePicker, TimePicker, Button, Card, Select, Upload, message, Radio, Slider } from 'antd';
+import { Row, Col, Spin, Alert, Form, Input, DatePicker, TimePicker, Button, Card, Select, Upload, message, Radio, Slider, Drawer, Descriptions, Badge } from 'antd';
 import { useAuth } from '@/hooks';
 import { AuthService, HarianService, RencanaAksiService, SkpsService, RhkService } from '@/services';
 import { ProfileCard, AbsenceCard, DashboardSummary } from '@/components/dashboard';
 import Timeline from 'react-calendar-timeline';
 import moment from 'moment';
 import 'react-calendar-timeline/dist/style.css';
-import { UploadOutlined, LinkOutlined, CalendarOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { UploadOutlined, LinkOutlined, CalendarOutlined, ClockCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const Dashboard = () => {
   const { user, token } = useAuth();
@@ -14,12 +14,16 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
   const [rencanaAksiOptions, setRencanaAksiOptions] = useState([]);
   const [skpOptions, setSkpOptions] = useState([]);
   const [rhkOptions, setRhkOptions] = useState([]);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [uploadType, setUploadType] = useState('files');
   const [showForm, setShowForm] = useState(false);
+  const [drawer, setDrawer] = useState({ open: false, data: {}, placement: 'right' });
 
   // Fungsi untuk mengambil data dashboard
   const fetchDashboardData = async (isRefresh = false) => {
@@ -175,17 +179,36 @@ const Dashboard = () => {
         formData.tautan = values.tautan;
       }
       
-      const response = await HarianService.store(formData, token);
+      let response;
+      
+      // Jika drawer terbuka dan ada data, berarti sedang mengedit
+      if (drawer.open && drawer.data.id) {
+        response = await HarianService.update(drawer.data.id, formData, token);
+        
+        if (response.status) {
+          message.success('Data harian berhasil diperbarui');
+          setDrawer(prev => ({ ...prev, open: false })); // Tutup drawer setelah berhasil
+        } else {
+          message.error(response.message || 'Gagal memperbarui data harian');
+        }
+      } else {
+        // Jika tidak, berarti sedang menambah data baru
+        response = await HarianService.store(formData, token);
+        
+        if (response.status) {
+          message.success('Data harian berhasil disimpan');
+        } else {
+          message.error(response.message || 'Gagal menyimpan data harian');
+        }
+      }
       
       if (response.status) {
-        message.success('Data harian berhasil disimpan');
         form.resetFields();
+        editForm.resetFields();
         setShowForm(false); // Tutup form setelah berhasil
         
         // Refresh data dashboard untuk menampilkan data harian terbaru
         await fetchDashboardData(true);
-      } else {
-        message.error(response.message || 'Gagal menyimpan data harian');
       }
     } catch (err) {
       console.error('Error submitting form:', err);
@@ -262,7 +285,7 @@ const Dashboard = () => {
               className="mb-4"
             >
               <Form
-                form={form}
+                form={drawer.open && drawer.data.id ? editForm : form}
                 layout="vertical"
                 onFinish={handleSubmit}
                 initialValues={{
@@ -533,7 +556,7 @@ const Dashboard = () => {
                       end_time: endTime,
                       itemProps: {
                         style: {
-                          backgroundColor: '#1890ff',
+                          background: '#1890ff', // Menggunakan background sebagai pengganti backgroundColor
                           color: 'white',
                           borderRadius: '4px',
                           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
@@ -561,7 +584,7 @@ const Dashboard = () => {
                     end_time: endOfDay,
                     itemProps: {
                       style: {
-                        backgroundColor: '#f5f5f5',
+                        background: '#f5f5f5',
                         color: '#999',
                         borderRadius: '4px',
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
@@ -589,12 +612,130 @@ const Dashboard = () => {
                     stackItems={true}
                     itemTouchSendsClick={false}
                     minZoom={60 * 60 * 1000} // 1 jam minimum zoom
+                    onItemClick={(itemId, e, time) => {
+                      // Jangan tampilkan drawer untuk item kosong
+                      if (itemId === 'empty') return;
+                      
+                      // Cari item yang diklik
+                      const item = harian.find(h => h.id === itemId);
+                      if (item) {
+                        // Gunakan setTimeout untuk menghindari konflik dengan event handler lain
+                        setTimeout(() => {
+                          setDrawer({ data: item, open: true, placement: 'right' });
+                        }, 0);
+                      }
+                    }}
                   />
                 );
               })()}
             </div>
           </Col>
         )}
+        
+        {/* Drawer untuk detail kegiatan harian */}
+        <Drawer 
+          title="Detail Kegiatan Harian" 
+          closable 
+          onClose={() => setDrawer(prev => ({ ...prev, open: false }))} 
+          open={drawer.open} 
+          placement={drawer.placement} 
+          width={900} 
+          zIndex={900}
+        >
+          {drawer.data && drawer.data.id && (
+            <>
+              <Descriptions title="Detail Kegiatan" bordered column={2}>
+                <Descriptions.Item label="Nama Kegiatan" span={2}>
+                  <div className="flex items-center gap-x-2">
+                    {drawer.data.name}
+                    <Button 
+                      icon={<EditOutlined />} 
+                      type="text" 
+                      onClick={() => {
+                        // Set nilai awal form edit
+                        editForm.setFieldsValue({
+                          name: drawer.data.name,
+                          desc: drawer.data.desc,
+                          progress: drawer.data.progress,
+                          date: moment(drawer.data.date),
+                          start_time: moment(drawer.data.start_date_time, 'YYYY-MM-DD HH:mm:ss'),
+                          end_time: moment(drawer.data.end_date_time, 'YYYY-MM-DD HH:mm:ss'),
+                          skp_id: drawer.data.skp_id,
+                          rhk_id: drawer.data.rhk_id,
+                          rencana_aksi_ids: drawer.data.rencana_aksi_ids || []
+                        });
+                        
+                        // Tampilkan form edit
+                        setShowForm(true);
+                      }} 
+                    />
+                    <Button 
+                      icon={<DeleteOutlined />} 
+                      type="text" 
+                      danger 
+                      loading={deleteLoading}
+                      onClick={async () => {
+                        if (window.confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
+                          try {
+                            setDeleteLoading(true);
+                            const response = await HarianService.delete(drawer.data.id, token);
+                            
+                            if (response.status) {
+                              message.success('Kegiatan harian berhasil dihapus');
+                              setDrawer(prev => ({ ...prev, open: false }));
+                              
+                              // Refresh data dashboard
+                              await fetchDashboardData(true);
+                            } else {
+                              message.error(response.message || 'Gagal menghapus kegiatan harian');
+                            }
+                          } catch (err) {
+                            console.error('Error deleting activity:', err);
+                            message.error('Terjadi kesalahan saat menghapus kegiatan harian');
+                          } finally {
+                            setDeleteLoading(false);
+                          }
+                        }
+                      }} 
+                    />
+                  </div>
+                </Descriptions.Item>
+                <Descriptions.Item label="Tanggal">{moment(drawer.data.date).format('YYYY-MM-DD')}</Descriptions.Item>
+                <Descriptions.Item label="Progress">{drawer.data.progress}%</Descriptions.Item>
+                <Descriptions.Item label="Waktu Mulai">{moment(drawer.data.start_date_time).format('HH:mm:ss')}</Descriptions.Item>
+                <Descriptions.Item label="Waktu Selesai">{moment(drawer.data.end_date_time).format('HH:mm:ss')}</Descriptions.Item>
+                <Descriptions.Item label="RHK" span={2}>{drawer.data.rhk?.desc || '-'}</Descriptions.Item>
+                <Descriptions.Item label="Deskripsi" span={2}>{drawer.data.desc}</Descriptions.Item>
+                <Descriptions.Item label="Rencana Aksi" span={2}>
+                  {drawer.data.rencana_aksi?.map((ra, index) => (
+                    <div key={ra.id}>
+                      {index + 1}. {ra.desc}
+                    </div>
+                  )) || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Lampiran" span={2}>
+                  {drawer.data.tautan ? (
+                    <a href={drawer.data.tautan} target="_blank" rel="noopener noreferrer">
+                      {drawer.data.tautan}
+                    </a>
+                  ) : drawer.data.files && drawer.data.files.length > 0 ? (
+                    <div>
+                      {drawer.data.files.map((file, index) => (
+                        <div key={index}>
+                          <a href={file.url} target="_blank" rel="noopener noreferrer">
+                            {file.name || `File ${index + 1}`}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    'Tidak ada lampiran'
+                  )}
+                </Descriptions.Item>
+              </Descriptions>
+            </>
+          )}
+        </Drawer>
       </Row>
     </div>
   );
