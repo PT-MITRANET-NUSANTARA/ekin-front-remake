@@ -18,3 +18,4 @@ export { default as FeedbackKinerjaService } from './FeedbackKinerjaService';
 export { default as UmpegService } from './UmpegService';
 export { default as UnitKerjaService } from './UnitKerjaService';
 export { default as VerificatorService } from './VerificatorService';
+export { default as WebSettingsService } from './WebSettingsService';

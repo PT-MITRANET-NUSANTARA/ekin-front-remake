@@ -1,7 +1,7 @@
 import * as Auth from '@/pages/auth';
 import * as Dashboard from '@/pages/dashboard';
 import * as Landing from '@/pages/landing';
-import { CheckSquareOutlined, ClusterOutlined, DashboardOutlined, DatabaseOutlined, FileProtectOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { CheckSquareOutlined, ClusterOutlined, DashboardOutlined, DatabaseOutlined, FileProtectOutlined, SettingOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 
 export const landingLink = [
   {
@@ -122,6 +122,13 @@ export const dashboardLink = [
     path: '/dashboard/varificator',
     element: Dashboard.Verificators,
     permissions: ['manage_verificator']
+  },
+  {
+    label: 'Web Settings',
+    icon: SettingOutlined,
+    path: '/dashboard/web_settings',
+    element: Dashboard.WebSettings,
+    permissions: ['manage_settings']
   }
 ];
 

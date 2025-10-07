@@ -118,6 +118,7 @@ export default class User extends Model {
       'manage_rkts',
       'manage_assessment_period',
       'manage_perjanjian_kinerja',
+      'manage_settings',
     ];
 
     const umpegPermission = [
@@ -130,6 +131,7 @@ export default class User extends Model {
       'manage_rkts',
       'manage_assessment_period',
       'manage_perjanjian_kinerja',
+      'manage_settings',
     ];
 
     const jptPermissions = [
