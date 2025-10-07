@@ -37,6 +37,26 @@ export default class AuthService {
     return { ...response, data: User.fromApiData(response.data, token) };
   }
 
+  /**
+   * Get dashboard data including profile and absence information
+   * @param {string} token - The authentication token
+   * @param {AbortSignal} [signal] - Optional AbortSignal to cancel the request
+   * @returns {Promise<{
+   *   code: number,
+   *   status: boolean,
+   *   message: string,
+   *   data: {
+   *     profile: Object,
+   *     absence: Object
+   *   }
+   * }>} - A promise that resolves to dashboard data
+   */
+  static async getDashboard(token, signal) {
+    const response = await api.get('/auth/dashboard', { token, signal });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
   static async getDetailProfile(token, nip) {
     const response = await api.get(`/user/${nip}`, { token });
     if (!response.data) return response;

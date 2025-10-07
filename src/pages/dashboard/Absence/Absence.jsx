@@ -1,6 +1,6 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { AbsenceService } from '@/services';
+import { AbsenceService, UserService } from '@/services';
 import { Card, List, Skeleton, Space, Tag } from 'antd';
 import React from 'react';
 import { Absence as AbsenceModel } from '@/models';
@@ -36,8 +36,10 @@ const Absence = () => {
   const deleteAbsence = useService(AbsenceService.delete);
   const storeAbsence = useService(AbsenceService.store);
   const updateAbsence = useService(AbsenceService.update);
+  const { execute: executeGetUsers, ...getUsersByUnit } = useService(UserService.getUsersByUnit);
   const [filterValues, setFilterValues] = React.useState({ search: '' });
   const pagination = usePagination({ totalData: getAllAbsence.totalData });
+  const [users, setUsers] = React.useState([]);
 
   const fetchAbsence = React.useCallback(() => {
     execute({
@@ -49,9 +51,28 @@ const Absence = () => {
     });
   }, [execute, filterValues.search, pagination.page, pagination.per_page, token, user]);
 
+  const fetchUsers = React.useCallback(() => {
+    if (user && user.unor && user.unor.id) {
+      executeGetUsers({
+        token: token,
+        unitId: user.unor.id,
+        search: '',
+        page: 1,
+        perPage: 100
+      });
+    }
+  }, [executeGetUsers, token, user]);
+
   React.useEffect(() => {
     fetchAbsence();
-  }, [fetchAbsence, pagination.page, pagination.per_page]);
+    fetchUsers();
+  }, [fetchAbsence, fetchUsers, pagination.page, pagination.per_page]);
+
+  React.useEffect(() => {
+    if (getUsersByUnit.data) {
+      setUsers(getUsersByUnit.data);
+    }
+  }, [getUsersByUnit.data]);
 
   const absences = getAllAbsence.data ?? [];
   
@@ -97,10 +118,10 @@ const Absence = () => {
             onClick={() => {
               modal.edit({
                 title: "Ubah Absensi",
-                formFields: formFields({ options: {} }),
+                formFields: formFields({ options: { users } }),
                 data: { ...record, tanggal: dayjs(record.tanggal) },
                 onSubmit: async (values) => {
-                  const { isSuccess, message } = await updateAbsence.execute(record.id, values, token);
+                  const { isSuccess, message } = await updateAbsence.execute(record.id, { ...values, id_unit: user.unor.id }, token);
                   if (isSuccess) {
                     success('Berhasil', message);
                     fetchAbsence();
@@ -172,9 +193,9 @@ const Absence = () => {
   const onCreate = () => {
     modal.create({
       title: "Tambah Absensi",
-      formFields: formFields({ options: {} }),
+      formFields: formFields({ options: { users } }),
       onSubmit: async (values) => {
-        const { isSuccess, message } = await storeAbsence.execute(values, token);
+        const { isSuccess, message } = await storeAbsence.execute({ ...values, id_unit: user.unor.id }, token);
         if (isSuccess) {
           success('Berhasil', message);
           fetchAbsence();

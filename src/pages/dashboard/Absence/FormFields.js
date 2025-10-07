@@ -5,13 +5,17 @@ export const formFields = ({ options }) => [
   {
     label: 'NIP',
     name: 'id_user',
-    type: InputType.TEXT,
+    type: InputType.SELECT,
     rules: [
       {
         required: true,
         message: 'NIP harus diisi'
       }
     ],
+    options: options.users?.map(user => ({
+      label: `${user.nip_asn} - ${user.nama_asn}`,
+      value: user.nip_asn
+    })) || [],
     size: 'large'
   },
   {
@@ -24,7 +28,12 @@ export const formFields = ({ options }) => [
         message: 'Tanggal harus diisi'
       }
     ],
-    size: 'large'
+    size: 'large',
+    props: {
+      format: 'YYYY-MM-DD',
+      disabledTime: true,
+      showTime: false
+    }
   },
   {
     label: 'Status',

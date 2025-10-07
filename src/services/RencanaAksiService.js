@@ -15,6 +15,22 @@ export default class RencanaAksiService {
     if (!response.data) return response;
     return { ...response, data: response.data };
   }
+  
+  /**
+   * @param {{ token: string, rhk_id: number }} params
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: RencanaAksi[];
+   * }>}
+   * */
+  static async getByRhk(params) {
+    const { token, rhk_id } = params;
+    const response = await api.get(`/rencana-aksi/rhk/${rhk_id}`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
 
   /**
    * @param {RencanaAksi} data

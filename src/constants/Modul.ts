@@ -19,8 +19,7 @@ enum Modul {
   FEEDBACK_PERILAKU = 'Feedback Perilaku',
   FEEDBACK_KINERJA = 'Feedback Kinerja',
   UMPEG = 'UMPEG',
-  VERIFICATOR = 'Verificator'
-  LAMPIRAN = 'Lampiran',
+  VERIFICATOR = 'Verificator',
   ABSENCE = 'Absensi'
 }
 
