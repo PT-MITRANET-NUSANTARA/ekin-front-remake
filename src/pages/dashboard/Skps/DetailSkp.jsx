@@ -186,21 +186,16 @@ const DetailSkp = () => {
       <div className="mt-4 flex w-full items-center justify-between">
         <div className="inline-flex items-center gap-x-2"></div>
         <div className="inline-flex items-center gap-x-2">
-          <Button 
-            variant="solid" 
-            color="primary" 
-            icon={<DownloadOutlined />}
-            onClick={() => navigate(`/dashboard/skp-download/${id}`)}
-          >
+          <Button variant="solid" color="primary" icon={<DownloadOutlined />} onClick={() => navigate(`/dashboard/skp-download/${id}`)}>
             Download SKP
           </Button>
           <Popconfirm title="Apakah anda yakin ingin mengajukan SKP?" onConfirm={() => handleAjukanSkp(detailSkp)}>
-            <Button variant="solid" color="primary" disabled={detailSkp.status !== 'DRAFT'}>
+            <Button variant="solid" color="primary" disabled={detailSkp.status !== 'DRAFT' || !user?.isJpt}>
               Ajukan SKP
             </Button>
           </Popconfirm>
           <Popconfirm title="Apakah anda yakin ingin menghapus SKP?" onConfirm={() => handleDeleteSkp(detailSkp)}>
-            <Button variant="solid" color="danger">
+            <Button disabled={!user?.isJpt} variant="solid" color="danger">
               Hapus
             </Button>
           </Popconfirm>

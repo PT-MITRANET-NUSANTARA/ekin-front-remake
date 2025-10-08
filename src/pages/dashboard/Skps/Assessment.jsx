@@ -42,6 +42,9 @@ const Assessment = () => {
             <Button variant="solid" color="primary" onClick={() => navigate(window.location.pathname + '/detail')}>
               Detail
             </Button>
+            <Button variant="solid" color="primary" onClick={() => navigate(window.location.pathname + '/curva')}>
+              Kurva Penilaian
+            </Button>
           </div>
           <Descriptions title="Detail SKP" size="default" column={3} bordered className="mb-12">
             <Descriptions.Item label="Pendekatan">{detailSkp.pendekatan}</Descriptions.Item>

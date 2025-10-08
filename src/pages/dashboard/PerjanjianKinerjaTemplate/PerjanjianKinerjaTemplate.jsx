@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unknown-property */
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, Button, Row, Col, Typography, Divider, Image } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
@@ -44,9 +46,7 @@ const PerjanjianKinerjaTemplate = () => {
         total_anggaran: '300.000.000',
         tujuan: {
           description: 'Meningkatkan kompetensi SDM bidang TIK',
-          indikator_kinerja: [
-            { name: 'Persentase ASN yang Terlatih TIK', target: '75', satuan: '%' }
-          ]
+          indikator_kinerja: [{ name: 'Persentase ASN yang Terlatih TIK', target: '75', satuan: '%' }]
         }
       }
     ]
@@ -58,14 +58,10 @@ const PerjanjianKinerjaTemplate = () => {
 
   return (
     <div>
-      <Card 
-        title="Perjanjian Kinerja Template" 
+      <Card
+        title="Perjanjian Kinerja Template"
         extra={
-          <Button 
-            type="primary" 
-            icon={<PrinterOutlined />} 
-            onClick={handlePrint}
-          >
+          <Button type="primary" icon={<PrinterOutlined />} onClick={handlePrint}>
             Cetak
           </Button>
         }
@@ -74,35 +70,30 @@ const PerjanjianKinerjaTemplate = () => {
         <div className="print-content" ref={printRef}>
           {/* Cover Page */}
           <div className="cover-page" style={{ textAlign: 'center', marginBottom: 50, pageBreakAfter: 'always' }}>
-            <Image 
-              src={pohuwato} 
-              alt="Logo Kabupaten Pohuwato" 
-              style={{ width: 150, marginBottom: 30 }}
-              preview={false}
-            />
-            <Title level={2} style={{ marginTop: 20 }}>PERJANJIAN KINERJA</Title>
+            <Image src={pohuwato} alt="Logo Kabupaten Pohuwato" style={{ width: 150, marginBottom: 30 }} preview={false} />
+            <Title level={2} style={{ marginTop: 20 }}>
+              PERJANJIAN KINERJA
+            </Title>
             <Title level={3}>{dummyData.tahun}</Title>
-            <Title level={4} style={{ marginTop: 40 }}>{dummyData.unit.nama_unor}</Title>
-            <Title level={4} style={{ marginTop: 40 }}>KABUPATEN POHUWATO</Title>
+            <Title level={4} style={{ marginTop: 40 }}>
+              {dummyData.unit.nama_unor}
+            </Title>
+            <Title level={4} style={{ marginTop: 40 }}>
+              KABUPATEN POHUWATO
+            </Title>
           </div>
 
           {/* Content Page */}
           <div className="content-page" style={{ marginBottom: 50, pageBreakAfter: 'always' }}>
             <div style={{ textAlign: 'center', marginBottom: 30 }}>
-              <Image 
-                src={pohuwato} 
-                alt="Logo Kabupaten Pohuwato" 
-                style={{ width: 80, marginBottom: 10 }}
-                preview={false}
-              />
+              <Image src={pohuwato} alt="Logo Kabupaten Pohuwato" style={{ width: 80, marginBottom: 10 }} preview={false} />
               <Title level={3}>PERJANJIAN KINERJA {dummyData.tahun}</Title>
               <Title level={4}>{dummyData.unit.nama_unor} - KABUPATEN POHUWATO</Title>
               <Divider />
             </div>
 
             <Paragraph style={{ textAlign: 'justify', textIndent: '25px', lineHeight: '2em' }}>
-              Dalam rangka mewujudkan manajemen pemerintahan yang efektif, transparan, dan akuntabel serta berorientasi
-              pada hasil, kami yang bertanda tangan dibawah ini:
+              Dalam rangka mewujudkan manajemen pemerintahan yang efektif, transparan, dan akuntabel serta berorientasi pada hasil, kami yang bertanda tangan dibawah ini:
             </Paragraph>
 
             <div style={{ marginLeft: 20, marginBottom: 20 }}>
@@ -128,14 +119,12 @@ const PerjanjianKinerjaTemplate = () => {
             </div>
 
             <Paragraph style={{ textAlign: 'justify', textIndent: '25px', lineHeight: '2em' }}>
-              Pihak pertama berjanji akan mewujudkan target kinerja yang seharusnya sesuai lampiran perjanjian ini, dalam
-              rangka mencapai target kinerja jangka menengah seperti yang telah ditetapkan dalam dokumen perencanaan.
-              Keberhasilan dan kegagalan pencapaian target kinerja tersebut menjadi tanggung jawab kami.
+              Pihak pertama berjanji akan mewujudkan target kinerja yang seharusnya sesuai lampiran perjanjian ini, dalam rangka mencapai target kinerja jangka menengah seperti yang telah ditetapkan dalam dokumen perencanaan. Keberhasilan dan
+              kegagalan pencapaian target kinerja tersebut menjadi tanggung jawab kami.
             </Paragraph>
 
             <Paragraph style={{ textAlign: 'justify', textIndent: '25px', lineHeight: '2em' }}>
-              Pihak kedua akan melakukan supervisi yang diperlukan serta akan melakukan evaluasi terhadap capaian kinerja
-              dari perjanjian ini dan mengambil tindakan yang diperlukan dalam rangka pemberian penghargaan dan sanksi.
+              Pihak kedua akan melakukan supervisi yang diperlukan serta akan melakukan evaluasi terhadap capaian kinerja dari perjanjian ini dan mengambil tindakan yang diperlukan dalam rangka pemberian penghargaan dan sanksi.
             </Paragraph>
 
             {/* Signature Table */}
@@ -160,12 +149,7 @@ const PerjanjianKinerjaTemplate = () => {
           {/* Tables Page */}
           <div className="tables-page">
             <div style={{ textAlign: 'center', marginBottom: 30 }}>
-              <Image 
-                src={pohuwato} 
-                alt="Logo Kabupaten Pohuwato" 
-                style={{ width: 80, marginBottom: 10 }}
-                preview={false}
-              />
+              <Image src={pohuwato} alt="Logo Kabupaten Pohuwato" style={{ width: 80, marginBottom: 10 }} preview={false} />
               <Title level={3}>LAMPIRAN PERJANJIAN KINERJA {dummyData.tahun}</Title>
               <Title level={4}>{dummyData.unit.nama_unor} - KABUPATEN POHUWATO</Title>
               <Divider />
@@ -182,38 +166,36 @@ const PerjanjianKinerjaTemplate = () => {
                 </tr>
               </thead>
               <tbody>
-                {dummyData.programs.map((program, programIndex) => (
+                {dummyData.programs.map((program, programIndex) =>
                   program.tujuan && program.tujuan.indikator_kinerja && program.tujuan.indikator_kinerja.length > 0 ? (
                     program.tujuan.indikator_kinerja.map((indikator, indikatorIndex) => (
                       <tr key={`${programIndex}-${indikatorIndex}`}>
                         {indikatorIndex === 0 && (
                           <>
-                            <td 
-                              rowSpan={program.tujuan.indikator_kinerja.length} 
-                              style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}
-                            >
+                            <td rowSpan={program.tujuan.indikator_kinerja.length} style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>
                               {programIndex + 1}
                             </td>
-                            <td 
-                              rowSpan={program.tujuan.indikator_kinerja.length} 
-                              style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}
-                            >
+                            <td rowSpan={program.tujuan.indikator_kinerja.length} style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>
                               {program.tujuan.description}
                             </td>
                           </>
                         )}
                         <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{indikator.name}</td>
-                        <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{indikator.target} {indikator.satuan}</td>
+                        <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>
+                          {indikator.target} {indikator.satuan}
+                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr key={programIndex}>
                       <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{programIndex + 1}</td>
                       <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{program.tujuan ? program.tujuan.description : program.name}</td>
-                      <td colSpan={2} style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>No indicators found</td>
+                      <td colSpan={2} style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>
+                        No indicators found
+                      </td>
                     </tr>
                   )
-                ))}
+                )}
               </tbody>
             </table>
 
@@ -265,7 +247,8 @@ const PerjanjianKinerjaTemplate = () => {
           body * {
             visibility: hidden;
           }
-          .print-content, .print-content * {
+          .print-content,
+          .print-content * {
             visibility: visible;
           }
           .print-content {
@@ -294,7 +277,10 @@ const PerjanjianKinerjaTemplate = () => {
             size: A4;
             margin: 2cm;
           }
-          table, tr, td, th {
+          table,
+          tr,
+          td,
+          th {
             page-break-inside: avoid;
           }
           .tables-page table {

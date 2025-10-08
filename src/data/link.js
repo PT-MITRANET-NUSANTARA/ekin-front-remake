@@ -94,18 +94,6 @@ export const dashboardLink = [
     ]
   },
   {
-    path: '/dashboard/skp-download/:id',
-    label: 'Download SKP',
-    element: Dashboard.SkpDownload,
-    permissions: ['lihat_dashboard']
-  },
-  {
-    path: '/dashboard/perjanjian-kinerja-template',
-    label: 'Template Perjanjian Kinerja',
-    element: Dashboard.PerjanjianKinerjaTemplate,
-    permissions: ['lihat_dashboard']
-  },
-  {
     label: 'Rencana Kerja Tahunan',
     icon: ClusterOutlined,
     children: [

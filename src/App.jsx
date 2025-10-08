@@ -13,6 +13,7 @@ import {
   AssessmentKinerja,
   AssessmentPerilaku,
   AssessmentSkp,
+  Curva,
   DetailRkt,
   DetailSkp,
   DetailSkpPenilaian,
@@ -20,10 +21,12 @@ import {
   JabatanUmpeg,
   JabatanVerificators,
   Mph,
+  PerjanjianKinerjaTemplate,
   ProgramsIndicators,
   RencanaAksi,
   SkpAssessmentPeriod,
   SkpBawahan,
+  SkpDownload,
   SubAcitivitiesIndicators,
   UserProfile
 } from './pages/dashboard';
@@ -95,7 +98,10 @@ function App() {
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/predikat', element: <AssessmentSkp /> },
             { path: '/dashboard/user_profile', element: <UserProfile /> },
             { path: '/dashboard/umpegs/:id', element: <JabatanUmpeg /> },
-            { path: '/dashboard/verificator/:id/:unit_id/jabatan/:unor_id', element: <JabatanVerificators /> }
+            { path: '/dashboard/verificator/:id/:unit_id/jabatan/:unor_id', element: <JabatanVerificators /> },
+            { path: '/dashboard/perjanjian-kinerja-template', element: <PerjanjianKinerjaTemplate /> },
+            { path: '/dashboard/skp-download/:id', element: <SkpDownload /> },
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/curva', element: <Curva /> }
           ]
         },
         {

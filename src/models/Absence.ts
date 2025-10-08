@@ -46,16 +46,7 @@ export default class Absence extends Model {
 
   public static fromApiData<T extends IncomingApiData | IncomingApiData[]>(apiData: T): ReturnType<T, IncomingApiData, Absence> {
     if (Array.isArray(apiData)) return apiData.map((object) => this.fromApiData(object)) as ReturnType<T, IncomingApiData, Absence>;
-    return new Absence(
-      apiData.id,
-      apiData.user_id,
-      apiData.date,
-      apiData.status,
-      apiData.unit_id,
-      apiData.desc,
-      apiData.created_at,
-      apiData.updated_at
-    ) as ReturnType<T, IncomingApiData, Absence>;
+    return new Absence(apiData.id, apiData.user_id, apiData.date, apiData.status, apiData.unit_id, apiData.desc, apiData.created_at, apiData.updated_at) as ReturnType<T, IncomingApiData, Absence>;
   }
 
   public static toApiData<T extends FormValue | FormValue[]>(absence: T): ReturnType<T, FormValue, OutgoingApiData> {

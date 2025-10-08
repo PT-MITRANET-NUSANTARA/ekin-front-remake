@@ -12,10 +12,11 @@ export const formFields = ({ options }) => [
         message: 'NIP harus diisi'
       }
     ],
-    options: options.users?.map(user => ({
-      label: `${user.nip_asn} - ${user.nama_asn}`,
-      value: user.nip_asn
-    })) || [],
+    options:
+      options.users?.map((user) => ({
+        label: `${user.nip_asn} - ${user.nama_asn}`,
+        value: user.nip_asn
+      })) || [],
     size: 'large'
   },
   {

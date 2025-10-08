@@ -11,7 +11,12 @@ export const formFields = ({ options }) => [
         message: `Periode mulai harus diisi`
       }
     ],
-    size: 'large'
+    size: 'large',
+    props: {
+      format: 'YYYY-MM-DD',
+      disabledTime: true,
+      showTime: false
+    }
   },
   {
     label: `Periode Akhir`,
@@ -23,7 +28,12 @@ export const formFields = ({ options }) => [
         message: `Periode akhir harus diisi`
       }
     ],
-    size: 'large'
+    size: 'large',
+    props: {
+      format: 'YYYY-MM-DD',
+      disabledTime: true,
+      showTime: false
+    }
   },
   {
     label: `Pendekatan`,

@@ -36,3 +36,4 @@ export { default as WebSettings } from './WebSettings/WebSettings';
 export { default as VerificatePerjanjianKinerjas } from './PerjanjianKinerjas/VerificatePerjanjianKinerjas';
 export { default as PerjanjianKinerjaTemplate } from './PerjanjianKinerjaTemplate/PerjanjianKinerjaTemplate';
 export { default as SkpDownload } from './Skps/SkpDownload';
+export { default as Curva } from './Skps/Curva';

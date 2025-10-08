@@ -15,7 +15,7 @@ export default class RencanaAksiService {
     if (!response.data) return response;
     return { ...response, data: response.data };
   }
-  
+
   /**
    * @param {{ token: string, rhk_id: number }} params
    * @returns {Promise<{

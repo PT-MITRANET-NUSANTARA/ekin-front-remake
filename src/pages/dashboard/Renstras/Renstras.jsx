@@ -82,7 +82,15 @@ const Renstras = () => {
                 formFields: formFields({ options: { missions: missions } }),
                 data: { ...record, tanggal_mulai: dayjs(record.tanggal_mulai), tanggal_selesai: dayjs(record.tanggal_selesai), ids_misi: record.ids_misi.map((item) => ({ label: item.nama, value: item.id })) },
                 onSubmit: async (values) => {
-                  const { isSuccess, message } = await updateRenstras.execute(record.id, values, token);
+                  const { isSuccess, message } = await updateRenstras.execute(
+                    record.id,
+                    {
+                      ...values,
+                      tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DD'),
+                      tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DD')
+                    },
+                    token
+                  );
                   if (isSuccess) {
                     success('Berhasil', message);
                     fetchRenstras({ token: token, page: pagination.page, per_page: pagination.per_page });
@@ -196,6 +204,8 @@ const Renstras = () => {
       onSubmit: async (values) => {
         const payload = {
           ...values,
+          tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DD'),
+          tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DD'),
           id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
         };
         const { isSuccess, message } = await storeRenstras.execute(payload, token);

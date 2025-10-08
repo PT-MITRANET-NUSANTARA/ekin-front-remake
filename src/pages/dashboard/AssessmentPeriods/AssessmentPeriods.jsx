@@ -81,7 +81,15 @@ const AssessmentPeriods = () => {
                 formFields: formFields({ options: { renstras: renstras } }),
                 data: { ...record, tanggal_mulai: dayjs(record.tanggal_mulai), tanggal_selesai: dayjs(record.tanggal_selesai), id_renstra: record.id_renstra },
                 onSubmit: async (values) => {
-                  const { isSuccess, message } = await updateAssessmentPeriod.execute(record.id, values, token);
+                  const { isSuccess, message } = await updateAssessmentPeriod.execute(
+                    record.id,
+                    {
+                      ...values,
+                      tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DD'),
+                      tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DD')
+                    },
+                    token
+                  );
                   if (isSuccess) {
                     success('Berhasil', message);
                     fetchAssessmentPeriods({ token: token, page: pagination.page, per_page: pagination.per_page });
@@ -151,6 +159,8 @@ const AssessmentPeriods = () => {
       onSubmit: async (values) => {
         const payload = {
           ...values,
+          tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DD'),
+          tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DD'),
           id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
         };
         const { isSuccess, message } = await storeAssessmentPeriod.execute(payload, token);

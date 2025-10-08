@@ -23,7 +23,12 @@ export const formFields = ({ options }) => [
         message: `Tanggal mulai harus diisi`
       }
     ],
-    size: 'large'
+    size: 'large',
+    props: {
+      format: 'YYYY-MM-DD',
+      disabledTime: true,
+      showTime: false
+    }
   },
   {
     label: `Tanggal Selesai`,
@@ -35,7 +40,12 @@ export const formFields = ({ options }) => [
         message: `Tanggal selesai harus diisi`
       }
     ],
-    size: 'large'
+    size: 'large',
+    props: {
+      format: 'YYYY-MM-DD',
+      disabledTime: true,
+      showTime: false
+    }
   },
   {
     label: `Rencana Strategi`,

@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { AbsenceService, UserService, HarianService } from '@/services';
-import { Card, List, Skeleton, Space, Tag, Button } from 'antd';
+import { AbsenceService, UserService } from '@/services';
+import { Card, Skeleton, Space, Tag, Button } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import React from 'react';
 import { Absence as AbsenceModel } from '@/models';
@@ -43,7 +43,7 @@ const Absence = () => {
   const [filterValues, setFilterValues] = React.useState({ search: '' });
   const pagination = usePagination({ totalData: getAllAbsence.totalData });
   const [users, setUsers] = React.useState([]);
-  
+
   // Fungsi untuk navigasi ke halaman data harian
   const navigateToHarian = (userId, date) => {
     // Navigasi ke halaman data harian dengan parameter user_id dan date
@@ -84,8 +84,6 @@ const Absence = () => {
   }, [getUsersByUnit.data]);
 
   const absences = getAllAbsence.data ?? [];
-  
-
 
   const column = [
     {
@@ -126,11 +124,11 @@ const Absence = () => {
             model={AbsenceModel}
             onClick={() => {
               modal.edit({
-                title: "Ubah Absensi",
+                title: 'Ubah Absensi',
                 formFields: formFields({ options: { users } }),
                 data: { ...record, tanggal: dayjs(record.tanggal) },
                 onSubmit: async (values) => {
-                  const { isSuccess, message } = await updateAbsence.execute(record.id, { ...values, id_unit: user.unor.id }, token);
+                  const { isSuccess, message } = await updateAbsence.execute(record.id, { ...values, id_unit: user.unor.id, tanggal: values.tanggal.format('YYYY-MM-DD') }, token);
                   if (isSuccess) {
                     success('Berhasil', message);
                     fetchAbsence();
@@ -147,7 +145,7 @@ const Absence = () => {
             model={AbsenceModel}
             onClick={() => {
               modal.delete.default({
-                title: "Delete Absensi",
+                title: 'Delete Absensi',
                 data: record,
                 onSubmit: async () => {
                   const { isSuccess, message } = await deleteAbsence.execute(record.id, token);
@@ -194,13 +192,7 @@ const Absence = () => {
               });
             }}
           />
-          <Button 
-            type="text" 
-            size="small"
-            icon={<CalendarOutlined />}
-            title="Aksi Harian"
-            onClick={() => navigateToHarian(record.id_user, record.tanggal)}
-          />
+          <Button type="text" size="small" icon={<CalendarOutlined />} title="Aksi Harian" onClick={() => navigateToHarian(record.id_user, record.tanggal)} />
         </Space>
       )
     });
@@ -208,10 +200,16 @@ const Absence = () => {
 
   const onCreate = () => {
     modal.create({
-      title: "Tambah Absensi",
+      title: 'Tambah Absensi',
       formFields: formFields({ options: { users } }),
       onSubmit: async (values) => {
-        const { isSuccess, message } = await storeAbsence.execute({ ...values, id_unit: user.unor.id }, token);
+        const formatted = {
+          ...values,
+          tanggal: values.tanggal.format('YYYY-MM-DD'),
+          id_unit: user.unor.id
+        };
+
+        const { isSuccess, message } = await storeAbsence.execute(formatted, token);
         if (isSuccess) {
           success('Berhasil', message);
           fetchAbsence();
@@ -228,13 +226,7 @@ const Absence = () => {
       <DataTableHeader modul="Absensi" onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllAbsence.isLoading}>
-          <DataTable 
-            data={absences} 
-            columns={column} 
-            loading={getAllAbsence.isLoading} 
-            map={(absence) => ({ key: absence.id, ...absence })} 
-            pagination={pagination} 
-          />
+          <DataTable data={absences} columns={column} loading={getAllAbsence.isLoading} map={(absence) => ({ key: absence.id, ...absence })} pagination={pagination} />
         </Skeleton>
       </div>
     </Card>

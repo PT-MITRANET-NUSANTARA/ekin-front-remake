@@ -1,5 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-unknown-property */
+/* eslint-disable no-unused-vars */
 import React, { useRef, useState, useEffect } from 'react';
-import { Card, Button, Typography, Divider, Row, Col, Skeleton } from 'antd';
+import { Card, Button, Typography, Skeleton } from 'antd';
 import { PrinterOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import { useAuth, useService, useNotification } from '@/hooks';
@@ -25,12 +28,12 @@ const SkpDownload = () => {
       // Pastikan abortController tidak undefined
       const options = abortController ? { token, id, signal: abortController.signal } : { token, id };
       const response = await fetchSkp(options);
-      
+
       // Periksa apakah request sudah dibatalkan
       if (abortController && abortController.signal.aborted) {
         return;
       }
-      
+
       if (response && response.isSuccess) {
         setSkpData(response.data);
         setBawahan(response.data.posjab[response.data.posjab.length - 1]);
@@ -55,10 +58,10 @@ const SkpDownload = () => {
   useEffect(() => {
     // Buat AbortController untuk membatalkan request jika komponen unmount
     const abortController = new AbortController();
-    
+
     // Panggil fungsi fetch dengan AbortController
     fetchSkpData(abortController);
-    
+
     // Cleanup function untuk membatalkan request jika komponen unmount
     return () => {
       abortController.abort();
@@ -114,11 +117,7 @@ const SkpDownload = () => {
       {
         id: 1,
         name: 'Berorientasi Pelayanan',
-        isi: [
-          'Memahami dan memenuhi kebutuhan masyarakat',
-          'Ramah, cekatan, solutif, dan dapat diandalkan',
-          'Melakukan perbaikan tiada henti'
-        ]
+        isi: ['Memahami dan memenuhi kebutuhan masyarakat', 'Ramah, cekatan, solutif, dan dapat diandalkan', 'Melakukan perbaikan tiada henti']
       },
       {
         id: 2,
@@ -138,15 +137,10 @@ const SkpDownload = () => {
 
   return (
     <div>
-      <Card 
-        title="Sasaran Kinerja Pegawai" 
+      <Card
+        title="Sasaran Kinerja Pegawai"
         extra={
-          <Button 
-            type="primary" 
-            icon={<PrinterOutlined />} 
-            onClick={handlePrint}
-            disabled={loading}
-          >
+          <Button type="primary" icon={<PrinterOutlined />} onClick={handlePrint} disabled={loading}>
             Cetak
           </Button>
         }
@@ -156,219 +150,209 @@ const SkpDownload = () => {
           <Skeleton active paragraph={{ rows: 10 }} />
         ) : (
           <div className="print-content" ref={printRef}>
-          <div className="title-wrapper" style={{ textAlign: 'center', marginBottom: 30 }}>
-            <Title level={3}>SASARAN KINERJA PEGAWAI</Title>
-            <Title level={3}>PENDEKATAN HASIL KERJA KUANTITATIF</Title>
-            <Title level={3}>BAGI PEJABAT ADMINISTRASI DAN PEJABAT FUNGSIONAL</Title>
-          </div>
+            <div className="title-wrapper" style={{ textAlign: 'center', marginBottom: 30 }}>
+              <Title level={3}>SASARAN KINERJA PEGAWAI</Title>
+              <Title level={3}>PENDEKATAN HASIL KERJA KUANTITATIF</Title>
+              <Title level={3}>BAGI PEJABAT ADMINISTRASI DAN PEJABAT FUNGSIONAL</Title>
+            </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-            <Text>PEMERINTAH KAB. POHUWATO</Text>
-          </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+              <Text>PEMERINTAH KAB. POHUWATO</Text>
+            </div>
 
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
-            <tbody>
-              <tr>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NO</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }} colSpan={2}>PEGAWAI YANG DINILAI</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NO</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }} colSpan={2}>PEGAWAI PENILAI KINERJA</td>
-              </tr>
-              <tr>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>1</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NAMA</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{bawahan?.nama_asn}</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>1</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NAMA</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{atasan?.nama_asn}</td>
-              </tr>
-              <tr>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>2</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NIP</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{bawahan?.nip_asn}</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>2</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NIP</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{atasan?.nip_asn}</td>
-              </tr>
-              <tr>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>4</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>JABATAN</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{bawahan?.nama_jabatan}</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>4</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>JABATAN</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{atasan?.nama_jabatan}</td>
-              </tr>
-              <tr>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>5</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>UNIT KERJA</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{bawahan?.unor.nama}</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>5</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>UNIT KERJA</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{atasan?.unor.nama}</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
-            <tbody>
-              <tr>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>NO</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>RENCANA HASIL KERJA PIMPINAN YANG DIINTERVENSI</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>RENCANA HASIL KERJA</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>ASPEK</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>INDKATOR KINERJA INDIVIDU</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>TARGET/SESUAI EKSPEKTASI</td>
-              </tr>
-              <tr>
-                    <td colSpan={6} style={{ border: '1px solid #000', padding: 8, textAlign: 'left' }}>
-                      Utama
-                    </td>
-                  </tr>
-              {skpData.rhk?.filter(rhk => rhk.jenis === 'UTAMA').map((rhk, rhkIndex) => (
-                <React.Fragment key={rhk.id}>
-                  <tr>
-                    <td 
-                      style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }} 
-                      rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}
-                    >
-                      {rhkIndex + 1}
-                    </td>
-                    <td 
-                      style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }} 
-                      rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-                        <p>{rhk.desc}</p>
-                      </div>
-                    </td>
-                    <td 
-                      style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }} 
-                      rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-                        <p>{rhk.desc}</p>
-                        <span>{rhk.klasifikasi}</span>
-                      </div>
-                    </td>
-                    <td colSpan={3} style={{ border: '1px solid #000', padding: 8 }}></td>
-                  </tr>
-                  {rhk.aspek?.map((aspek) => (
-                    <tr key={aspek.id}>
-                      <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{aspek.jenis}</td>
-                      <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-                          <p>{aspek.indikator?.name || ''}</p>
-                        </div>
-                      </td>
-                      <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>
-                        {aspek.target_tahunan?.target + aspek.target_tahunan?.satuan || ''}
-                      </td>
-                    </tr>
-                  ))}
-                </React.Fragment>
-              ))}
-              <tr>
-                <td colSpan={6} style={{ border: '1px solid #000', padding: 8, textAlign: 'left' }}>
-                  Tambahan
-                </td>
-              </tr>
-               {skpData.rhk?.filter(rhk => rhk.jenis === 'TAMBAHAN').map((rhk, rhkIndex) => (
-                <React.Fragment key={rhk.id}>
-                  <tr>
-                    <td 
-                      style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }} 
-                      rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}
-                    >
-                      {rhkIndex + 1}
-                    </td>
-                    <td 
-                      style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }} 
-                      rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-                        <p>{rhk.desc}</p>
-                      </div>
-                    </td>
-                    <td 
-                      style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }} 
-                      rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-                        <p>{rhk.desc}</p>
-                        <span>{rhk.klasifikasi}</span>
-                      </div>
-                    </td>
-                    <td colSpan={3} style={{ border: '1px solid #000', padding: 8 }}></td>
-                  </tr>
-                  {rhk.aspek?.map((aspek) => (
-                    <tr key={aspek.id}>
-                      <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{aspek.jenis}</td>
-                      <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
-                          <p>{aspek.indikator?.name || ''}</p>
-                        </div>
-                      </td>
-                      <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>
-                        {aspek.target_tahunan?.target + aspek.target_tahunan?.satuan || ''}
-                      </td>
-                    </tr>
-                  ))}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
-            <tbody>
-              <tr>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>NO</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>PERILAKU KERJA</td>
-                <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>EKSPEKTASI KHUSUS PIMPINAN</td>
-              </tr>
-              {skpData.perilaku_id.map((perilaku, index) => (
-                <tr key={perilaku.id}>
-                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{index + 1}</td>
-                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left' }}>
-                    <div>
-                      <b>{perilaku.name}</b>
-                      <ol style={{ listStyleType: 'decimal', listStylePosition: 'inside', paddingLeft: '20px' }}>
-                        {perilaku.content.map((item, itemIndex) => (
-                          <li key={itemIndex}>{item}</li>
-                        ))}
-                      </ol>
-                    </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
+              <tbody>
+                <tr>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NO</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }} colSpan={2}>
+                    PEGAWAI YANG DINILAI
                   </td>
-                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{perilaku.ekspetasi}</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NO</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }} colSpan={2}>
+                    PEGAWAI PENILAI KINERJA
+                  </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+                <tr>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>1</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NAMA</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{bawahan?.nama_asn}</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>1</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NAMA</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{atasan?.nama_asn}</td>
+                </tr>
+                <tr>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>2</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NIP</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{bawahan?.nip_asn}</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>2</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>NIP</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{atasan?.nip_asn}</td>
+                </tr>
+                <tr>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>4</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>JABATAN</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{bawahan?.nama_jabatan}</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>4</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>JABATAN</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{atasan?.nama_jabatan}</td>
+                </tr>
+                <tr>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>5</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>UNIT KERJA</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{bawahan?.unor.nama}</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>5</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>UNIT KERJA</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{atasan?.unor.nama}</td>
+                </tr>
+              </tbody>
+            </table>
 
-          <table style={{ width: '100%', marginTop: '50px' }}>
-            <tbody>
-              <tr>
-                <td style={{ width: '50%', textAlign: 'center' }}>Pegawai YANG DINILAI</td>
-                <td style={{ width: '50%', textAlign: 'center' }}>Pejabat PENILAI KINERJA</td>
-              </tr>
-              <tr>
-                <td style={{ height: '100px' }}></td>
-                <td style={{ height: '100px' }}></td>
-              </tr>
-              <tr>
-                <td style={{ textAlign: 'center' }}><b>{bawahan.nama_jabatan}</b></td>
-                <td style={{ textAlign: 'center' }}><b>{atasan.nama_jabatan}</b></td>
-              </tr>
-              <tr>
-                <td style={{ textAlign: 'center' }}>{bawahan.nama_asn}</td>
-                <td style={{ textAlign: 'center' }}>{atasan.nama_asn}</td>
-              </tr>
-              <tr>
-                <td style={{ textAlign: 'center' }}>{bawahan.nip_asn}</td>
-                <td style={{ textAlign: 'center' }}>{atasan.nip_asn}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
+              <tbody>
+                <tr>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>NO</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>RENCANA HASIL KERJA PIMPINAN YANG DIINTERVENSI</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>RENCANA HASIL KERJA</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>ASPEK</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>INDKATOR KINERJA INDIVIDU</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>TARGET/SESUAI EKSPEKTASI</td>
+                </tr>
+                <tr>
+                  <td colSpan={6} style={{ border: '1px solid #000', padding: 8, textAlign: 'left' }}>
+                    Utama
+                  </td>
+                </tr>
+                {skpData.rhk
+                  ?.filter((rhk) => rhk.jenis === 'UTAMA')
+                  .map((rhk, rhkIndex) => (
+                    <React.Fragment key={rhk.id}>
+                      <tr>
+                        <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }} rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}>
+                          {rhkIndex + 1}
+                        </td>
+                        <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }} rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
+                            <p>{rhk.desc}</p>
+                          </div>
+                        </td>
+                        <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }} rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
+                            <p>{rhk.desc}</p>
+                            <span>{rhk.klasifikasi}</span>
+                          </div>
+                        </td>
+                        <td colSpan={3} style={{ border: '1px solid #000', padding: 8 }}></td>
+                      </tr>
+                      {rhk.aspek?.map((aspek) => (
+                        <tr key={aspek.id}>
+                          <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{aspek.jenis}</td>
+                          <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
+                              <p>{aspek.indikator?.name || ''}</p>
+                            </div>
+                          </td>
+                          <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{aspek.target_tahunan?.target + aspek.target_tahunan?.satuan || ''}</td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                <tr>
+                  <td colSpan={6} style={{ border: '1px solid #000', padding: 8, textAlign: 'left' }}>
+                    Tambahan
+                  </td>
+                </tr>
+                {skpData.rhk
+                  ?.filter((rhk) => rhk.jenis === 'TAMBAHAN')
+                  .map((rhk, rhkIndex) => (
+                    <React.Fragment key={rhk.id}>
+                      <tr>
+                        <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }} rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}>
+                          {rhkIndex + 1}
+                        </td>
+                        <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }} rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
+                            <p>{rhk.desc}</p>
+                          </div>
+                        </td>
+                        <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }} rowSpan={rhk.aspek ? rhk.aspek.length + 1 : 1}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
+                            <p>{rhk.desc}</p>
+                            <span>{rhk.klasifikasi}</span>
+                          </div>
+                        </td>
+                        <td colSpan={3} style={{ border: '1px solid #000', padding: 8 }}></td>
+                      </tr>
+                      {rhk.aspek?.map((aspek) => (
+                        <tr key={aspek.id}>
+                          <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{aspek.jenis}</td>
+                          <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left', maxWidth: '12rem' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', textAlign: 'left' }}>
+                              <p>{aspek.indikator?.name || ''}</p>
+                            </div>
+                          </td>
+                          <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{aspek.target_tahunan?.target + aspek.target_tahunan?.satuan || ''}</td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+              </tbody>
+            </table>
+
+            <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: 20 }}>
+              <tbody>
+                <tr>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>NO</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>PERILAKU KERJA</td>
+                  <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center', fontWeight: 'bold' }}>EKSPEKTASI KHUSUS PIMPINAN</td>
+                </tr>
+                {skpData.perilaku_id.map((perilaku, index) => (
+                  <tr key={perilaku.id}>
+                    <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{index + 1}</td>
+                    <td style={{ border: '1px solid #000', padding: 8, textAlign: 'left' }}>
+                      <div>
+                        <b>{perilaku.name}</b>
+                        <ol style={{ listStyleType: 'decimal', listStylePosition: 'inside', paddingLeft: '20px' }}>
+                          {perilaku.content.map((item, itemIndex) => (
+                            <li key={itemIndex}>{item}</li>
+                          ))}
+                        </ol>
+                      </div>
+                    </td>
+                    <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{perilaku.ekspetasi}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <table style={{ width: '100%', marginTop: '50px' }}>
+              <tbody>
+                <tr>
+                  <td style={{ width: '50%', textAlign: 'center' }}>Pegawai YANG DINILAI</td>
+                  <td style={{ width: '50%', textAlign: 'center' }}>Pejabat PENILAI KINERJA</td>
+                </tr>
+                <tr>
+                  <td style={{ height: '100px' }}></td>
+                  <td style={{ height: '100px' }}></td>
+                </tr>
+                <tr>
+                  <td style={{ textAlign: 'center' }}>
+                    <b>{bawahan.nama_jabatan}</b>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <b>{atasan.nama_jabatan}</b>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ textAlign: 'center' }}>{bawahan.nama_asn}</td>
+                  <td style={{ textAlign: 'center' }}>{atasan.nama_asn}</td>
+                </tr>
+                <tr>
+                  <td style={{ textAlign: 'center' }}>{bawahan.nip_asn}</td>
+                  <td style={{ textAlign: 'center' }}>{atasan.nip_asn}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         )}
       </Card>
 
@@ -377,7 +361,8 @@ const SkpDownload = () => {
           body * {
             visibility: hidden;
           }
-          .print-content, .print-content * {
+          .print-content,
+          .print-content * {
             visibility: visible;
           }
           .print-content {
@@ -392,7 +377,10 @@ const SkpDownload = () => {
             size: A4 landscape;
             margin: 1.5cm;
           }
-          table, tr, td, th {
+          table,
+          tr,
+          td,
+          th {
             page-break-inside: avoid;
           }
           table {

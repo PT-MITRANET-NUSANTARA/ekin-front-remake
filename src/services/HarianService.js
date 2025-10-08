@@ -15,11 +15,11 @@ export default class HarianService {
    * */
   static async getAll(token, params = {}) {
     const queryParams = {};
-    
+
     // Add user_id and date to query params if they exist
     if (params.user_id) queryParams.user_id = params.user_id;
     if (params.date) queryParams.date = params.date;
-    
+
     const response = await api.get('/harian', { token, params: queryParams });
     if (!response.data) return response;
     return { ...response, data: response.data };

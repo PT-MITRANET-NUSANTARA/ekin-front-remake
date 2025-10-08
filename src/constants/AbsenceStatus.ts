@@ -4,5 +4,5 @@ export enum AbsenceStatus {
   IZIN = 'IZIN',
   ALPHA = 'ALPHA',
   TANPA_KETERANGAN = 'TANPA_KETERANGAN',
-  DINAS = 'DINAS',
+  DINAS = 'DINAS'
 }

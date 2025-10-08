@@ -281,7 +281,7 @@ const Skps = () => {
                         </Button>
                         <Button
                           className="w-fit"
-                          variant="outline"
+                          variant="solid"
                           color="primary"
                           icon={<DownloadOutlined />}
                           onClick={() => {
