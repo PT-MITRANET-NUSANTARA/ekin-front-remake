@@ -1,7 +1,7 @@
 import * as Auth from '@/pages/auth';
 import * as Dashboard from '@/pages/dashboard';
 import * as Landing from '@/pages/landing';
-import { CheckCircleOutlined, CheckSquareOutlined, ClusterOutlined, DashboardOutlined, DatabaseOutlined, FileProtectOutlined, SettingOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { CalendarOutlined, CheckCircleOutlined, CheckSquareOutlined, ClusterOutlined, DashboardOutlined, DatabaseOutlined, FileProtectOutlined, ScheduleOutlined, SettingOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 
 export const landingLink = [
   {
@@ -94,6 +94,18 @@ export const dashboardLink = [
     ]
   },
   {
+    path: '/dashboard/skp-download/:id',
+    label: 'Download SKP',
+    element: Dashboard.SkpDownload,
+    permissions: ['lihat_dashboard']
+  },
+  {
+    path: '/dashboard/perjanjian-kinerja-template',
+    label: 'Template Perjanjian Kinerja',
+    element: Dashboard.PerjanjianKinerjaTemplate,
+    permissions: ['lihat_dashboard']
+  },
+  {
     label: 'Rencana Kerja Tahunan',
     icon: ClusterOutlined,
     children: [
@@ -136,6 +148,20 @@ export const dashboardLink = [
     path: '/dashboard/verificate_perjanjian_kinerja',
     element: Dashboard.VerificatePerjanjianKinerjas,
     permissions: ['manage_verificate']
+  },
+  {
+    label: 'Kegiatan Harian',
+    icon: CalendarOutlined,
+    path: '/dashboard/harian',
+    element: Dashboard.Harian,
+    permissions: ['lihat_dashboard']
+  },
+  {
+    label: 'Absensi',
+    icon: ScheduleOutlined,
+    path: '/dashboard/absence',
+    element: Dashboard.Absence,
+    permissions: ['lihat_dashboard']
   }
 ];
 

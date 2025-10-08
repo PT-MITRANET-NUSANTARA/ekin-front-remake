@@ -6,9 +6,11 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { aspekFormFields, lampiranFormFields, rhkFormFields } from './FormFields';
 import { lampiranColumn, perilakuColumns, RhkColumn } from './Columns';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DownloadOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 
 const DetailSkp = () => {
+  const navigate = useNavigate();
   const { token, user } = useAuth();
   const { id } = useParams();
   const modal = useCrudModal();
@@ -184,6 +186,14 @@ const DetailSkp = () => {
       <div className="mt-4 flex w-full items-center justify-between">
         <div className="inline-flex items-center gap-x-2"></div>
         <div className="inline-flex items-center gap-x-2">
+          <Button 
+            variant="solid" 
+            color="primary" 
+            icon={<DownloadOutlined />}
+            onClick={() => navigate(`/dashboard/skp-download/${id}`)}
+          >
+            Download SKP
+          </Button>
           <Popconfirm title="Apakah anda yakin ingin mengajukan SKP?" onConfirm={() => handleAjukanSkp(detailSkp)}>
             <Button variant="solid" color="primary" disabled={detailSkp.status !== 'DRAFT'}>
               Ajukan SKP

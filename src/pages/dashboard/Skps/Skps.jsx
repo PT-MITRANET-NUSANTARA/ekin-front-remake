@@ -2,7 +2,7 @@ import { DataTableHeader } from '@/components';
 import Modul from '@/constants/Modul';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { PerjanjianKinerjaService, RenstrasService, SkpsService, UnitKerjaService } from '@/services';
-import { CheckCircleFilled, CheckSquareOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, PaperClipOutlined, TableOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CheckSquareOutlined, DeleteOutlined, DownloadOutlined, EditOutlined, InfoCircleOutlined, PaperClipOutlined, TableOutlined, UserSwitchOutlined } from '@ant-design/icons';
 import { Alert, Badge, Button, Card, Descriptions, Skeleton } from 'antd';
 import React from 'react';
 import { formFields, perjanjianKinerjaFormFields, skpFilterFields } from './FormFields';
@@ -249,35 +249,48 @@ const Skps = () => {
                       ))}
                       {!item.perjanjian_kinerja.length && <Alert message="Mohon upload perjanjian kinerja terlebih dahulu" type="warning" showIcon />}
                       <hr />
-                      <Button
-                        className="w-fit"
-                        variant="solid"
-                        color="primary"
-                        onClick={() => {
-                          modal.create({
-                            title: `Tambah ${Modul.PERJANJIAN_KINERJA}`,
-                            formFields: perjanjianKinerjaFormFields,
-                            onSubmit: async (values) => {
-                              const { isSuccess, message } = await storePerjanjianKinerja.execute({ ...values, unit_id: item.posjab[0].unor.induk.id_simpeg, unor_id: item.posjab[0].unor.id, skp_id: item.id }, token, values.file.file);
-                              if (isSuccess) {
-                                success('Berhasil', message);
-                                execute({
-                                  token,
-                                  user_id: user.newNip,
-                                  page: pagination.page,
-                                  per_page: pagination.per_page,
-                                  search: filterValues.search
-                                });
-                              } else {
-                                error('Gagal', message);
+                      <div className="flex gap-x-2">
+                        <Button
+                          className="w-fit"
+                          variant="solid"
+                          color="primary"
+                          onClick={() => {
+                            modal.create({
+                              title: `Tambah ${Modul.PERJANJIAN_KINERJA}`,
+                              formFields: perjanjianKinerjaFormFields,
+                              onSubmit: async (values) => {
+                                const { isSuccess, message } = await storePerjanjianKinerja.execute({ ...values, unit_id: item.posjab[0].unor.induk.id_simpeg, unor_id: item.posjab[0].unor.id, skp_id: item.id }, token, values.file.file);
+                                if (isSuccess) {
+                                  success('Berhasil', message);
+                                  execute({
+                                    token,
+                                    user_id: user.newNip,
+                                    page: pagination.page,
+                                    per_page: pagination.per_page,
+                                    search: filterValues.search
+                                  });
+                                } else {
+                                  error('Gagal', message);
+                                }
+                                return isSuccess;
                               }
-                              return isSuccess;
-                            }
-                          });
-                        }}
-                      >
-                        Tambah
-                      </Button>
+                            });
+                          }}
+                        >
+                          Tambah
+                        </Button>
+                        <Button
+                          className="w-fit"
+                          variant="outline"
+                          color="primary"
+                          icon={<DownloadOutlined />}
+                          onClick={() => {
+                            navigate('/dashboard/perjanjian-kinerja-template');
+                          }}
+                        >
+                          Template
+                        </Button>
+                      </div>
                     </div>
                   </Descriptions.Item>
                 )}

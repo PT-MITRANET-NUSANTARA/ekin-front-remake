@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        @page {
+            margin-top: 2cm;
+            margin-bottom: 2cm;
+            margin-left: 2cm;
+            margin-right: 2cm;
+        }
+
+        body {
+            font-family: 'Helvetica', sans-serif;
+            margin: 0;
+        }
+
+        * {
+            font-size: 12px;
+        }
+
+        /* Cover Page Styles */
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            page-break-after: always;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 2rem;
+        }
+
+        .cover-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            margin: 1rem 0;
+        }
+
+        .cover-year {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin: 1rem 0;
+        }
+
+        .cover-unit {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 2rem 0;
+            padding: 2rem 0;
+        }
+
+        .cover-location {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 2rem 0;
+            padding: 2rem 0;
+        }
+
+        /* Content Page Styles */
+        .content-page {
+            page-break-before: always;
+            page-break-after: always;
+        }
+
+        .content-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .content-header .logo-small {
+            width: 80px;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+
+        .content-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            margin: 0.5rem 0;
+        }
+
+        .content-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin: 0.5rem 0;
+        }
+
+        /* Tables Page Styles */
+        .tables-page {
+            page-break-before: always;
+        }
+
+        .tables-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #333;
+            padding-bottom: 1rem;
+        }
+
+        .tables-header .logo-small {
+            width: 80px;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+
+        .tables-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            margin: 0.5rem 0;
+        }
+
+        .tables-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin: 0.5rem 0;
+        }
+
+        .heading-1 {
+            text-align: center;
+        }
+
+        .heading-2 {
+            margin-bottom: 0;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        .paragraf {
+            text-align: justify;
+            text-indent: 25px;
+            line-height: 2em;
+            margin: 1rem 0;
+        }
+
+        .number-list {
+            list-style-type: decimal;
+            margin-left: 25px;
+            padding: 0px;
+            line-height: 2em;
+        }
+
+        .number-list li {
+            text-align: justify;
+        }
+
+        .table-sasaran {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .table-sasaran th,
+        .table-sasaran td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table-sasaran th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .table-evaluasi {
+            width: 100%;
+            margin-top: 1.5rem;
+            border-collapse: collapse;
+        }
+
+        .table-evaluasi td {
+            width: 50%;
+            padding: 3rem 0;
+        }
+
+        .table-evaluasi .header-row td {
+            padding: 0.5rem;
+            border: none;
+            text-align: left;
+        }
+
+        .table-evaluasi .title-row td {
+            padding: 0.5rem;
+            border: none;
+        }
+
+        .table-evaluasi .name-row td,
+        .table-evaluasi .id-row td {
+            padding: 0.5rem;
+            border: none;
+        }
+
+        .details {
+            margin-top: 1rem;
+            text-align: left;
+            line-height: 1.5em;
+        }
+
+        .details p {
+            margin: 0.5em 0;
+        }
+
+        .details table {
+            border: none;
+        }
+
+        .details table td {
+            border: none;
+            padding: 2px 0;
+        }
+
+        .program-table {
+            width: 100%;
+            margin-bottom: 4rem;
+            border-collapse: collapse;
+        }
+
+        .program-table thead tr {
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .program-table td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        .program-table th {
+            padding: 8px;
+            text-align: center;
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+    </style>
+
+</head>
+
+<body>
+    <!-- Page 1: Cover Page -->
+    <div class="cover-page">
+        <img src="data:image/jpeg;base64,{{logo_base64}}" alt="Logo Kabupaten Pohuwato" class="logo">
+        <div class="cover-title">PERJANJIAN KINERJA</div>
+        <div class="cover-year">{{tahun}}</div>
+        <div class="cover-unit">{{unit.nama_unor}}</div>
+        <div class="cover-location">KABUPATEN POHUWATO</div>
+    </div>
+
+    <!-- Page 2: Content Page -->
+    <div class="content-page">
+        <!-- Header with Logo -->
+        <div class="content-header">
+            <img src="data:image/jpeg;base64,{{logo_base64}}" alt="Logo Kabupaten Pohuwato" class="logo-small">
+            <h1>PERJANJIAN KINERJA {{tahun}}</h1>
+            <h2>{{unit.nama_unor}} - KABUPATEN POHUWATO</h2>
+        </div>
+
+        <p class="paragraf">
+            Dalam rangka mewujudkan manajemen pemerintahan yang efektif, transparan, dan akuntabel serta berorientasi
+            pada hasil, kami yang bertanda tangan dibawah ini :
+        </p>
+        
+        <div class="details">
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="vertical-align: top; width: 80px">Nama </td>
+                        <td>: {{nama_pihak_pertama}}</td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top; width: 80px">Jabatan</td>
+                        <td>: {{jabatan_pihak_pertama}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 1rem">Selanjutnya disebut Pihak Pertama</p>
+            
+            <table>
+                <tbody>
+                    <tr>
+                        <td style="vertical-align: top; width: 80px">Nama </td>
+                        <td>: {{nama_pihak_kedua}}</td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top; width: 80px">Jabatan</td>
+                        <td>: {{jabatan_pihak_kedua}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 1rem">Selaku atasan langsung pihak pertama, selanjutnya disebut Pihak Kedua</p>
+        </div>
+
+        <p class="paragraf">
+            Pihak pertama berjanji akan mewujudkan target kinerja yang seharusnya sesuai lampiran perjanjian ini, dalam
+            rangka mencapai target kinerja jangka menengah seperti yang telah ditetapkan dalam dokumen perencanaan.
+            Keberhasilan dan kegagalan pencapaian target kinerja tersebut menjadi tanggung jawab kami.
+        </p>
+
+        <p class="paragraf">
+            Pihak kedua akan melakukan supervisi yang diperlukan serta akan melakukan evaluasi terhadap capaian kinerja
+            dari perjanjian ini dan mengambil tindakan yang diperlukan dalam rangka pemberian penghargaan dan sanksi.
+        </p>
+
+        <!-- Signature Table for Content Page -->
+        <table class="table-evaluasi">
+            <tbody>
+                <tr class="header-row">
+                    <td>Pegawai yang dinilai</td>
+                    <td>Pejabat penilai kinerja</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="title-row">
+                    <td>{{jabatan_pihak_pertama}}</td>
+                    <td>{{jabatan_pihak_kedua}}</td>
+                </tr>
+                <tr class="name-row">
+                    <td>{{nama_pihak_pertama}}</td>
+                    <td>{{nama_pihak_kedua}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Page 3: Tables Page -->
+    <div class="tables-page">
+        <!-- Header with Logo -->
+        <div class="tables-header">
+            <img src="data:image/jpeg;base64,{{logo_base64}}" alt="Logo Kabupaten Pohuwato" class="logo-small">
+            <h1>LAMPIRAN PERJANJIAN KINERJA {{tahun}}</h1>
+            <h2>{{unit.nama_unor}} - KABUPATEN POHUWATO</h2>
+        </div>
+
+        <!-- Sasaran Strategis Table -->
+        <table class="table-sasaran">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Sasaran Strategis</th>
+                    <th>Indikator Kinerja</th>
+                    <th>Target (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each programs}}
+                    {{#if tujuan}}
+                        {{#each tujuan.indikator_kinerja}}
+                            <tr>
+                                {{#if @first}}
+                                    <td rowspan="{{../tujuan.indikator_kinerja.length}}">{{add @../index 1}}</td>
+                                    <td rowspan="{{../tujuan.indikator_kinerja.length}}">{{../tujuan.description}}</td>
+                                {{/if}}
+                                <td>{{name}}</td>
+                                <td>{{target}} {{satuan}}</td>
+                            </tr>
+                        {{else}}
+                            <tr>
+                                <td>{{add @index 1}}</td>
+                                <td>{{tujuan.description}}</td>
+                                <td colspan="2">No indicators found</td>
+                            </tr>
+                        {{/each}}
+                    {{else}}
+                        <tr>
+                            <td>{{add @index 1}}</td>
+                            <td>{{name}}</td>
+                            <td colspan="2">No tujuan data</td>
+                        </tr>
+                    {{/if}}
+                {{/each}}
+            </tbody>
+        </table>
+
+        <!-- Program Table -->
+        <table class="program-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>PROGRAM</th>
+                    <th>ANGGARAN</th>
+                    <th>KET</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each programs}}
+                    <tr>
+                        <td>{{add @index 1}}</td>
+                        <td>{{name}}</td>
+                        <td>Rp. {{total_anggaran}}</td>
+                        <td>APBD</td>
+                    </tr>
+                {{/each}}
+            </tbody>
+        </table>
+
+        <!-- Signature Table for Tables Page -->
+        <table class="table-evaluasi">
+            <tbody>
+                <tr class="header-row">
+                    <td>Pegawai yang dinilai</td>
+                    <td>Pejabat penilai kinerja</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="title-row">
+                    <td>{{jabatan_pihak_pertama}}</td>
+                    <td>{{jabatan_pihak_kedua}}</td>
+                </tr>
+                <tr class="name-row">
+                    <td>{{nama_pihak_pertama}}</td>
+                    <td>{{nama_pihak_kedua}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html> 
