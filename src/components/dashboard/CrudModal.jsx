@@ -7,7 +7,7 @@ import TextArea from 'antd/es/input/TextArea';
 import Dragger from 'antd/es/upload/Dragger';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { MapPicker, Select } from './input';
+import { MapPicker, Select, SelectWithParent } from './input';
 import { debounce } from 'lodash';
 import { useAuth } from '@/hooks';
 
@@ -105,6 +105,9 @@ export default function CrudModal({ isModalOpen, data: initialData, close, title
 
       case InputType.SELECT_FETCH:
         return <Select showSearch placeholder={`Cari ${field.label}`} filterOption={false} onSearch={(value) => handleSearch(value, field)} options={searchOptions} />;
+
+      case InputType.SELECT_WITH_PARENT:
+        return <SelectWithParent form={form} field={field} parentName={field.parentName} fetchOptions={field.fetchOptions} mapOptions={field.mapOptions} readOnly={field.readOnly} />;
 
       case InputType.SELECT_LOGO:
         return (

@@ -8,6 +8,7 @@ import TextArea from 'antd/es/input/TextArea';
 import Dragger from 'antd/es/upload/Dragger';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { SelectWithParent } from './input';
 
 const Crud = ({ formFields, initialData, onSubmit = () => {}, type = '', isLoading }) => {
   const [form] = Form.useForm();
@@ -58,6 +59,9 @@ const Crud = ({ formFields, initialData, onSubmit = () => {}, type = '', isLoadi
 
       case InputType.SELECT:
         return <Select placeholder="Pilih" size="large" {...field} />;
+
+      case InputType.SELECT_WITH_PARENT:
+        return <SelectWithParent form={form} field={field} parentName={field.parentName} fetchOptions={field.fetchOptions} mapOptions={field.mapOptions} readOnly={field.readOnly} />;
 
       case InputType.SELECT_LOGO:
         return (

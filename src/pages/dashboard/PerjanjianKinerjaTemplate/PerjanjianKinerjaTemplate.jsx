@@ -36,19 +36,16 @@ const PerjanjianKinerjaTemplate = () => {
 
       if (response && response.isSuccess) {
         setTemplateData(response.data);
-        setPosjab(response.data.skp.posjab[response.data.skp.posjab.length -1]);
+        setPosjab(response.data.skp.posjab[response.data.skp.posjab.length - 1]);
         if (response.data.atasan_skp) {
-        setPosjabAtasan(response.data.atasan_skp.posjab[response.data.atasan_skp.posjab.length -1]);
-          
-        }
-        else
-        {
+          setPosjabAtasan(response.data.atasan_skp.posjab[response.data.atasan_skp.posjab.length - 1]);
+        } else {
           setPosjabAtasan({
-            nama_jabatan : posjab.unor.atasan.unor_jabatan,
-            nama_unor : posjab.unor.atasan.unor_nama,
-            nama_asn : posjab.unor.atasan.asn.nama_atasan,
-            nip_asn : posjab.unor.atasan.asn.nip_atasan,
-          })
+            nama_jabatan: posjab.unor.atasan.unor_jabatan,
+            nama_unor: posjab.unor.atasan.unor_nama,
+            nama_asn: posjab.unor.atasan.asn.nama_atasan,
+            nip_asn: posjab.unor.atasan.asn.nip_atasan
+          });
         }
       } else if (response) {
         error('Gagal', response.message || 'Gagal mengambil data template');
@@ -66,8 +63,6 @@ const PerjanjianKinerjaTemplate = () => {
     }
   };
 
-  console.log(posjabAtasan);
-
   // Panggil fungsi fetch saat komponen dimuat
   useEffect(() => {
     // Buat AbortController untuk membatalkan request jika komponen unmount
@@ -81,7 +76,6 @@ const PerjanjianKinerjaTemplate = () => {
       abortController.abort();
     };
   }, [id, token]);
-
 
   // Data dummy untuk fallback jika API belum tersedia
   const dummyData = {
@@ -132,7 +126,7 @@ const PerjanjianKinerjaTemplate = () => {
   };
 
   // Use templateData if available, otherwise fallback to dummyData
-  const data =  templateData;
+  const data = templateData;
 
   return (
     <div>

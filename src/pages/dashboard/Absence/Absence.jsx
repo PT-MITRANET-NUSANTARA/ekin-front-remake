@@ -1,12 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { AbsenceService, UserService } from '@/services';
+import { AbsenceService, UnitKerjaService, UserService } from '@/services';
 import { Card, Skeleton, Space, Tag, Button } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import React from 'react';
 import { Absence as AbsenceModel } from '@/models';
 import { DataTable, DataTableHeader } from '@/components';
-import { formFields, absenceFilterFields } from './FormFields';
+import { formFields } from './FormFields';
 import dayjs from 'dayjs';
 import { AbsenceStatus } from '@/constants/AbsenceStatus';
 import { useNavigate } from 'react-router-dom';
@@ -37,50 +38,52 @@ const Absence = () => {
   const { success, error } = useNotification();
   const navigate = useNavigate();
   const { execute, ...getAllAbsence } = useService(AbsenceService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
+
   const deleteAbsence = useService(AbsenceService.delete);
   const storeAbsence = useService(AbsenceService.store);
   const updateAbsence = useService(AbsenceService.update);
-  const { execute: executeGetUsers, ...getUsersByUnit } = useService(UserService.getUsersByUnit);
+
+  const { execute: fetchUsers, ...getUsersByUnit } = useService(UserService.getUsersByUnit);
   const [filterValues, setFilterValues] = React.useState({
     search: '',
-    id_user: user?.isAdmin || user?.umpegs?.length ? '' : user?.nipBaru
+    unit_id: user?.isAdmin || user?.umpegs?.length ? [] : user?.unor.id,
+    user_id: user?.isAdmin || user?.umpegs?.length ? [] : user?.newNip
   });
   const pagination = usePagination({ totalData: getAllAbsence.totalData });
   const [users, setUsers] = React.useState([]);
 
-  // Fungsi untuk navigasi ke halaman data harian
   const navigateToHarian = (userId, date) => {
-    // Navigasi ke halaman data harian dengan parameter user_id dan date
     navigate(`/dashboard/harian?user_id=${userId}&date=${date}`);
   };
 
   const fetchAbsence = React.useCallback(() => {
     execute({
-      token: token,
+      token,
       page: pagination.page,
       per_page: pagination.per_page,
       search: filterValues.search,
-      unit_id: user ? user.unor.id : '',
-      user_id: user?.isAdmin || user?.umpegs?.length ? filterValues.id_user : user?.nipBaru
+      unit_id: user?.isAdmin || user?.umpegs?.length ? filterValues.unit_id : user?.unor.id,
+      user_id: user?.isAdmin || user?.umpegs?.length ? filterValues.id_user : user?.newNip
     });
-  }, [execute, filterValues.search, filterValues.id_user, pagination.page, pagination.per_page, token, user]);
+  }, [execute, token, pagination.page, pagination.per_page, filterValues.search, filterValues.unit_id, filterValues.id_user, user?.isAdmin, user?.umpegs?.length, user?.unor?.id, user?.newNip]);
 
-  const fetchUsers = React.useCallback(() => {
-    if (user && user.unor && user.unor.id) {
-      executeGetUsers({
-        token: token,
-        unitId: user.unor.id,
-        search: '',
-        page: 1,
-        perPage: 100
-      });
-    }
-  }, [executeGetUsers, token, user]);
+  // const fetchUsers = React.useCallback(() => {
+  //   if (user && user.unor && user.unor.id) {
+  //     executeGetUsers({
+  //       token: token,
+  //       unitId: user.unor.id,
+  //       search: '',
+  //       page: 1,
+  //       perPage: 100
+  //     });
+  //   }
+  // }, [executeGetUsers, token, user]);
 
   React.useEffect(() => {
     fetchAbsence();
-    fetchUsers();
-  }, [fetchAbsence, fetchUsers, pagination.page, pagination.per_page]);
+    fetchUnitKerja({ token: token });
+  }, [fetchAbsence, fetchUnitKerja, fetchUsers, pagination.page, pagination.per_page, token]);
 
   React.useEffect(() => {
     if (getUsersByUnit.data) {
@@ -88,6 +91,8 @@ const Absence = () => {
     }
   }, [getUsersByUnit.data]);
 
+  const unitKerja = getAllUnitKerja.data ?? [];
+  const memoizedUnitKerja = React.useMemo(() => unitKerja ?? [], [unitKerja?.length]);
   const absences = getAllAbsence.data ?? [];
 
   const column = [
@@ -206,7 +211,55 @@ const Absence = () => {
   const onCreate = () => {
     modal.create({
       title: 'Tambah Absensi',
-      formFields: formFields({ options: { users } }),
+      formFields: [
+        ...formFields(),
+        ...(user?.isAdmin || user?.umpegs?.length
+          ? [
+              {
+                label: 'Nama Unit',
+                name: 'unit_id',
+                type: InputType.SELECT,
+                rules: [
+                  {
+                    required: true,
+                    message: 'Nama Unit harus diisi'
+                  }
+                ],
+                options: user?.isAdmin
+                  ? unitKerja.map((item) => ({
+                      label: item.nama_unor,
+                      value: item.id_simpeg
+                    }))
+                  : user.umpegs.map((item) => ({
+                      label: item.unit.nama_unor,
+                      value: item.unit.id_simpeg
+                    })),
+                size: 'large'
+              },
+              {
+                label: 'NIP',
+                name: 'id_user',
+                type: InputType.SELECT_WITH_PARENT,
+                parentName: 'unit_id',
+                fetchOptions: async ({ token, parentValue }) => {
+                  const res = await fetchUsers({ token, unitId: parentValue });
+                  return res;
+                },
+                rules: [
+                  {
+                    required: true,
+                    message: 'Nama User harus diisi'
+                  }
+                ],
+                mapOptions: (item) => ({
+                  label: `${item.nip_asn} - ${item.nama_asn}`,
+                  value: item.nip_asn
+                }),
+                size: 'large'
+              }
+            ]
+          : [])
+      ],
       onSubmit: async (values) => {
         const formatted = {
           ...values,
@@ -227,42 +280,62 @@ const Absence = () => {
   };
 
   // Filter configuration
-  const filter = {
-    formFields: [
-      ...(user?.isAdmin || user?.umpegs?.length
-        ? [
-            {
-              label: `Pegawai`,
-              name: 'id_user',
-              type: InputType.SELECT,
-              options: users.map((item) => ({
-                label: `${item.nama} (${item.nip_baru})`,
-                value: item.nip_baru
-              }))
-            }
-          ]
-        : [])
-    ],
-    initialData: {
-      id_user: filterValues.id_user
-    },
-    isLoading: getAllAbsence.isLoading,
-    onSubmit: (values) => {
-      setFilterValues({
-        ...filterValues,
-        id_user: user?.isAdmin || user?.umpegs?.length ? values.id_user : user?.nipBaru
-      });
-    }
-  };
+  const filter = React.useMemo(
+    () => ({
+      formFields: [
+        ...(user?.isAdmin || user?.umpegs?.length
+          ? [
+              {
+                label: 'Nama Unit',
+                name: 'unit_id',
+                type: InputType.SELECT,
+                options: user?.isAdmin
+                  ? memoizedUnitKerja.map((item) => ({
+                      label: item.nama_unor,
+                      value: item.id_simpeg
+                    }))
+                  : user.umpegs.map((item) => ({
+                      label: item.unit.nama_unor,
+                      value: item.unit.id_simpeg
+                    }))
+              },
+              {
+                label: 'NIP',
+                name: 'id_user',
+                type: InputType.SELECT_WITH_PARENT,
+                parentName: 'unit_id',
+                fetchOptions: async ({ token, parentValue }) => {
+                  const res = await fetchUsers({ token, unitId: parentValue });
+                  return res;
+                },
+                mapOptions: (item) => ({
+                  label: `${item.nip_asn} - ${item.nama_asn}`,
+                  value: item.nip_asn
+                }),
+                size: 'large'
+              }
+            ]
+          : [])
+      ],
+      initialData: {
+        unit_id: filterValues.unit_id,
+        id_user: filterValues.id_user
+      },
+      isLoading: getAllAbsence.isLoading,
+      onSubmit: (values) => {
+        setFilterValues((prev) => ({
+          ...prev,
+          id_user: user?.isAdmin || user?.umpegs?.length ? values.id_user : user?.newNip,
+          unit_id: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user?.unor?.id
+        }));
+      }
+    }),
+    [user?.isAdmin, user.umpegs, user?.newNip, user?.unor?.id, memoizedUnitKerja, filterValues.unit_id, filterValues.id_user, getAllAbsence.isLoading, fetchUsers]
+  );
 
   return (
     <Card>
-      <DataTableHeader 
-        modul="Absensi" 
-        filter={filter} 
-        onStore={onCreate} 
-        onSearch={(values) => setFilterValues({ ...filterValues, search: values })} 
-      />
+      <DataTableHeader modul="Absensi" filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ ...filterValues, search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllAbsence.isLoading}>
           <DataTable data={absences} columns={column} loading={getAllAbsence.isLoading} map={(absence) => ({ key: absence.id, ...absence })} pagination={pagination} />

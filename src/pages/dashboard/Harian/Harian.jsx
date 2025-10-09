@@ -1,13 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth, useNotification, usePagination, useService } from '@/hooks';
-import { HarianService } from '@/services';
+import { HarianService, UnitKerjaService, UserService } from '@/services';
 import { Card, Space, Button, Skeleton, Row, Col, Form, Input, DatePicker, TimePicker, Select, Slider, Modal, Typography, Descriptions, List, Divider } from 'antd';
 import { EditOutlined, DeleteOutlined, LinkOutlined, InfoCircleOutlined, FileOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { DataTable } from '@/components';
+import { DataTable, DataTableHeader } from '@/components';
 import moment from 'moment';
 import 'moment/locale/id';
+import { InputType } from '@/constants';
 
 const Harian = () => {
   const { token, user } = useAuth();
@@ -18,7 +20,6 @@ const Harian = () => {
   const [editForm] = Form.useForm();
 
   // State untuk data
-  const [harianData, setHarianData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [uploadType, setUploadType] = useState('files');
@@ -33,8 +34,6 @@ const Harian = () => {
   const [editRecord, setEditRecord] = useState(null);
 
   // State untuk filter dan pagination
-  const [filterValues, setFilterValues] = useState({ search: '' });
-  const pagination = usePagination({ totalData: harianData.length });
 
   // State untuk options
   const [skpOptions, setSkpOptions] = useState([]);
@@ -47,84 +46,41 @@ const Harian = () => {
   const date = queryParams.get('date');
 
   // Service untuk mengambil data harian
-  const { execute: fetchHarian, ...getHarianService } = useService(HarianService.getAll);
+  const { execute, ...getHarianService } = useService(HarianService.getAll);
+  const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
+  const { execute: fetchUsers, ...getUsersByUnit } = useService(UserService.getUsersByUnit);
+
+  const [filterValues, setFilterValues] = React.useState({
+    search: '',
+    unit_id: user?.isAdmin || user?.umpegs?.length ? [] : user?.unor.id,
+    user_id: user?.isAdmin || user?.umpegs?.length ? [] : user?.newNip,
+    date: moment().format('YYYY-MM-DD')
+  });
+  const pagination = usePagination({ totalData: getHarianService.totalData });
   const deleteHarian = useService(HarianService.delete);
   const storeHarian = useService(HarianService.store);
   const updateHarian = useService(HarianService.update);
 
-  // Fungsi untuk mengambil data harian
-  const getHarianData = async () => {
-    try {
-      setLoading(true);
-      // Menyiapkan parameter untuk filter
-      const params = {};
-      if (userId) params.user_id = userId;
-      if (date) params.date = moment(date).format('YYYY-MM-DD');
+  const unitKerja = getAllUnitKerja.data ?? [];
+  const memoizedUnitKerja = React.useMemo(() => unitKerja ?? [], [unitKerja?.length]);
+  const harianData = getHarianService.data ?? [];
 
-      // Menggunakan token dan parameter untuk mengambil data
-      const response = await fetchHarian(token, params);
+  const fetchHarian = React.useCallback(() => {
+    execute({
+      token,
+      page: pagination.page,
+      per_page: pagination.per_page,
+      search: filterValues.search,
+      unit_id: user?.isAdmin || user?.umpegs?.length ? filterValues.unit_id : user?.unor.id,
+      user_id: user?.isAdmin || user?.umpegs?.length ? filterValues.id_user : user?.newNip,
+      date: filterValues.date
+    });
+  }, [execute, token, pagination.page, pagination.per_page, filterValues.search, filterValues.unit_id, filterValues.id_user, filterValues.date, user?.isAdmin, user?.umpegs?.length, user?.unor?.id, user?.newNip]);
 
-      if (response.status) {
-        console.log('Data dari API (refresh):', response.data);
-        setHarianData(response.data || []);
-        success('Berhasil', 'Data harian berhasil diambil');
-      } else {
-        error('Gagal', response.message || 'Gagal mengambil data harian');
-      }
-    } catch (err) {
-      console.error('Error fetching harian data:', err);
-      error('Error', 'Terjadi kesalahan saat mengambil data harian');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Mengambil data saat komponen dimuat
-  useEffect(() => {
-    let isMounted = true;
-    const abortController = new AbortController();
-
-    const fetchData = async () => {
-      if (token && isMounted) {
-        try {
-          setLoading(true);
-
-          // Menyiapkan parameter untuk filter
-          const params = {};
-          if (userId) params.user_id = userId;
-          if (date) params.date = moment(date).format('YYYY-MM-DD');
-
-          // Menggunakan token dan parameter untuk mengambil data dengan abort controller
-          const response = await HarianService.getAll(token, params);
-
-          if (response.status && isMounted) {
-            console.log('Data dari API:', response.data);
-            setHarianData(response.data || []);
-            success('Berhasil', 'Data harian berhasil diambil');
-          } else if (isMounted) {
-            error('Gagal', response.message || 'Gagal mengambil data harian');
-          }
-        } catch (err) {
-          if (err.name !== 'AbortError' && isMounted) {
-            console.error('Error fetching harian data:', err);
-            error('Error', 'Terjadi kesalahan saat mengambil data harian');
-          }
-        } finally {
-          if (isMounted) {
-            setLoading(false);
-          }
-        }
-      }
-    };
-
-    fetchData();
-
-    // Cleanup function
-    return () => {
-      isMounted = false;
-      abortController.abort();
-    };
-  }, [token, userId, date, success, error]);
+  React.useEffect(() => {
+    fetchHarian();
+    fetchUnitKerja({ token: token });
+  }, [fetchHarian, fetchUnitKerja, fetchUsers, pagination.page, pagination.per_page, token]);
 
   // Fungsi untuk menangani submit form
   const handleSubmit = async (values) => {
@@ -183,7 +139,7 @@ const Harian = () => {
 
       if (response.status) {
         // Refresh data
-        getHarianData();
+        fetchHarian({ token: token });
       }
     } catch (err) {
       console.error('Error submitting form:', err);
@@ -200,7 +156,7 @@ const Harian = () => {
 
       if (response.status) {
         success('Berhasil', 'Data harian berhasil dihapus');
-        getHarianData();
+        fetchHarian({ token: token });
       } else {
         error('Gagal', response.message || 'Gagal menghapus data harian');
       }
@@ -259,7 +215,7 @@ const Harian = () => {
         success('Berhasil', 'Data harian berhasil diperbarui');
         editForm.resetFields();
         setEditModalVisible(false);
-        getHarianData(); // Refresh data
+        fetchHarian({ token: token });
       } else {
         error('Gagal', response.message || 'Gagal memperbarui data harian');
       }
@@ -281,9 +237,9 @@ const Harian = () => {
   const columns = [
     {
       title: 'Nama Kegiatan',
-      dataIndex: 'name',
-      key: 'name',
-      sorter: (a, b) => a.name.localeCompare(b.name),
+      dataIndex: 'desc',
+      key: 'desc',
+      sorter: (a, b) => a.desc.localeCompare(b.desc),
       searchable: true
     },
     {
@@ -337,30 +293,83 @@ const Harian = () => {
     }
   ];
 
+  React.useEffect(() => {
+    fetchUnitKerja({ token: token });
+  }, [fetchUnitKerja, pagination.page, pagination.per_page, token]);
+
+  const filter = React.useMemo(
+    () => ({
+      formFields: [
+        ...(user?.isAdmin || user?.umpegs?.length
+          ? [
+              {
+                label: 'Nama Unit',
+                name: 'unit_id',
+                type: InputType.SELECT,
+                options: user?.isAdmin
+                  ? memoizedUnitKerja.map((item) => ({
+                      label: item.nama_unor,
+                      value: item.id_simpeg
+                    }))
+                  : user.umpegs.map((item) => ({
+                      label: item.unit.nama_unor,
+                      value: item.unit.id_simpeg
+                    }))
+              },
+              {
+                label: 'NIP',
+                name: 'id_user',
+                type: InputType.SELECT_WITH_PARENT,
+                parentName: 'unit_id',
+                fetchOptions: async ({ token, parentValue }) => {
+                  const res = await fetchUsers({ token, unitId: parentValue });
+                  return res;
+                },
+                mapOptions: (item) => ({
+                  label: `${item.nip_asn} - ${item.nama_asn}`,
+                  value: item.nip_asn
+                }),
+                size: 'large'
+              }
+            ]
+          : [])
+      ],
+      initialData: {
+        unit_id: filterValues.unit_id,
+        id_user: filterValues.id_user
+      },
+      isLoading: getHarianService.isLoading,
+      onSubmit: (values) => {
+        setFilterValues((prev) => ({
+          ...prev,
+          id_user: user?.isAdmin || user?.umpegs?.length ? values.id_user : user?.newNip,
+          unit_id: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user?.unor?.id
+        }));
+      }
+    }),
+    [user?.isAdmin, user.umpegs, user?.newNip, user?.unor?.id, memoizedUnitKerja, filterValues.unit_id, filterValues.id_user, getHarianService.isLoading, fetchUsers]
+  );
+
   return (
     <div className="w-full">
-      <Card title="Data Kegiatan Harian">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            {userId && date && (
-              <div className="text-gray-600">
-                <span>Data untuk User ID: {userId}</span>
-                <span className="mx-2">|</span>
-                <span>Tanggal: {moment(date).format('DD MMMM YYYY')}</span>
-              </div>
-            )}
-          </div>
-        </div>
-
+      <Card>
         {/* Tabel Data Harian */}
-        <Skeleton loading={loading}>
-          {harianData && harianData.length > 0 ? (
-            <DataTable data={harianData} columns={columns} loading={loading} map={(harian) => ({ key: harian.id, ...harian })} pagination={pagination} />
-          ) : (
-            <div className="py-4 text-center">
-              <p>Tidak ada data kegiatan harian yang tersedia</p>
+        <Skeleton loading={getHarianService.isLoading}>
+          <>
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                {userId && date && (
+                  <div className="text-gray-600">
+                    <span>Data untuk User ID: {userId}</span>
+                    <span className="mx-2">|</span>
+                    <span>Tanggal: {moment(date).format('DD MMMM YYYY')}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+            <DataTableHeader modul={'Data Harian'} filter={filter}></DataTableHeader>
+            <DataTable data={harianData} columns={columns} loading={getHarianService.isLoading} map={(harian) => ({ key: harian.id, ...harian })} pagination={pagination} />
+          </>
         </Skeleton>
       </Card>
 

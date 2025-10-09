@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import api from '@/utils/api';
 
 export default class HarianService {
@@ -13,18 +14,12 @@ export default class HarianService {
    *  data?: any[];
    * }>}
    * */
-  static async getAll(token, params = {}) {
-    const queryParams = {};
-
-    // Add user_id and date to query params if they exist
-    if (params.user_id) queryParams.user_id = params.user_id;
-    if (params.date) queryParams.date = params.date;
-
-    const response = await api.get('/harian', { token, params: queryParams });
+  static async getAll({ token, ...filters }) {
+    const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
+    const response = await api.get('/absence', { token, params });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }
-
   /**
    * @param {Object} data
    * @param {string} token
