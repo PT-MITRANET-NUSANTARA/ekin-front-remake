@@ -142,7 +142,7 @@ export const dashboardLink = [
     label: 'Kegiatan Harian',
     icon: CalendarOutlined,
     path: '/dashboard/harian',
-    element: Dashboard.Harian,
+    element: Dashboard.Daily,
     permissions: ['lihat_dashboard']
   },
   {

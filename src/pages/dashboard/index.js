@@ -17,7 +17,6 @@ export { default as Skps } from './Skps/Skps';
 export { default as DetailSkp } from './Skps/DetailSkp';
 export { default as UserProfile } from './UserProfile/UserProfile';
 export { default as Absence } from './Absence/Absence';
-export { default as Harian } from './Harian/Harian';
 export { default as Mph } from './Skps/Mph';
 export { default as SkpBawahan } from './Skps/SkpBawahan';
 export { default as SkpAssessmentPeriod } from './Skps/SkpAssessmentPeriod';
@@ -37,3 +36,5 @@ export { default as VerificatePerjanjianKinerjas } from './PerjanjianKinerjas/Ve
 export { default as PerjanjianKinerjaTemplate } from './PerjanjianKinerjaTemplate/PerjanjianKinerjaTemplate';
 export { default as SkpDownload } from './Skps/SkpDownload';
 export { default as Curva } from './Skps/Curva';
+export { default as Daily } from './Daily/Daily';
+export { default as DetailAbsence } from './Absence/DetailAbsence';
