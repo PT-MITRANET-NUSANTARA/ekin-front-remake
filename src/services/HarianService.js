@@ -16,7 +16,7 @@ export default class HarianService {
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/absence', { token, params });
+    const response = await api.get('/harian', { token, params });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }

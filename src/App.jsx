@@ -14,6 +14,7 @@ import {
   AssessmentPerilaku,
   AssessmentSkp,
   Curva,
+  DetailAbsence,
   DetailRkt,
   DetailSkp,
   DetailSkpPenilaian,
@@ -101,7 +102,8 @@ function App() {
             { path: '/dashboard/verificator/:id/:unit_id/jabatan/:unor_id', element: <JabatanVerificators /> },
             { path: '/dashboard/perjanjian-kinerja-template', element: <PerjanjianKinerjaTemplate /> },
             { path: '/dashboard/skp-download/:id', element: <SkpDownload /> },
-            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/curva', element: <Curva /> }
+            { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/curva', element: <Curva /> },
+            { path: '/dashboard/harian/:user_id/:date', element: <DetailAbsence /> }
           ]
         },
         {

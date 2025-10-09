@@ -53,10 +53,6 @@ const Absence = () => {
   const pagination = usePagination({ totalData: getAllAbsence.totalData });
   const [users, setUsers] = React.useState([]);
 
-  const navigateToHarian = (userId, date) => {
-    navigate(`/dashboard/harian?user_id=${userId}&date=${date}`);
-  };
-
   const fetchAbsence = React.useCallback(() => {
     execute({
       token,
@@ -202,7 +198,7 @@ const Absence = () => {
               });
             }}
           />
-          <Button type="text" size="small" icon={<CalendarOutlined />} title="Aksi Harian" onClick={() => navigateToHarian(record.id_user, record.tanggal)} />
+          <Button type="text" size="small" icon={<CalendarOutlined />} title="Aksi Harian" onClick={() => navigate(`/dashboard/harian/${record.id_user}/${record.tanggal}`)} />
         </Space>
       )
     });
