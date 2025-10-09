@@ -1,6 +1,19 @@
 import { InputType } from '@/constants';
 import { AbsenceStatus } from '@/constants/AbsenceStatus';
 
+export const absenceFilterFields = () => [
+  {
+    label: 'Tanggal',
+    name: 'tanggal',
+    type: InputType.DATE,
+    props: {
+      format: 'YYYY-MM-DD',
+      disabledTime: true,
+      showTime: false
+    }
+  }
+];
+
 export const formFields = ({ options }) => [
   {
     label: 'NIP',

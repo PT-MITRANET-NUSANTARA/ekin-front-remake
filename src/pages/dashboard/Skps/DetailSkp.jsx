@@ -256,7 +256,7 @@ const DetailSkp = () => {
                         title: `Tambah ${Modul.RHK}`,
                         formFields: rhkFormFields({ options: { rkts: rkts } }),
                         onSubmit: async (values) => {
-                          const { isSuccess, message } = await storeRhk.execute({ ...values, skp_id: detailSkp.id }, token);
+                          const { isSuccess, message } = await storeRhk.execute({ ...values, skp_id: detailSkp.id, rkts_id: values.rkts }, token);
                           if (isSuccess) {
                             success('Berhasil', message);
                             fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });

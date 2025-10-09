@@ -20,6 +20,22 @@ export default class PerjanjianKinerjaService {
 
   /**
    * @param {string} token
+   * @param {string} skp_id
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: any;
+   * }>}
+   * */
+  static async getTemplate({ token, skp_id, signal }) {
+    const response = await api.get(`/perjanjian-kinerja/skp/${skp_id}/template`, { token, signal });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
+   * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;

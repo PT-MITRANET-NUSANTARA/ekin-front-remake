@@ -285,7 +285,7 @@ const Skps = () => {
                           color="primary"
                           icon={<DownloadOutlined />}
                           onClick={() => {
-                            navigate('/dashboard/perjanjian-kinerja-template');
+                            navigate(`/dashboard/perjanjian-kinerja-template/${item.id}`);
                           }}
                         >
                           Template

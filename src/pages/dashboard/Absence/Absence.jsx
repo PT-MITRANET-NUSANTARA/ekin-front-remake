@@ -6,10 +6,11 @@ import { CalendarOutlined } from '@ant-design/icons';
 import React from 'react';
 import { Absence as AbsenceModel } from '@/models';
 import { DataTable, DataTableHeader } from '@/components';
-import { formFields } from './FormFields';
+import { formFields, absenceFilterFields } from './FormFields';
 import dayjs from 'dayjs';
 import { AbsenceStatus } from '@/constants/AbsenceStatus';
 import { useNavigate } from 'react-router-dom';
+import { InputType } from '@/constants';
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -40,7 +41,10 @@ const Absence = () => {
   const storeAbsence = useService(AbsenceService.store);
   const updateAbsence = useService(AbsenceService.update);
   const { execute: executeGetUsers, ...getUsersByUnit } = useService(UserService.getUsersByUnit);
-  const [filterValues, setFilterValues] = React.useState({ search: '' });
+  const [filterValues, setFilterValues] = React.useState({
+    search: '',
+    id_user: user?.isAdmin || user?.umpegs?.length ? '' : user?.nipBaru
+  });
   const pagination = usePagination({ totalData: getAllAbsence.totalData });
   const [users, setUsers] = React.useState([]);
 
@@ -56,9 +60,10 @@ const Absence = () => {
       page: pagination.page,
       per_page: pagination.per_page,
       search: filterValues.search,
-      unit_id: user ? user.unor.id : ''
+      unit_id: user ? user.unor.id : '',
+      user_id: user?.isAdmin || user?.umpegs?.length ? filterValues.id_user : user?.nipBaru
     });
-  }, [execute, filterValues.search, pagination.page, pagination.per_page, token, user]);
+  }, [execute, filterValues.search, filterValues.id_user, pagination.page, pagination.per_page, token, user]);
 
   const fetchUsers = React.useCallback(() => {
     if (user && user.unor && user.unor.id) {
@@ -221,9 +226,43 @@ const Absence = () => {
     });
   };
 
+  // Filter configuration
+  const filter = {
+    formFields: [
+      ...(user?.isAdmin || user?.umpegs?.length
+        ? [
+            {
+              label: `Pegawai`,
+              name: 'id_user',
+              type: InputType.SELECT,
+              options: users.map((item) => ({
+                label: `${item.nama} (${item.nip_baru})`,
+                value: item.nip_baru
+              }))
+            }
+          ]
+        : [])
+    ],
+    initialData: {
+      id_user: filterValues.id_user
+    },
+    isLoading: getAllAbsence.isLoading,
+    onSubmit: (values) => {
+      setFilterValues({
+        ...filterValues,
+        id_user: user?.isAdmin || user?.umpegs?.length ? values.id_user : user?.nipBaru
+      });
+    }
+  };
+
   return (
     <Card>
-      <DataTableHeader modul="Absensi" onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader 
+        modul="Absensi" 
+        filter={filter} 
+        onStore={onCreate} 
+        onSearch={(values) => setFilterValues({ ...filterValues, search: values })} 
+      />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllAbsence.isLoading}>
           <DataTable data={absences} columns={column} loading={getAllAbsence.isLoading} map={(absence) => ({ key: absence.id, ...absence })} pagination={pagination} />
