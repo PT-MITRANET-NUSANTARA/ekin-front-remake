@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ekin-frontend:latest
+    container_name: ekin-frontend
+    ports:
+      - "3002:3002"
+    restart: unless-stopped
