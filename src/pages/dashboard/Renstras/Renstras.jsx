@@ -256,7 +256,7 @@ const Renstras = () => {
 
   return (
     <Card>
-      <DataTableHeader modul={Modul.RENSTRA} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
+      <DataTableHeader modul={'Sinkronisasi Rencana Strategi Dengan Visi Misi Kepala Daerah'} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllRenstras.isLoading}>
           <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} />

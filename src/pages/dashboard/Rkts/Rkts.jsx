@@ -43,7 +43,7 @@ const SubActivities = () => {
   React.useEffect(() => {
     fetchRkts();
     fetchRenstras({ token: token });
-    fetchSubActivities({ token: token });
+    fetchSubActivities({ token: token, page: 1, perPage: 99999 });
     fetchUnitKerja({ token: token });
   }, [fetchRkts, fetchRenstras, pagination.page, pagination.per_page, token, fetchSubActivities, fetchUnitKerja]);
 
@@ -156,9 +156,63 @@ const SubActivities = () => {
                     children: rupiahFormat(record.total_anggaran)
                   },
                   {
-                    key: 'total_anggaran',
-                    label: `Total Anggaran`,
+                    key: 'sub_kegiatan',
+                    label: `Sub Kegiatan`,
                     children: <List size="small" bordered dataSource={record.id_sub_kegiatan} renderItem={(item) => <List.Item>{item.nama}</List.Item>} />
+                  },
+                  {
+                    key: 'input',
+                    label: `Indikator Input`,
+                    children: (
+                      <>
+                        <List
+                          size="small"
+                          bordered
+                          dataSource={record.input_indikator_kinerja}
+                          renderItem={(item) => (
+                            <List.Item>
+                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
+                            </List.Item>
+                          )}
+                        />
+                      </>
+                    )
+                  },
+                  {
+                    key: 'output',
+                    label: `Indikator Output`,
+                    children: (
+                      <>
+                        <List
+                          size="small"
+                          bordered
+                          dataSource={record.output_indikator_kinerja}
+                          renderItem={(item) => (
+                            <List.Item>
+                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
+                            </List.Item>
+                          )}
+                        />
+                      </>
+                    )
+                  },
+                  {
+                    key: 'outcome',
+                    label: `Indikator Outcome`,
+                    children: (
+                      <>
+                        <List
+                          size="small"
+                          bordered
+                          dataSource={record.outcome_indikator_kinerja}
+                          renderItem={(item) => (
+                            <List.Item>
+                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
+                            </List.Item>
+                          )}
+                        />
+                      </>
+                    )
                   }
                 ]
               });

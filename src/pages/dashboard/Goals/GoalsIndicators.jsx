@@ -1,7 +1,7 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
 import { GoalsService } from '@/services';
-import { Card, Space } from 'antd';
+import { Card, Descriptions, Space, Tag } from 'antd';
 import React from 'react';
 import { Goals as GoalModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -154,6 +154,14 @@ const GoalsIndicators = () => {
   return (
     <Card>
       <DataTableHeader onStore={onCreate} modul={detailGoal?.nama ?? ''} />
+      <Descriptions size="default" column={2} bordered className="mb-4">
+        <Descriptions.Item label="Unit Kerja">{detailGoal?.id_unit?.nama_unor}</Descriptions.Item>
+        <Descriptions.Item label="Judul Tujuan">{detailGoal?.nama}</Descriptions.Item>
+        <Descriptions.Item label="Renstra">
+          <Tag>{detailGoal?.renstra?.tanggal_mulai}</Tag>
+          Hingga <Tag>{detailGoal?.renstra?.tanggal_selesai}</Tag>
+        </Descriptions.Item>
+      </Descriptions>
       <div className="w-full max-w-full overflow-x-auto">
         <DataTable data={indicators ?? []} columns={column} loading={getDetailGoal.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
       </div>

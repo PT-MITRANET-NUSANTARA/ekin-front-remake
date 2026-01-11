@@ -1,13 +1,14 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
 import { ActivitiesService } from '@/services';
-import { Card, Space } from 'antd';
+import { Card, Descriptions, Space } from 'antd';
 import React from 'react';
 import { Programs as ProgramModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
 import { indicatorFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
+import { rupiahFormat } from '@/utils/rupiahFormat';
 
 const AcitivitiesIndicators = () => {
   const { id } = useParams();
@@ -157,6 +158,12 @@ const AcitivitiesIndicators = () => {
   return (
     <Card>
       <DataTableHeader onStore={onCreate} modul={detailActivity?.nama ?? ''} />
+      <Descriptions size="default" column={2} bordered className="mb-4">
+        <Descriptions.Item label="Unit Kerja">{detailActivity?.id_unit?.nama_unor}</Descriptions.Item>
+        <Descriptions.Item label="Judul Kegiatan">{detailActivity?.nama}</Descriptions.Item>
+        <Descriptions.Item label="Program">{detailActivity?.id_program?.nama}</Descriptions.Item>
+        <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailActivity.total_anggaran)}</Descriptions.Item>
+      </Descriptions>
       <div className="w-full max-w-full overflow-x-auto">
         <DataTable data={indicators ?? []} columns={column} loading={getDetailActivity.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
       </div>

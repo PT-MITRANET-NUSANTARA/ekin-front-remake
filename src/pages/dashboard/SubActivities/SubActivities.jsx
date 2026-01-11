@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { ActivitiesService, SubActivitiesService, UnitKerjaService } from '@/services';
-import { Button, Card, Skeleton, Space } from 'antd';
+import { Button, Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { SubActivities as SubActivityModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -133,8 +133,26 @@ const SubActivities = () => {
                   },
                   {
                     key: 'tujuan',
-                    label: `Tujuan`,
-                    children: record.id_tujuan.nama
+                    label: `Sub Kegiatan`,
+                    children: record.id_kegiatan.nama
+                  },
+                  {
+                    key: 'indikator',
+                    label: `Indikator Kinerja ${Modul.SUBACTIVITY}`,
+                    children: (
+                      <>
+                        <List
+                          size="small"
+                          bordered
+                          dataSource={record.indikator_kinerja}
+                          renderItem={(item) => (
+                            <List.Item>
+                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
+                            </List.Item>
+                          )}
+                        />
+                      </>
+                    )
                   }
                 ]
               });
