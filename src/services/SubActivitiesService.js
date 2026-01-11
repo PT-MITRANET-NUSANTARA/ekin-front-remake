@@ -16,6 +16,7 @@ export default class SubActivitiesService {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
     const response = await api.get('/sub-kegiatan', { token, params });
     if (!response.data) return response;
+
     return { ...response, data: SubActivities.fromApiData(response.data) };
   }
 
@@ -60,6 +61,8 @@ export default class SubActivitiesService {
    * }>}
    */
   static async update(id, data, token) {
+    console.log(data);
+
     return await api.patch(`/sub-kegiatan/${id}`, { body: SubActivities.toApiData(data), token });
   }
 

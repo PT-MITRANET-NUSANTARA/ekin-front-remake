@@ -58,12 +58,12 @@ export const dashboardLink = [
     ]
   },
   {
-    label: 'Rencana Kerja',
+    label: 'Renstra',
     icon: CheckSquareOutlined,
     children: [
       {
         path: '/dashboard/renstras',
-        label: 'Rencana Strategi',
+        label: 'Sinkronasi',
         element: Dashboard.Renstras,
         permissions: ['manage_renstra']
       },

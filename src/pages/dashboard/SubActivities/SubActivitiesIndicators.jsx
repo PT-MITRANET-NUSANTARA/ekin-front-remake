@@ -1,13 +1,14 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
 import { SubActivitiesService } from '@/services';
-import { Card, Space } from 'antd';
+import { Card, Descriptions, Space } from 'antd';
 import React from 'react';
 import { SubActivities as SubActivityModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
 import { indicatorFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
+import { rupiahFormat } from '@/utils/rupiahFormat';
 
 const SubAcitivitiesIndicators = () => {
   const { id } = useParams();
@@ -30,6 +31,8 @@ const SubAcitivitiesIndicators = () => {
       setIndicators(detailSubActivity.indikator_kinerja);
     }
   }, [detailSubActivity]);
+
+  console.log(indicators);
 
   const column = [
     {
@@ -140,6 +143,8 @@ const SubAcitivitiesIndicators = () => {
           indikator_kinerja: [...(indicators || []), values]
         };
 
+        console.log(payload);
+
         const { isSuccess, message } = await updateSubAcitivites.execute(id, payload, token);
 
         if (isSuccess) {
@@ -157,6 +162,11 @@ const SubAcitivitiesIndicators = () => {
   return (
     <Card>
       <DataTableHeader onStore={onCreate} modul={detailSubActivity?.nama ?? ''} />
+      <Descriptions size="default" column={2} bordered className="mb-4">
+        <Descriptions.Item label="Judul Kegiatan">{detailSubActivity?.nama}</Descriptions.Item>
+        <Descriptions.Item label="Kegiatan">{detailSubActivity?.id_kegiatan?.nama}</Descriptions.Item>
+        <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailSubActivity.total_anggaran)}</Descriptions.Item>
+      </Descriptions>
       <div className="w-full max-w-full overflow-x-auto">
         <DataTable data={indicators ?? []} columns={column} loading={getDetailSubActivity.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
       </div>

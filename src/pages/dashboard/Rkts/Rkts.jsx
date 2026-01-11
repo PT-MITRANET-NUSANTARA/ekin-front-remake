@@ -43,7 +43,7 @@ const SubActivities = () => {
   React.useEffect(() => {
     fetchRkts();
     fetchRenstras({ token: token });
-    fetchSubActivities({ token: token });
+    fetchSubActivities({ token: token, page: 1, perPage: 99999 });
     fetchUnitKerja({ token: token });
   }, [fetchRkts, fetchRenstras, pagination.page, pagination.per_page, token, fetchSubActivities, fetchUnitKerja]);
 

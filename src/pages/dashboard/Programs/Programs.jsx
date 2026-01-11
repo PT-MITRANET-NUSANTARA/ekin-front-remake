@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { GoalsService, ProgramsService, UnitKerjaService } from '@/services';
-import { Button, Card, Skeleton, Space } from 'antd';
+import { Button, Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Programs as ProgramModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -135,6 +135,24 @@ const Programs = () => {
                     key: 'tujuan',
                     label: `Tujuan`,
                     children: record.id_tujuan.nama
+                  },
+                  {
+                    key: 'indikator',
+                    label: `Indikator Kinerja ${Modul.GOAL}`,
+                    children: (
+                      <>
+                        <List
+                          size="small"
+                          bordered
+                          dataSource={record.indikator_kinerja}
+                          renderItem={(item) => (
+                            <List.Item>
+                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
+                            </List.Item>
+                          )}
+                        />
+                      </>
+                    )
                   }
                 ]
               });

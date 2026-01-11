@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { GoalsService, RenstrasService, UnitKerjaService } from '@/services';
-import { Button, Card, Skeleton, Space, Tag } from 'antd';
+import { Button, Card, List, Skeleton, Space, Tag } from 'antd';
 import React from 'react';
 import { Goals as GoalModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -134,6 +134,24 @@ const Goals = () => {
                       <>
                         <Tag>{record.renstra.tanggal_mulai}</Tag>
                         Hingga <Tag>{record.renstra.tanggal_selesai}</Tag>
+                      </>
+                    )
+                  },
+                  {
+                    key: 'indikator',
+                    label: `Indikator Kinerja ${Modul.GOAL}`,
+                    children: (
+                      <>
+                        <List
+                          size="small"
+                          bordered
+                          dataSource={record.indikator_kinerja}
+                          renderItem={(item) => (
+                            <List.Item>
+                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
+                            </List.Item>
+                          )}
+                        />
                       </>
                     )
                   }

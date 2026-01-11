@@ -147,8 +147,8 @@ const Activities = () => {
                   },
                   {
                     key: 'tujuan',
-                    label: `Tujuan`,
-                    children: record.id_tujuan.nama
+                    label: `Program`,
+                    children: record.id_program.nama
                   }
                 ]
               });

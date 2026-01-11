@@ -174,21 +174,21 @@ const PerjanjianKinerjaTemplate = () => {
               <div style={{ marginLeft: 20, marginBottom: 20 }}>
                 <Row>
                   <Col span={3}>Nama</Col>
-                  <Col span={21}>: {data.nama_pihak_pertama}</Col>
+                  <Col span={21}>: {data?.nama_pihak_pertama}</Col>
                 </Row>
                 <Row>
                   <Col span={3}>Jabatan</Col>
-                  <Col span={21}>: {data.jabatan_pihak_pertama}</Col>
+                  <Col span={21}>: {data?.jabatan_pihak_pertama}</Col>
                 </Row>
                 <Paragraph style={{ marginTop: 10 }}>Selanjutnya disebut Pihak Pertama</Paragraph>
 
                 <Row>
                   <Col span={3}>Nama</Col>
-                  <Col span={21}>: {data.nama_pihak_kedua}</Col>
+                  <Col span={21}>: {data?.nama_pihak_kedua}</Col>
                 </Row>
                 <Row>
                   <Col span={3}>Jabatan</Col>
-                  <Col span={21}>: {data.jabatan_pihak_kedua}</Col>
+                  <Col span={21}>: {data?.jabatan_pihak_kedua}</Col>
                 </Row>
                 <Paragraph style={{ marginTop: 10 }}>Selaku atasan langsung pihak pertama, selanjutnya disebut Pihak Kedua</Paragraph>
               </div>
@@ -241,7 +241,7 @@ const PerjanjianKinerjaTemplate = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.tujuans.map((tujuan, tujuanIndex) =>
+                  {data?.tujuans.map((tujuan, tujuanIndex) =>
                     tujuan.indikator_kinerja_id && tujuan.indikator_kinerja_id.length > 0 ? (
                       tujuan.indikator_kinerja_id.map((indikator, indikatorIndex) => (
                         <tr key={`${tujuanIndex}-${indikatorIndex}`}>
@@ -285,7 +285,7 @@ const PerjanjianKinerjaTemplate = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.programs.map((program, index) => (
+                  {data?.programs.map((program, index) => (
                     <tr key={index}>
                       <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{index + 1}</td>
                       <td style={{ border: '1px solid #000', padding: 8, textAlign: 'center' }}>{program.name}</td>
