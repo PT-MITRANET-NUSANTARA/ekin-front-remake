@@ -1,7 +1,7 @@
 import { useAuth, useNotification, useService } from '@/hooks';
 import { WebSettingsService } from '@/services';
 import { SettingOutlined } from '@ant-design/icons';
-import { Button, Card, Form, Input, Menu, Skeleton, TimePicker } from 'antd';
+import { Button, Card, Form, Input, Menu, Select, Skeleton, TimePicker } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import dayjs from 'dayjs';
 import React from 'react';
@@ -64,6 +64,8 @@ const WebSettings = () => {
     return isSuccess;
   };
 
+  console.log(websettings);
+
   return (
     <div className="w-full gap-4">
       <Card>
@@ -99,6 +101,17 @@ const WebSettings = () => {
 
               <Form.Item label="Bupati ID" name="bupati_id">
                 <Input size="large" />
+              </Form.Item>
+              <Form.Item label="Hari Kerja (Default)" name="default_work_days">
+                <Select size="large" mode="multiple">
+                  <Select.Option value="MON">Senin</Select.Option>
+                  <Select.Option value="TUE">Selasa</Select.Option>
+                  <Select.Option value="WED">Rabu</Select.Option>
+                  <Select.Option value="THU">Kamis</Select.Option>
+                  <Select.Option value="FRI">Jumat</Select.Option>
+                  <Select.Option value="SAT">Sabtu</Select.Option>
+                  <Select.Option value="SUN">Minggu</Select.Option>
+                </Select>
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit" loading={storeSettings.isLoading}>

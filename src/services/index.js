@@ -22,3 +22,4 @@ export { default as UserService } from './UserService';
 export { default as VerificatorService } from './VerificatorService';
 export { default as WebSettingsService } from './WebSettingsService';
 export { default as HarianService } from './HarianService';
+export { default as CalendarsService } from './CalendarsService';

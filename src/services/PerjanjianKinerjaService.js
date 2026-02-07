@@ -44,6 +44,8 @@ export default class PerjanjianKinerjaService {
    * }>}
    * */
   static async download(token, id) {
+    console.log(id, token);
+
     const response = await api.get(`/perjanjian-kinerja/${id}/download`, { token });
     if (!response.data) return response;
     return { ...response, data: response.data };

@@ -99,11 +99,13 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
         ) : (
           <Skeleton.Input size="small" />
         )}
-        <Dropdown className="lg:hidden" menu={{ items: menuItems, onClick: handleMenuClick }}>
-          <Button color="default" variant="link">
-            <MenuOutlined />
-          </Button>
-        </Dropdown>
+        <div className="block lg:hidden">
+          <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
+            <Button color="default" variant="link">
+              <MenuOutlined />
+            </Button>
+          </Dropdown>
+        </div>
       </div>
       {/* {(children || (user && user.eitherCan([DELETE, model], [CREATE, model]))) && ( */}
       {children ||

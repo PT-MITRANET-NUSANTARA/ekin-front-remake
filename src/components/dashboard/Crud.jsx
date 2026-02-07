@@ -150,54 +150,57 @@ const Crud = ({ formFields, initialData, onSubmit = () => {}, type = '', isLoadi
                 }
               ],
               content_style: `
-                body {
-                  background: #fff;
-                }
+               body {
+  background: #fff;
+}
 
-                /* Disable the blue "focus" border for the editable region */
-                .editable-section:focus-visible {
-                  outline: none !important;
-                }
+/* Disable focus outline */
+.editable-section:focus-visible {
+  outline: none !important;
+}
 
-                .header,
-                .footer {
-                  font-size: 0.8rem;
-                  color: #ddd;
-                }
+.header,
+.footer {
+  font-size: 0.8rem;
+  color: #ddd;
+}
 
-                .header {
-                  display: flex;
-                  justify-content: space-between;
-                  padding: 0 0 1rem 0;
-                }
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0 1rem 0;
+}
 
-                .header .right-text {
-                  text-align: right;
-                }
+.header .right-text {
+  text-align: right;
+}
 
-                .footer {
-                  padding:2rem 0 0 0;
-                  text-align: center;
-                }
+.footer {
+  padding: 2rem 0 0 0;
+  text-align: center;
+}
 
-                /* Apply page-like styling */
-                @media (min-width: 840px) {
-                  html {
-                    background: #eceef4;
-                    min-height: 100%;
-                    padding: 0.5rem;
-                  }
+/* === LANDSCAPE PAGE STYLE === */
+@media (min-width: 1100px) {
+  html {
+    background: #eceef4;
+    min-height: 100%;
+    padding: 0.5rem;
+  }
 
-                  body {
-                    background-color: #fff;
-                    box-shadow: 0 0 4px rgba(0, 0, 0, .15);
-                    box-sizing: border-box;
-                    margin: 1rem auto 0;
-                    max-width: 820px;
-                    min-height: calc(100vh - 1rem);
-                    padding: 2rem 6rem 2rem 6rem;
-                  }
-                }
+  body {
+    background-color: #fff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    margin: 1rem auto 0;
+
+    /* Landscape adjustments */
+    max-width: 1120px;      /* lebih lebar */
+    min-height: 720px;      /* lebih pendek */
+    padding: 2.5rem 4rem;  /* kiri-kanan lebih sempit */
+
+  }
+}
               `
             }}
             onInit={(evt, editor) => {

@@ -186,7 +186,7 @@ const DetailSkp = () => {
       <div className="mt-4 flex w-full items-center justify-between">
         <div className="inline-flex items-center gap-x-2"></div>
         <div className="inline-flex items-center gap-x-2">
-          <Button variant="solid" color="primary" icon={<DownloadOutlined />} onClick={() => navigate(`/dashboard/skp-download/${id}`)}>
+          <Button variant="solid" color="primary" icon={<DownloadOutlined />} onClick={() => navigate(window.location.pathname + `/download`)}>
             Download SKP
           </Button>
           <Popconfirm title="Apakah anda yakin ingin mengajukan SKP?" onConfirm={() => handleAjukanSkp(detailSkp)}>

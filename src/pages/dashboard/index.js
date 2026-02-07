@@ -33,8 +33,11 @@ export { default as JabatanVerificators } from './Verificators/JabatanVerificato
 export { default as PerjanjianKinerjas } from './PerjanjianKinerjas/PerjanjianKinerja';
 export { default as WebSettings } from './WebSettings/WebSettings';
 export { default as VerificatePerjanjianKinerjas } from './PerjanjianKinerjas/VerificatePerjanjianKinerjas';
-export { default as PerjanjianKinerjaTemplate } from './PerjanjianKinerjaTemplate/PerjanjianKinerjaTemplate';
-export { default as SkpDownload } from './Skps/SkpDownload';
+export { default as PerjanjianKinerjaDoc } from './Prints/PerjanjianKinerjaDoc';
+export { default as SkpDoc } from './Prints/SkpDoc';
+export { default as SkpPenilaianDoc } from './Prints/SkpPenilaianDoc';
 export { default as Curva } from './Skps/Curva';
 export { default as Daily } from './Daily/Daily';
 export { default as DetailAbsence } from './Absence/DetailAbsence';
+export { default as Calendars } from './RequestSample1/Calendars';
+export { default as Harians } from './RequestSample2/Harians';

@@ -101,47 +101,48 @@ const DetailSkpPenilaian = () => {
                 <Typography.Title level={5}>Rencana Hasil Kerja Utama</Typography.Title>
               </div>
               <div className="inline-flex items-center gap-x-2">
-                {user?.newNip === detailSkp.user_id && (
-                  <Button
-                    variant="solid"
-                    color="primary"
-                    onClick={() => {
-                      modal.create({
-                        title: `Tambah ${Modul.RHK_PENILAIAN}`,
-                        formFields: [
-                          {
-                            label: `RHK`,
-                            name: 'rhk_id',
-                            type: InputType.SELECT,
-                            rules: [
-                              {
-                                required: true,
-                                message: `Rencana hasil kerja harus diisi`
-                              }
-                            ],
-                            size: 'large',
-                            options: rhks.map((item) => ({
-                              label: item.desc,
-                              value: item.id
-                            }))
-                          }
-                        ],
-                        onSubmit: async (values) => {
-                          const { isSuccess, message } = await storeRhkPenilaian.execute({ ...values, skp_id: id, periode_penilaian_id: assessment_periode_id }, token);
-                          if (isSuccess) {
-                            success('Berhasil', message);
-                            fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
-                          } else {
-                            error('Gagal', message);
-                          }
-                          return isSuccess;
+                {/* {user?.newNip === detailSkp.user_id && ( */}
+
+                <Button
+                  variant="solid"
+                  color="primary"
+                  onClick={() => {
+                    modal.create({
+                      title: `Tambah ${Modul.RHK_PENILAIAN}`,
+                      formFields: [
+                        {
+                          label: `RHK`,
+                          name: 'rhk_id',
+                          type: InputType.SELECT,
+                          rules: [
+                            {
+                              required: true,
+                              message: `Rencana hasil kerja harus diisi`
+                            }
+                          ],
+                          size: 'large',
+                          options: rhks.map((item) => ({
+                            label: item.desc,
+                            value: item.id
+                          }))
                         }
-                      });
-                    }}
-                  >
-                    Tambah RHK Penilaian
-                  </Button>
-                )}
+                      ],
+                      onSubmit: async (values) => {
+                        const { isSuccess, message } = await storeRhkPenilaian.execute({ ...values, skp_id: id, periode_penilaian_id: assessment_periode_id }, token);
+                        if (isSuccess) {
+                          success('Berhasil', message);
+                          fetchDetailSkp({ token: token, page: pagination.page, per_page: pagination.per_page });
+                        } else {
+                          error('Gagal', message);
+                        }
+                        return isSuccess;
+                      }
+                    });
+                  }}
+                >
+                  Tambah RHK Penilaian
+                </Button>
+                {/* )} */}
               </div>
             </div>
             <Table bordered columns={RhkColumn()} dataSource={flattenData(detailSkp?.rhk?.filter((item) => item.jenis === 'UTAMA') ?? [])} pagination={false} rowKey={(record) => `${record.rhkId}-${record.aspekId}`} />

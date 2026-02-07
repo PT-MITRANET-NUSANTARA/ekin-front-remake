@@ -99,10 +99,10 @@ export const dashboardLink = [
     children: [
       { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts, permissions: ['manage_rkts'] },
       { path: '/dashboard/assessment_periods', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod, permissions: ['manage_assessment_period'] },
-      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas, permissions: ['manage_perjanjian_kinerja'] },
-      { label: 'Template Perjanjian Kinerja', path: '/dashboard/perjanjian-kinerja-template/:id', element: Dashboard.PerjanjianKinerjaTemplate, permissions: ['manage_skp'] }
+      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas, permissions: ['manage_perjanjian_kinerja'] }
     ]
   },
+
   {
     label: 'SKP',
     icon: FileProtectOutlined,
@@ -151,6 +151,18 @@ export const dashboardLink = [
     path: '/dashboard/absence',
     element: Dashboard.Absence,
     permissions: ['lihat_dashboard']
+  },
+  {
+    label: 'Kalender',
+    icon: CalendarOutlined,
+    path: '/dashboard/calendar',
+    element: Dashboard.Calendars
+  },
+  {
+    label: 'Request Sample 2',
+    icon: DatabaseOutlined,
+    path: '/dashboard/harians',
+    element: Dashboard.Harians
   }
 ];
 

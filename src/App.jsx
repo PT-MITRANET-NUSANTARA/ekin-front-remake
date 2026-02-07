@@ -22,12 +22,13 @@ import {
   JabatanUmpeg,
   JabatanVerificators,
   Mph,
-  PerjanjianKinerjaTemplate,
+  PerjanjianKinerjaDoc,
   ProgramsIndicators,
   RencanaAksi,
   SkpAssessmentPeriod,
   SkpBawahan,
-  SkpDownload,
+  SkpDoc,
+  SkpPenilaianDoc,
   SubAcitivitiesIndicators,
   UserProfile
 } from './pages/dashboard';
@@ -71,9 +72,7 @@ function App() {
               return [
                 {
                   path: item.path,
-                  element: isLoading ? (
-                    <Skeleton active />
-                  ) : (
+                  element: (
                     <RequirePermission required={item.permissions || []}>
                       <item.element />
                     </RequirePermission>
@@ -97,13 +96,15 @@ function App() {
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/penilaian_kinerja', element: <AssessmentKinerja /> },
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/penilaian_perilaku', element: <AssessmentPerilaku /> },
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/predikat', element: <AssessmentSkp /> },
+            { path: '/dashboard/skps/:id/download', element: <SkpDoc /> },
+            { path: '/dashboard/skps/:id/penilaian/download', element: <SkpPenilaianDoc /> },
             { path: '/dashboard/user_profile', element: <UserProfile /> },
             { path: '/dashboard/umpegs/:id', element: <JabatanUmpeg /> },
             { path: '/dashboard/verificator/:id/:unit_id/jabatan/:unor_id', element: <JabatanVerificators /> },
-            { path: '/dashboard/perjanjian-kinerja-template', element: <PerjanjianKinerjaTemplate /> },
-            { path: '/dashboard/skp-download/:id', element: <SkpDownload /> },
+            { path: '/dashboard/skp-download/:id', element: <SkpDoc /> },
             { path: '/dashboard/skps/:id/assessment_periods/:assessment_periode_id/assessment/curva', element: <Curva /> },
-            { path: '/dashboard/harian/:user_id/:date', element: <DetailAbsence /> }
+            { path: '/dashboard/harian/:user_id/:date', element: <DetailAbsence /> },
+            { path: '/dashboard/perjanjian-kinerja-template/:id', element: <PerjanjianKinerjaDoc /> }
           ]
         },
         {

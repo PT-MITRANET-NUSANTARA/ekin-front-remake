@@ -166,3 +166,46 @@ export const staticTemplateAttr = [
   'status_perangkat_desa',
   'nama_jabatan_perangkat_desa'
 ];
+
+export const dummyHarian = [
+  {
+    id: 1,
+    tanggal: '2026-01-15',
+    judul_kegiatan: 'Penyusunan Laporan Kinerja Bulanan',
+    detail_kegiatan: 'Menyusun dan merekap laporan kinerja bulanan unit kerja berdasarkan data yang telah dikumpulkan.',
+    indikator: ['Laporan selesai tepat waktu', 'Data sesuai dengan realisasi kegiatan', 'Format laporan sesuai standar'],
+    status: 'DIAJUKAN',
+    pengajuan_skp: true,
+    catatan_verifikator: null
+  },
+  {
+    id: 2,
+    tanggal: '2026-01-15',
+    judul_kegiatan: 'Rapat Koordinasi Internal',
+    detail_kegiatan: 'Mengikuti rapat koordinasi internal bersama pimpinan dan anggota tim untuk membahas progres kerja mingguan.',
+    indikator: ['Hadir dalam rapat', 'Memberikan masukan aktif', 'Notulen rapat terdokumentasi'],
+    status: 'DITERIMA',
+    pengajuan_skp: true,
+    catatan_verifikator: null
+  },
+  {
+    id: 3,
+    tanggal: '2026-01-16',
+    judul_kegiatan: 'Pemutakhiran Data Pegawai',
+    detail_kegiatan: 'Melakukan pembaruan dan validasi data pegawai pada sistem informasi kepegawaian.',
+    indikator: ['Data pegawai tervalidasi', 'Tidak ada data ganda', 'Perubahan terdokumentasi'],
+    status: 'DITOLAK',
+    pengajuan_skp: true,
+    catatan_verifikator: 'Indikator belum sesuai dengan hasil yang dilaporkan.'
+  },
+  {
+    id: 4,
+    tanggal: '2026-01-17',
+    judul_kegiatan: 'Pelayanan Administrasi Mahasiswa',
+    detail_kegiatan: 'Memberikan layanan administrasi kepada mahasiswa terkait surat aktif kuliah dan transkrip sementara.',
+    indikator: ['Jumlah mahasiswa terlayani', 'Waktu layanan sesuai SOP', 'Tidak ada keluhan'],
+    status: 'DITERIMA',
+    pengajuan_skp: false,
+    catatan_verifikator: null
+  }
+];
