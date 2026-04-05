@@ -5,7 +5,7 @@ import { Card, Skeleton, Space, Typography } from 'antd';
 import React from 'react';
 import { Missions as MissionModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { formFields } from './FormFields';
 
 const Missions = () => {
@@ -152,14 +152,16 @@ const Missions = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={Modul.MISSION} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllMissions.isLoading}>
-          <DataTable data={missions} columns={column} loading={getAllMissions.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={Modul.MISSION} subTitle={'Kelola dan atur data misi dengan mudah. Tambahkan, ubah, atau hapus misi agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={Modul.MISSION} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllMissions.isLoading}>
+            <DataTable data={missions} columns={column} loading={getAllMissions.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

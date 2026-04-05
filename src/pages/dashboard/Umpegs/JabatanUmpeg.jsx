@@ -94,8 +94,7 @@ const Umpegs = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={detailUmpeg?.unit?.nama_unor} onStore={onCreate}></DataTableHeader>
+    <Card title={<DataTableHeader modul={detailUmpeg?.unit?.nama_unor} onStore={onCreate}></DataTableHeader>}>
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getDetailUmpeg.isLoading}>
           <DataTable

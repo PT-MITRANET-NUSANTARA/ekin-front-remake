@@ -115,8 +115,7 @@ const SkpBawahan = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={Modul.SKP_BAWAHAN}></DataTableHeader>
+    <Card title={<DataTableHeader modul={Modul.SKP_BAWAHAN}></DataTableHeader>}>
       <Descriptions size="default" column={3} bordered className="mb-6">
         <Descriptions.Item label="Pendekatan">{detailSkp.pendekatan}</Descriptions.Item>
         <Descriptions.Item label="Periode Mulai">{detailSkp.periode_start}</Descriptions.Item>

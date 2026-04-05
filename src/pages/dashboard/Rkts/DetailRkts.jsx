@@ -192,20 +192,17 @@ const Rkts = () => {
 
   return (
     <div className="flex flex-col gap-y-4">
-      <Card>
-        <DataTableHeader onStore={() => onCreate('input')} modul={`Rkt ${detailRkt?.nama ?? ''}- Input`} />
+      <Card title={<DataTableHeader onStore={() => onCreate('input')} modul={`Rkt ${detailRkt?.nama ?? ''}- Input`} />}>
         <div className="w-full max-w-full overflow-x-auto">
           <DataTable data={inputIndicators ?? []} columns={getColumns('input')} loading={getDetailRkt.isLoading} map={(innput) => ({ key: innput.id, ...innput })} />
         </div>
       </Card>
-      <Card>
-        <DataTableHeader onStore={() => onCreate('output')} modul={`Rkt ${detailRkt?.nama ?? ''}- Output`} />
+      <Card title={<DataTableHeader onStore={() => onCreate('output')} modul={`Rkt ${detailRkt?.nama ?? ''}- Output`} />}>
         <div className="w-full max-w-full overflow-x-auto">
           <DataTable data={outputIndicators ?? []} columns={getColumns('output')} loading={getDetailRkt.isLoading} map={(output) => ({ key: output.id, ...output })} />
         </div>
       </Card>
-      <Card>
-        <DataTableHeader onStore={() => onCreate('outcome')} modul={`Rkt ${detailRkt?.nama ?? ''}- Outcome`} />
+      <Card title={<DataTableHeader onStore={() => onCreate('outcome')} modul={`Rkt ${detailRkt?.nama ?? ''}- Outcome`} />}>
         <div className="w-full max-w-full overflow-x-auto">
           <DataTable data={outcomeIndicators ?? []} columns={getColumns('output')} loading={getDetailRkt.isLoading} map={(outcome) => ({ key: outcome.id, ...outcome })} />
         </div>

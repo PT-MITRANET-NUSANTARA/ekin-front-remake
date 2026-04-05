@@ -4,7 +4,7 @@ import { UnitKerjaService, VerificatorService } from '@/services';
 import { Button, Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { unorFormFields } from './FormFields';
 import { BarsOutlined, DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -201,14 +201,16 @@ const Verificators = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={Modul.VERIFICATOR} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllverificators.isLoading}>
-          <DataTable data={verificator} columns={column} loading={getAllverificators.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={`${Modul.VERIFICATOR}`} subTitle={'Kelola dan atur data verificator dengan mudah. Tambahkan, ubah, atau hapus verificator agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={Modul.VERIFICATOR} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllverificators.isLoading}>
+            <DataTable data={verificator} columns={column} loading={getAllverificators.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

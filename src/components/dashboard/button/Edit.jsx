@@ -10,7 +10,7 @@ export default function Edit({ title = strings('edit'), onClick }) {
   // if (action !== Action.NONE && (!user || user.cant(action, model))) return null;
   return (
     <Tooltip title={title}>
-      <Button variant="outlined" color="primary" icon={<EditOutlined />} onClick={onClick} />
+      <Button shape="circle" variant="outlined" color="primary" icon={<EditOutlined />} onClick={onClick} />
     </Tooltip>
   );
 }

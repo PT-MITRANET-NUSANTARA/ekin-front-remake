@@ -5,7 +5,7 @@ import { Button, Card, List, Skeleton, Space, Tag } from 'antd';
 import React from 'react';
 import { Goals as GoalModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { goalFormFields, goalsFilterFields } from './FormFields';
 import { useNavigate } from 'react-router-dom';
@@ -249,14 +249,16 @@ const Goals = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={Modul.GOAL} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllGoals.isLoading}>
-          <DataTable data={goals} columns={column} loading={getAllGoals.isLoading} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={Modul.GOAL} subTitle={'Kelola dan atur data tujuan dengan mudah. Tambahkan, ubah, atau hapus tujuan agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={Modul.GOAL} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllGoals.isLoading}>
+            <DataTable data={goals} columns={column} loading={getAllGoals.isLoading} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

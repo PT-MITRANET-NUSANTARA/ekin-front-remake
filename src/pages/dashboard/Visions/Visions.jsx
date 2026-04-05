@@ -5,7 +5,7 @@ import { Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Visions as VisionModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { formFields } from './FormFields';
 
 const Visions = () => {
@@ -118,14 +118,16 @@ const Visions = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={Modul.VISION} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllVisions.isLoading}>
-          <DataTable data={visions} columns={column} loading={getAllVisions.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={Modul.VISION} subTitle={'Kelola dan atur data visi dengan mudah. Tambahkan, ubah, atau hapus visi agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={Modul.VISION} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllVisions.isLoading}>
+            <DataTable data={visions} columns={column} loading={getAllVisions.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

@@ -4,7 +4,7 @@ import { UmpegService, UnitKerjaService } from '@/services';
 import { Button, Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { unorFormFields } from './FormFields';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -130,14 +130,16 @@ const Umpegs = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={Modul.UMPEG} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllUmpegs.isLoading}>
-          <DataTable data={umpegs} columns={column} loading={getAllUmpegs.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={`${Modul.UMPEG}`} subTitle={'Kelola dan atur data umpeg dengan mudah. Tambahkan, ubah, atau hapus umpeg agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={Modul.UMPEG} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllUmpegs.isLoading}>
+            <DataTable data={umpegs} columns={column} loading={getAllUmpegs.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

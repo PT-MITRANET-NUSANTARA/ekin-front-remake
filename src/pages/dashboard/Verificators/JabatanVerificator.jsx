@@ -139,8 +139,7 @@ const Umpegs = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={selectedJabatanDetail?.unor_detail?.nama_unor} onStore={onCreate}></DataTableHeader>
+    <Card title={<DataTableHeader modul={selectedJabatanDetail?.unor_detail?.nama_unor} onStore={onCreate}></DataTableHeader>}>
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getDetailVerificator.isLoading}>
           <DataTable

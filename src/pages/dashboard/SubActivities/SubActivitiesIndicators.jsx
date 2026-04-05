@@ -5,7 +5,7 @@ import { Card, Descriptions, Space } from 'antd';
 import React from 'react';
 import { SubActivities as SubActivityModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { indicatorFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
@@ -160,17 +160,19 @@ const SubAcitivitiesIndicators = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader onStore={onCreate} modul={detailSubActivity?.nama ?? ''} />
-      <Descriptions size="default" column={2} bordered className="mb-4">
-        <Descriptions.Item label="Judul Kegiatan">{detailSubActivity?.nama}</Descriptions.Item>
-        <Descriptions.Item label="Kegiatan">{detailSubActivity?.id_kegiatan?.nama}</Descriptions.Item>
-        <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailSubActivity.total_anggaran)}</Descriptions.Item>
-      </Descriptions>
-      <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={indicators ?? []} columns={column} loading={getDetailSubActivity.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={`Indikator ${Modul.ACTIVITY}`} subTitle={'Kelola dan atur data indikator sub-kegiatan dengan mudah. Tambahkan, ubah, atau hapus  indikator sub-kegiatan agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader onStore={onCreate} modul={`Indikator ${detailSubActivity?.nama ?? ''}`} />}>
+        <Descriptions size="default" column={2} bordered className="mb-4">
+          <Descriptions.Item label="Judul Kegiatan">{detailSubActivity?.nama}</Descriptions.Item>
+          <Descriptions.Item label="Kegiatan">{detailSubActivity?.id_kegiatan?.nama}</Descriptions.Item>
+          <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailSubActivity.total_anggaran)}</Descriptions.Item>
+        </Descriptions>
+        <div className="w-full max-w-full overflow-x-auto">
+          <DataTable data={indicators ?? []} columns={column} loading={getDetailSubActivity.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
+        </div>
+      </Card>
+    </>
   );
 };
 

@@ -1,4 +1,3 @@
-import { useAuth } from '@/hooks';
 import { DeleteOutlined, DownloadOutlined, ExportOutlined, FilterOutlined, ImportOutlined, MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Input, Popover, Skeleton, Typography } from 'antd';
 import PropTypes from 'prop-types';
@@ -7,9 +6,7 @@ import { templateDownloader } from '@/utils/templateDownloader';
 
 const { Title } = Typography;
 
-// export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch, model, children, onImport, onExport, onSearch, filter }) {
 export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch, children, onImport, onExport, onSearch, filter }) {
-  const { user } = useAuth();
   const hasImportCapability = !!onImport && typeof onImport === 'object';
 
   const importMenuItems = hasImportCapability
@@ -17,7 +14,10 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
         {
           key: 'template',
           label: 'Download Template',
-          onClick: () => templateDownloader(onImport.templateFile)
+          onClick: () => {
+            if (onImport.templateHandler) onImport.templateHandler();
+            else if (onImport.templateFile) templateDownloader(onImport.templateFile);
+          }
         },
         {
           key: 'import',
@@ -29,7 +29,6 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
 
   const menuItems = [];
 
-  // if (user?.can(CREATE, model) && onStore) {
   if (onStore) {
     menuItems.push({
       label: 'Tambah',
@@ -37,7 +36,6 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
       icon: <PlusOutlined />
     });
   }
-  // if (user?.can(DELETE, model) && onDeleteBatch) {
   if (onDeleteBatch) {
     menuItems.push({
       label: `Hapus ${selectedData?.length || 0} Pilihan`,
@@ -79,7 +77,8 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
         onImport?.importHandler?.();
         break;
       case 'template':
-        templateDownloader?.(onImport.templateFile);
+        if (onImport?.templateHandler) onImport.templateHandler();
+        else if (onImport?.templateFile) templateDownloader(onImport.templateFile);
         break;
       case 'export':
         onExport?.();
@@ -91,49 +90,47 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
 
   return (
     <>
-      <div className="flex w-full items-center justify-between lg:mb-6">
-        {modul ? (
-          <Title level={5} style={{ margin: 0 }}>
-            Data {modul}
-          </Title>
-        ) : (
-          <Skeleton.Input size="small" />
-        )}
-        <div className="block lg:hidden">
+      <div className="my-4 inline-flex w-full items-center justify-between">
+        <div className="">
+          {modul ? (
+            <Title level={5} style={{ margin: 0 }}>
+              Data {modul}
+            </Title>
+          ) : (
+            <Skeleton.Input size="small" />
+          )}
+        </div>
+        <div className="md:hidden">
           <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
             <Button color="default" variant="link">
               <MenuOutlined />
             </Button>
           </Dropdown>
         </div>
-      </div>
-      {/* {(children || (user && user.eitherCan([DELETE, model], [CREATE, model]))) && ( */}
-      {children ||
-        (user && (
-          <div className="mb-6 flex flex-col-reverse justify-end gap-2 empty:hidden md:flex-row">
-            {/* {user && user.can(DELETE, model) && onDeleteBatch && ( */}
+        <div className="hidden flex-col-reverse items-center justify-end gap-2 empty:hidden md:flex md:flex-row">
+          <div className="mt-6 inline-flex items-center gap-x-2 lg:mt-0">
+            {onSearch && <Input.Search style={{ margin: 0 }} onSearch={onSearch} className="mt-6 w-full lg:mt-0 lg:w-fit" placeholder="Cari Data" allowClear />}
+            {filter && (
+              <Popover placement="leftBottom" trigger="click" content={<Crud formFields={filter.formFields} initialData={filter.initialData} isLoading={filter.isLoading} onSubmit={filter.onSubmit} type="create" />}>
+                <Button icon={<FilterOutlined />} />
+              </Popover>
+            )}
+          </div>
+          <>
             {onDeleteBatch && (
-              <Button className="me-auto hidden lg:flex" icon={<DeleteOutlined />} variant="solid" color="danger" disabled={!selectedData?.length} onClick={onDeleteBatch}>
+              <Button className="me-auto" icon={<DeleteOutlined />} variant="solid" color="danger" disabled={!selectedData?.length} onClick={onDeleteBatch}>
                 Hapus {selectedData?.length || null} Pilihan
               </Button>
             )}
-            <div className="mt-6 inline-flex items-center gap-x-2 lg:mt-0">
-              {onSearch && <Input.Search style={{ margin: 0 }} onSearch={onSearch} className="mt-6 w-full lg:mt-0 lg:w-fit" placeholder="Cari Data" allowClear />}
-              {filter && (
-                <Popover placement="leftBottom" trigger="click" content={<Crud formFields={filter.formFields} initialData={filter.initialData} isLoading={filter.isLoading} onSubmit={filter.onSubmit} type="create" />}>
-                  <Button icon={<FilterOutlined />} />
-                </Popover>
-              )}
-            </div>
-            {/* {user && user.can(CREATE, model) && onStore && ( */}
+
             {onStore && (
-              <Button className="hidden lg:flex" icon={<PlusOutlined />} type="primary" onClick={onStore}>
+              <Button icon={<PlusOutlined />} variant="outlined" color="primary" shape="round" onClick={onStore}>
                 Tambah
               </Button>
             )}
             {onImport && (
               <div className="hidden lg:flex">
-                <Dropdown.Button icon={<ImportOutlined />} menu={{ items: importMenuItems }}>
+                <Dropdown.Button trigger={['click']} icon={<ImportOutlined />} menu={{ items: importMenuItems }}>
                   Import
                 </Dropdown.Button>
               </div>
@@ -145,8 +142,19 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
             )}
 
             {children}
-          </div>
-        ))}
+          </>
+        </div>
+      </div>
+      <div className="md:hidden">
+        <div className="mb-4 inline-flex w-full items-center gap-x-2 lg:mt-0">
+          {onSearch && <Input.Search style={{ margin: 0 }} onSearch={onSearch} className="mt-6 w-full lg:mt-0 lg:w-fit" placeholder="Cari Data" allowClear />}
+          {filter && (
+            <Popover placement="leftBottom" trigger="click" content={<Crud formFields={filter.formFields} initialData={filter.initialData} isLoading={filter.isLoading} onSubmit={filter.onSubmit} type="create" />}>
+              <Button icon={<FilterOutlined />} />
+            </Popover>
+          )}
+        </div>
+      </div>
     </>
   );
 }

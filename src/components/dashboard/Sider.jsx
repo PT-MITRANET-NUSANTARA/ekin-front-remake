@@ -1,6 +1,6 @@
 import { dashboardLink } from '@/data/link';
 import { useAuth } from '@/hooks';
-import { Drawer, Grid, Menu, Tooltip } from 'antd';
+import { Drawer, Grid, Image, Menu, Tooltip } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -64,7 +64,9 @@ const DashboardSider = ({ collapsed, onCloseMenu }) => {
   return isDesktop ? (
     <Sider theme="light" className="p-4" width={230} collapsed={collapsed}>
       <Link to="/">
-        <div className="mb-4 flex w-full items-center justify-center"></div>
+        <div className="mb-4 flex w-full items-center justify-center">
+          <Image src="/image_asset/ekin_logo.png" width={40} preview={false} />
+        </div>
       </Link>
       <Menu className="w-full !border-none font-semibold" theme="light" mode="inline" defaultSelectedKeys={[pathname]} items={menuItems} />
     </Sider>

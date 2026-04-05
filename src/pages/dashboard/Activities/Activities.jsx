@@ -5,7 +5,7 @@ import { Button, Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Activities as ActivityModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
@@ -262,14 +262,16 @@ const Activities = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader filter={filter} modul={Modul.ACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllActivities.isLoading}>
-          <DataTable data={activities} columns={column} loading={getAllActivities.isLoading} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={Modul.ACTIVITY} subTitle={'Kelola dan atur data aktivitas dengan mudah. Tambahkan, ubah, atau hapus aktivitas agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader filter={filter} modul={Modul.ACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllActivities.isLoading}>
+            <DataTable data={activities} columns={column} loading={getAllActivities.isLoading} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

@@ -248,8 +248,7 @@ const DetailAbsence = () => {
   }
 
   return (
-    <Card>
-      <DataTableHeader modul={Modul.ABSENCE}></DataTableHeader>
+    <Card title={<DataTableHeader modul={Modul.ABSENCE}></DataTableHeader>}>
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllHarian.isLoading}>
           <DataTable data={daily} columns={column} loading={getAllHarian.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />

@@ -5,7 +5,7 @@ import { Card, Descriptions, Space, Tag } from 'antd';
 import React from 'react';
 import { Goals as GoalModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { indicatorFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
 
@@ -58,7 +58,7 @@ const GoalsIndicators = () => {
       render: (_, record) => (
         <Space size="small">
           <Edit
-            title={`Edit ${Modul.GOAL}`}
+            title={`Edit indikator ${Modul.GOAL}`}
             model={GoalModel}
             onClick={() => {
               modal.edit({
@@ -90,7 +90,7 @@ const GoalsIndicators = () => {
             }}
           />
           <Delete
-            title={`Delete ${Modul.GOAL}`}
+            title={`Delete indikator ${Modul.GOAL}`}
             model={GoalModel}
             onClick={() => {
               modal.delete.default({
@@ -127,7 +127,7 @@ const GoalsIndicators = () => {
 
   const onCreate = () => {
     modal.create({
-      title: `Tambah ${Modul.GOAL}`,
+      title: `Tambah indikator ${Modul.GOAL}`,
       formFields: indicatorFormFields(),
       onSubmit: async (values) => {
         const payload = {
@@ -152,20 +152,22 @@ const GoalsIndicators = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader onStore={onCreate} modul={detailGoal?.nama ?? ''} />
-      <Descriptions size="default" column={2} bordered className="mb-4">
-        <Descriptions.Item label="Unit Kerja">{detailGoal?.id_unit?.nama_unor}</Descriptions.Item>
-        <Descriptions.Item label="Judul Tujuan">{detailGoal?.nama}</Descriptions.Item>
-        <Descriptions.Item label="Renstra">
-          <Tag>{detailGoal?.renstra?.tanggal_mulai}</Tag>
-          Hingga <Tag>{detailGoal?.renstra?.tanggal_selesai}</Tag>
-        </Descriptions.Item>
-      </Descriptions>
-      <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={indicators ?? []} columns={column} loading={getDetailGoal.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={`Indikator ${Modul.GOAL}`} subTitle={'Kelola dan atur data indikator tujuan dengan mudah. Tambahkan, ubah, atau hapus indikator tujuan agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader onStore={onCreate} modul={`Indikator ${detailGoal?.nama ?? ''}`} />}>
+        <Descriptions size="default" column={2} bordered className="mb-4">
+          <Descriptions.Item label="Unit Kerja">{detailGoal?.id_unit?.nama_unor}</Descriptions.Item>
+          <Descriptions.Item label="Judul Tujuan">{detailGoal?.nama}</Descriptions.Item>
+          <Descriptions.Item label="Renstra">
+            <Tag>{detailGoal?.renstra?.tanggal_mulai}</Tag>
+            Hingga <Tag>{detailGoal?.renstra?.tanggal_selesai}</Tag>
+          </Descriptions.Item>
+        </Descriptions>
+        <div className="w-full max-w-full overflow-x-auto">
+          <DataTable data={indicators ?? []} columns={column} loading={getDetailGoal.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
+        </div>
+      </Card>
+    </>
   );
 };
 

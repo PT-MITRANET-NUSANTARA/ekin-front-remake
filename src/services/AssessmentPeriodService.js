@@ -45,6 +45,8 @@ export default class AssessmentPeriodService {
    * }}
    */
   static async store(data, token) {
+    console.log(data);
+
     return await api.post('/periode-penilaian', { body: AssessmentPeriod.toApiData(data), token });
   }
 

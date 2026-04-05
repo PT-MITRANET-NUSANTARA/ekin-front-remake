@@ -5,7 +5,7 @@ import { Button, Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Programs as ProgramModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
@@ -211,14 +211,16 @@ const Programs = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader filter={filter} modul={Modul.PROGRAM} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllPrograms.isLoading}>
-          <DataTable data={programs} columns={column} loading={getAllPrograms.isLoading} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={Modul.PROGRAM} subTitle={'Kelola dan atur data program dengan mudah. Tambahkan, ubah, atau hapus program agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader filter={filter} modul={Modul.PROGRAM} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllPrograms.isLoading}>
+            <DataTable data={programs} columns={column} loading={getAllPrograms.isLoading} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

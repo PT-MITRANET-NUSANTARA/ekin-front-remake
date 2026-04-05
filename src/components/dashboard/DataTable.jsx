@@ -1,5 +1,5 @@
-import { SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table } from 'antd';
+import { SearchOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Drawer, Input, Radio, Space, Table } from 'antd';
 import PropTypes from 'prop-types';
 import { useMemo, useRef, useState } from 'react';
 import Highlighter from 'react-highlight-words';
@@ -9,6 +9,8 @@ export default function DataTable({ columns, data, loading, title = '', handleSe
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
   const mappedData = useMemo(() => data.map(map), [data, map]);
+  const [drawer, setDrawer] = useState({ open: false });
+  const [tableSettings, setTableSettings] = useState({ bordered: false, size: 'small', showHeader: true });
 
   const columnsWithNumber = [
     {
@@ -142,23 +144,86 @@ export default function DataTable({ columns, data, loading, title = '', handleSe
   const columnsWithTitle = title ? [{ title, children: enhancedColumns }] : enhancedColumns;
 
   return (
-    <Table
-      rowSelection={handleSelectedData ? { type: 'checkbox', onChange: handleSelectedData } : undefined}
-      columns={columnsWithTitle}
-      dataSource={mappedData}
-      loading={loading}
-      pagination={
-        pagination
-          ? {
-              current: pagination.page,
-              pageSize: pagination.per_page,
-              total: pagination.totalData,
-              onChange: pagination.onChange
-            }
-          : false
-      }
-      {...props}
-    />
+    <div className="relative w-full">
+      <button onClick={() => setDrawer({ open: true })} className="absolute right-0 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-l-lg bg-[#5e9ea0]/40 transition-colors hover:bg-[#5e9ea0]/100">
+        <SettingOutlined className="text-white" />
+      </button>
+
+      <Table
+        showHeader={tableSettings.showHeader}
+        size={tableSettings.size}
+        rowSelection={handleSelectedData ? { type: 'checkbox', onChange: handleSelectedData } : undefined}
+        columns={columnsWithTitle}
+        dataSource={mappedData}
+        loading={loading}
+        bordered={tableSettings.bordered}
+        pagination={
+          pagination
+            ? {
+                current: pagination.page,
+                pageSize: pagination.per_page,
+                total: pagination.totalData,
+                onChange: pagination.onChange
+              }
+            : false
+        }
+        {...props}
+      />
+      <span className="mb-2 block text-xs italic text-gray-500">
+        table set as bordered:<b> {String(tableSettings.bordered)}</b>, size: <b>{String(tableSettings.size)}</b>, show header: <b>{String(tableSettings.showHeader)}</b> (you can always change this in table settings)
+      </span>
+      <Drawer open={drawer.open} onClose={() => setDrawer({ open: false })} title="Table Settings" width={300}>
+        <b>Ukuran Table:</b>
+        <Radio.Group
+          key="table-size"
+          className="my-2"
+          onChange={(e) =>
+            setTableSettings((prev) => ({
+              ...prev,
+              size: e.target.value
+            }))
+          }
+          value={tableSettings.size}
+        >
+          <Radio value="small">Small</Radio>
+          <Radio value="middle">Middle</Radio>
+          <Radio value="large">Large</Radio>
+        </Radio.Group>
+        <hr className="my-2" />
+        <b>Border Table:</b>
+        <Radio.Group
+          key="table-bordered"
+          className="my-2"
+          onChange={(e) =>
+            setTableSettings((prev) => ({
+              ...prev,
+              bordered: e.target.value
+            }))
+          }
+          value={tableSettings.bordered}
+        >
+          <Radio value={true}>Border</Radio>
+          <Radio value={false}>Tanpa Border</Radio>
+        </Radio.Group>
+        <hr className="my-2" />
+        <b>Header Table:</b>
+        <Radio.Group
+          key="table-show-header"
+          className="my-2"
+          onChange={(e) =>
+            setTableSettings((prev) => ({
+              ...prev,
+              showHeader: e.target.value
+            }))
+          }
+          value={tableSettings.showHeader}
+        >
+          <Radio value={true}>Tampilkan</Radio>
+          <Radio value={false}>Sembunyikan</Radio>
+        </Radio.Group>
+        <hr className="my-2" />
+      </Drawer>
+    </div>
   );
 }
 

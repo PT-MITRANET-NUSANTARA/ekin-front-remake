@@ -53,10 +53,12 @@ export default class AssessmentPeriod extends Model {
     const apiData: OutgoingApiData = {
       name: assessmentPeriod.nama,
       periode_start: assessmentPeriod.tanggal_selesai,
-      periode_end: assessmentPeriod.tanggal_selesai,
+      periode_end: assessmentPeriod.tanggal_mulai,
       unit_id: assessmentPeriod.id_unit,
       renstra_id: assessmentPeriod.id_renstra
     };
+
+    console.log(apiData);
 
     return apiData as ReturnType<T, FormValue, OutgoingApiData>;
   }

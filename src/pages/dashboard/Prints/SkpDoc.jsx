@@ -31,20 +31,31 @@ const SkpDoc = () => {
   };
 
   const buildVariables = (data) => {
-    const dataAsn = data?.posjab?.[data.posjab.length - 1];
+    const dataAsn = data?.posjab?.length ? data.posjab[data.posjab.length - 1] : null;
 
-    const lastAtasan = data?.atasan_skp?.[data.atasan_skp.length - 1];
-    const dataAtasan = lastAtasan?.posjab?.[lastAtasan.posjab.length - 1];
+    const lastAtasan = data?.atasan_skp?.length ? data.atasan_skp[data.atasan_skp.length - 1] : null;
+
+    const dataAtasan = lastAtasan?.posjab?.length ? lastAtasan.posjab[lastAtasan.posjab.length - 1] : null;
 
     return {
       nama_asn: dataAsn?.nama_asn ?? '-',
       nama_atasan: dataAtasan?.nama_asn ?? '-',
+
       nip_asn: dataAsn?.nip_asn ?? '-',
       nip_atasan: dataAtasan?.nip_asn ?? '-',
+
       jabatan_asn: dataAsn?.nama_jabatan ?? '-',
       jabatan_atasan: dataAtasan?.nama_jabatan ?? '-',
+
       kinerja_table: SKP_KINERJA_TEMPLATE(data),
-      perilaku_table: SKP_PERILAKU_TEMPLATE(data)
+      perilaku_table: SKP_PERILAKU_TEMPLATE(data),
+
+      pendekatan: data?.pendekatan ?? '-',
+      periode: `${data?.periode_start ?? '-'} - ${data?.periode_end ?? '-'}`,
+
+      unit_asn: data?.unit?.nama_unor ?? '-',
+
+      unit_atasan: lastAtasan?.unit?.nama_unor ?? data?.unit?.nama_unor ?? '-'
     };
   };
 

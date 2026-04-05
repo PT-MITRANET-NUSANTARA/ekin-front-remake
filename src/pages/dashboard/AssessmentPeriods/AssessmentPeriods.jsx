@@ -5,7 +5,7 @@ import { Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { AssessmentPeriod as AssessmentPeriodModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { assessmentPeriodFilterFields, formFields } from './FormFields';
 import dayjs from 'dayjs';
 import { InputType } from '@/constants';
@@ -163,6 +163,7 @@ const AssessmentPeriods = () => {
           tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DD'),
           id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
         };
+
         const { isSuccess, message } = await storeAssessmentPeriod.execute(payload, token);
         if (isSuccess) {
           success('Berhasil', message);
@@ -211,14 +212,16 @@ const AssessmentPeriods = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={Modul.ASSESSMENTPERIOD} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllAssessmentPeriods.isLoading}>
-          <DataTable data={assessmentPeriods} columns={column} loading={getAllAssessmentPeriods.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={`${Modul.ASSESSMENTPERIOD}`} subTitle={'Kelola dan atur data periode asesmen dengan mudah. Tambahkan, ubah, atau hapus periode asesmen agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={Modul.ASSESSMENTPERIOD} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllAssessmentPeriods.isLoading}>
+            <DataTable data={assessmentPeriods} columns={column} loading={getAllAssessmentPeriods.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

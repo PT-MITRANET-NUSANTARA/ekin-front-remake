@@ -5,7 +5,7 @@ import { Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Renstras as RenstraModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { formFields, renstraFilterFields } from './FormFields';
 import dayjs from 'dayjs';
 import { CheckCircleFilled } from '@ant-design/icons';
@@ -255,14 +255,16 @@ const Renstras = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader modul={'Sinkronisasi Rencana Strategi Dengan Visi Misi Kepala Daerah'} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllRenstras.isLoading}>
-          <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={Modul.RENSTRA} subTitle={'Kelola dan atur data rencana strategi dengan mudah. Tambahkan, ubah, atau hapus rencana strategi agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={'Sinkronisasi Rencana Strategi Dengan Visi Misi Kepala Daerah'} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllRenstras.isLoading}>
+            <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

@@ -155,8 +155,7 @@ const Skps = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader filter={filter} modul={Modul.SKP} {...(user?.isJpt ? { onStore: onCreate } : {})} onSearch={(values) => setFilterValues({ search: values })} />
+    <Card title={<DataTableHeader filter={filter} modul={Modul.SKP} {...(user?.isJpt ? { onStore: onCreate } : {})} onSearch={(values) => setFilterValues({ search: values })} />}>
       <Skeleton loading={getAllSkps.isLoading}>
         <div className="flex w-full max-w-full flex-col gap-y-6 overflow-x-auto">
           {skps.map((item) => (

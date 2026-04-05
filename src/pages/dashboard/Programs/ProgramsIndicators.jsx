@@ -5,7 +5,7 @@ import { Card, Descriptions, Space } from 'antd';
 import React from 'react';
 import { Programs as ProgramModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { indicatorFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
@@ -156,18 +156,20 @@ const ProgramsIndicators = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader onStore={onCreate} modul={detailProgram?.nama ?? ''} />
-      <Descriptions size="default" column={2} bordered className="mb-4">
-        <Descriptions.Item label="Unit Kerja">{detailProgram?.id_unit?.nama_unor}</Descriptions.Item>
-        <Descriptions.Item label="Judul Program">{detailProgram?.nama}</Descriptions.Item>
-        <Descriptions.Item label="Tujuan">{detailProgram?.id_tujuan?.nama}</Descriptions.Item>
-        <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailProgram.total_anggaran)}</Descriptions.Item>
-      </Descriptions>
-      <div className="w-full max-w-full overflow-x-auto">
-        <DataTable data={indicators ?? []} columns={column} loading={getDetailProgram.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={`Indikator ${Modul.PROGRAM}`} subTitle={'Kelola dan atur data indikator program dengan mudah. Tambahkan, ubah, atau hapus  indikator program agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader onStore={onCreate} modul={`Indikator Kinerja - ${detailProgram?.nama ?? ''}`} />}>
+        <Descriptions size="default" column={2} bordered className="mb-4">
+          <Descriptions.Item label="Unit Kerja">{detailProgram?.id_unit?.nama_unor}</Descriptions.Item>
+          <Descriptions.Item label="Judul Program">{detailProgram?.nama}</Descriptions.Item>
+          <Descriptions.Item label="Tujuan">{detailProgram?.id_tujuan?.nama}</Descriptions.Item>
+          <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailProgram.total_anggaran)}</Descriptions.Item>
+        </Descriptions>
+        <div className="w-full max-w-full overflow-x-auto">
+          <DataTable data={indicators ?? []} columns={column} loading={getDetailProgram.isLoading} map={(goals) => ({ key: goals.id, ...goals })} />
+        </div>
+      </Card>
+    </>
   );
 };
 

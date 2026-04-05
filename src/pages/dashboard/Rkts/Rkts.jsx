@@ -5,7 +5,7 @@ import { Button, Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Rkts as RktModel } from '@/models';
 import Modul from '@/constants/Modul';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
@@ -310,14 +310,16 @@ const SubActivities = () => {
   };
 
   return (
-    <Card>
-      <DataTableHeader filter={filter} modul={Modul.RKT} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllRkts.isLoading}>
-          <DataTable data={rkts} columns={column} loading={getAllRkts.isLoading} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={`${Modul.RKT}`} subTitle={'Kelola dan atur data rkt dengan mudah. Tambahkan, ubah, atau hapus rkt agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader filter={filter} modul={Modul.RKT} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllRkts.isLoading}>
+            <DataTable data={rkts} columns={column} loading={getAllRkts.isLoading} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 

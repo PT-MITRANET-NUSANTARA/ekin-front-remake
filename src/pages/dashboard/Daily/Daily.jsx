@@ -321,8 +321,7 @@ const Daily = () => {
   );
 
   return (
-    <Card>
-      <DataTableHeader filter={filter} modul={Modul.ABSENCE}></DataTableHeader>
+    <Card title={<DataTableHeader filter={filter} modul={Modul.ABSENCE}></DataTableHeader>}>
       <div className="w-full max-w-full overflow-x-auto">
         <Skeleton loading={getAllHarian.isLoading}>
           <DataTable data={daily} columns={column} loading={getAllHarian.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />

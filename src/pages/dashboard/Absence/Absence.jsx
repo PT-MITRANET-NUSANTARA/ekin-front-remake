@@ -6,7 +6,7 @@ import { Card, Skeleton, Space, Tag, Button } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import React from 'react';
 import { Absence as AbsenceModel } from '@/models';
-import { DataTable, DataTableHeader } from '@/components';
+import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { formFields } from './FormFields';
 import dayjs from 'dayjs';
 import { AbsenceStatus } from '@/constants/AbsenceStatus';
@@ -330,14 +330,16 @@ const Absence = () => {
   );
 
   return (
-    <Card>
-      <DataTableHeader modul="Absensi" filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ ...filterValues, search: values })} />
-      <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getAllAbsence.isLoading}>
-          <DataTable data={absences} columns={column} loading={getAllAbsence.isLoading} map={(absence) => ({ key: absence.id, ...absence })} pagination={pagination} />
-        </Skeleton>
-      </div>
-    </Card>
+    <>
+      <PageExplanation title={`Absensi`} subTitle={'Kelola dan atur data absensi dengan mudah. Tambahkan, ubah, atau hapus data absensi agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul="Absensi" filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ ...filterValues, search: values })} />}>
+        <div className="w-full max-w-full overflow-x-auto">
+          <Skeleton loading={getAllAbsence.isLoading}>
+            <DataTable data={absences} columns={column} loading={getAllAbsence.isLoading} map={(absence) => ({ key: absence.id, ...absence })} pagination={pagination} />
+          </Skeleton>
+        </div>
+      </Card>
+    </>
   );
 };
 
