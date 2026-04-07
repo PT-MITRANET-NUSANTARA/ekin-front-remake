@@ -23,13 +23,17 @@ export interface IncomingApiData {
 }
 
 export interface OutgoingApiData {
-  periode_start: string;
-  periode_end: string;
-  unit_id: number;
-  misi_ids: string[];
+  name: string;
+  desc: string;
+  startDate: string;
+  endDate: string;
+  unitId: number;
+  misiIds: string[];
 }
 
 interface FormValue {
+  nama: string;
+  deskripsi: string;
   tanggal_mulai: string;
   tanggal_selesai: string;
   id_unit: number;
@@ -89,10 +93,12 @@ export default class Renstras extends Model {
   public static toApiData<T extends FormValue | FormValue[]>(renstras: T): ReturnType<T, FormValue, OutgoingApiData> {
     if (Array.isArray(renstras)) return renstras.map((object) => this.toApiData(object)) as ReturnType<T, FormValue, OutgoingApiData>;
     const apiData: OutgoingApiData = {
-      unit_id: renstras.id_unit,
-      periode_start: renstras.tanggal_mulai,
-      periode_end: renstras.tanggal_selesai,
-      misi_ids: renstras.ids_misi
+      name: renstras.nama,
+      desc: renstras.deskripsi,
+      unitId: renstras.id_unit,
+      startDate: renstras.tanggal_mulai,
+      endDate: renstras.tanggal_selesai,
+      misiIds: renstras.ids_misi
     };
 
     return apiData as ReturnType<T, FormValue, OutgoingApiData>;

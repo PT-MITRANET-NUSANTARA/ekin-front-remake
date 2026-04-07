@@ -53,7 +53,6 @@ const Verificators = () => {
       dataIndex: 'jabatan_detail',
       render: (jabatan_detail, record) => {
         if (!Array.isArray(jabatan_detail)) return '-';
-
         return (
           <List
             size="small"

@@ -34,8 +34,7 @@ export const dashboardLink = [
       {
         path: '/dashboard',
         label: 'Dashboard',
-        element: Dashboard.Dashboard,
-        permissions: ['lihat_dashboard'] // ✅ ini publik
+        element: Dashboard.Dashboard
       }
     ]
   },
@@ -46,14 +45,12 @@ export const dashboardLink = [
       {
         path: '/dashboard/visions',
         label: 'Visi',
-        element: Dashboard.Visions,
-        permissions: ['manage_visi']
+        element: Dashboard.Visions
       },
       {
         path: '/dashboard/missions',
         label: 'Misi',
-        element: Dashboard.Missions,
-        permissions: ['manage_misi']
+        element: Dashboard.Missions
       }
     ]
   },
@@ -64,32 +61,27 @@ export const dashboardLink = [
       {
         path: '/dashboard/renstras',
         label: 'Sinkronasi',
-        element: Dashboard.Renstras,
-        permissions: ['manage_renstra']
+        element: Dashboard.Renstras
       },
       {
         path: '/dashboard/goals',
         label: 'Tujuan',
-        element: Dashboard.Goals,
-        permissions: ['manage_renstra']
+        element: Dashboard.Goals
       },
       {
         path: '/dashboard/programs',
         label: 'Program',
-        element: Dashboard.Programs,
-        permissions: ['manage_renstra']
+        element: Dashboard.Programs
       },
       {
         path: '/dashboard/activities',
         label: 'Kegiatan',
-        element: Dashboard.Activities,
-        permissions: ['manage_kegiatan']
+        element: Dashboard.Activities
       },
       {
         path: '/dashboard/subactivities',
         label: 'Sub Kegiatan',
-        element: Dashboard.SubActivities,
-        permissions: ['manage_renstra']
+        element: Dashboard.SubActivities
       }
     ]
   },
@@ -98,8 +90,8 @@ export const dashboardLink = [
     icon: ClusterOutlined,
     children: [
       { path: '/dashboard/rkts', label: 'RKT', element: Dashboard.Rkts, permissions: ['manage_rkts'] },
-      { path: '/dashboard/assessment_periods', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod, permissions: ['manage_assessment_period'] },
-      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas, permissions: ['manage_perjanjian_kinerja'] }
+      { path: '/dashboard/assessment_periods', label: 'Periode Penilaian', element: Dashboard.AssessmentPeriod },
+      { label: 'Perjanjian Kinerja', path: '/dashboard/perjanjian_kinerja', element: Dashboard.PerjanjianKinerjas }
     ]
   },
 
@@ -107,50 +99,43 @@ export const dashboardLink = [
     label: 'SKP',
     icon: FileProtectOutlined,
     path: '/dashboard/skps',
-    element: Dashboard.Skps,
-    permissions: ['manage_skp']
+    element: Dashboard.Skps
   },
   {
     label: 'Umpeg',
     icon: UsergroupAddOutlined,
     path: '/dashboard/umpegs',
-    element: Dashboard.Umpegs,
-    permissions: ['manage_umpegs']
+    element: Dashboard.Umpegs
   },
   {
     label: 'Verificator',
     icon: UsergroupAddOutlined,
     path: '/dashboard/varificator',
-    element: Dashboard.Verificators,
-    permissions: ['manage_verificator']
+    element: Dashboard.Verificators
   },
   {
     label: 'Web Settings',
     icon: SettingOutlined,
     path: '/dashboard/web_settings',
-    element: Dashboard.WebSettings,
-    permissions: ['manage_settings']
+    element: Dashboard.WebSettings
   },
   {
     label: 'Verifikasi',
     icon: CheckCircleOutlined,
     path: '/dashboard/verificate_perjanjian_kinerja',
-    element: Dashboard.VerificatePerjanjianKinerjas,
-    permissions: ['manage_verificate']
+    element: Dashboard.VerificatePerjanjianKinerjas
   },
   {
     label: 'Kegiatan Harian',
     icon: CalendarOutlined,
     path: '/dashboard/harian',
-    element: Dashboard.Daily,
-    permissions: ['lihat_dashboard']
+    element: Dashboard.Daily
   },
   {
     label: 'Absensi',
     icon: ScheduleOutlined,
     path: '/dashboard/absence',
-    element: Dashboard.Absence,
-    permissions: ['lihat_dashboard']
+    element: Dashboard.Absence
   },
   {
     label: 'Kalender',

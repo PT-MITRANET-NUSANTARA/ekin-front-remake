@@ -4,7 +4,7 @@ import { Avatar, Card, Descriptions, Skeleton, Typography } from 'antd';
 import React from 'react';
 
 const UserProfile = () => {
-  const { token, user, photoProfile } = useAuth();
+  const { token, user } = useAuth();
   const { execute, ...getAllDetailProfile } = useService(AuthService.getDetailProfile);
   const { execute: fetchSubordinate, ...getAllSubOrdinate } = useService(AuthService.getSubordinate);
 
@@ -26,9 +26,7 @@ const UserProfile = () => {
       <div className="col-span-12 flex w-full flex-col gap-y-4 lg:col-span-4">
         <Card className="w-full" cover={<img src="/image_asset/card_background.png" />}>
           <div className="relative px-4">
-            <div className="absolute -top-16 rounded-full bg-white p-1 shadow-md">
-              <Avatar size={90} src={photoProfile} style={{ color: 'black' }} className="shadow-md" />
-            </div>
+            <div className="absolute -top-16 rounded-full bg-white p-1 shadow-md">{/* <Avatar size={90} src={photoProfile} style={{ color: 'black' }} className="shadow-md" /> */}</div>
           </div>
           <div className="mt-12 px-4">
             <Skeleton loading={getAllDetailProfile.isLoading}>

@@ -28,13 +28,11 @@ import { useCallback, useEffect, useState } from 'react';
 
 export default function AuthProvider({ children }) {
   const { execute: loginService, isLoading: loginIsLoading } = useService(AuthService.login);
-  const { execute: getPhotoService, isLoading: getPhotoServiceLoading } = useService(AuthService.getPhoto);
   const { execute: forgotService, isLoading: forgotIsLoading } = useService(AuthService.forgot);
   const { execute: resetService, isLoading: resetIsLoading } = useService(AuthService.reset);
-  const { execute: getUser, isLoading: getUserIsLoading } = useService(AuthService.me);
+  const { execute: getUser, isLoading: getUserIsLoading } = useService(AuthService.verify);
   const [token, setToken] = useLocalStorage('token', '');
   const [user, setUser] = useState(null);
-  const [photoProfile, setPhotoProfile] = useState(null);
 
   env.dev(() => {
     window.token = token;
@@ -44,7 +42,6 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     if (!token) {
       setUser(null);
-      setPhotoProfile(null);
       return;
     }
 
@@ -67,31 +64,15 @@ export default function AuthProvider({ children }) {
 
   useEffect(() => {
     if (!token) {
-      setPhotoProfile(null);
       return;
     }
 
     const controller = new AbortController();
 
-    const fetchPhoto = async () => {
-      try {
-        const res = await getPhotoService(token, { signal: controller.signal });
-        if (res?.data) {
-          if (photoProfile) URL.revokeObjectURL(photoProfile);
-          setPhotoProfile(res.data);
-        }
-      } catch (error) {
-        if (error.name === 'CanceledError') return;
-        console.error('Error fetching photo profile:', error);
-      }
-    };
-
-    fetchPhoto();
-
     return () => {
       controller.abort();
     };
-  }, [getPhotoService, photoProfile, token]);
+  }, [token]);
 
   const login = useCallback(
     /**
@@ -100,10 +81,10 @@ export default function AuthProvider({ children }) {
      * @returns {Promise<Response>}
      */
     async (username, password) => {
-      const { message, isSuccess, data: token } = await loginService(username, password);
+      const { message, isSuccess, data: loginData } = await loginService(username, password);
       if (!isSuccess) return { message, isSuccess };
 
-      setToken(token);
+      setToken(loginData.token);
       return {
         isSuccess,
         message: 'Login berhasil'
@@ -163,8 +144,7 @@ export default function AuthProvider({ children }) {
         reset,
         token,
         user,
-        photoProfile,
-        isLoading: loginIsLoading || getUserIsLoading || forgotIsLoading || resetIsLoading || getPhotoServiceLoading,
+        isLoading: loginIsLoading || getUserIsLoading || forgotIsLoading || resetIsLoading,
         onUnauthorized
       }}
     >

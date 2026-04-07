@@ -1,7 +1,7 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { VisionsService } from '@/services';
-import { Card, Skeleton, Space } from 'antd';
+import { Card, List, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Visions as VisionModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -23,7 +23,7 @@ const Visions = () => {
     execute({
       token: token,
       page: pagination.page,
-      per_page: pagination.per_page,
+      perPage: pagination.per_page,
       search: filterValues.search
     });
   }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
@@ -46,6 +46,27 @@ const Visions = () => {
       dataIndex: 'deskripsi',
       sorter: (a, b) => a.deskripsi.length - b.deskripsi.length,
       searchable: true
+    },
+    {
+      title: 'Misi',
+      dataIndex: 'misi',
+      sorter: (a, b) => a.misi.length - b.misi.length,
+      searchable: true,
+      render: (record) => {
+        if (!Array.isArray(record)) return '-';
+        return (
+          <List
+            size="small"
+            bordered={false}
+            dataSource={record}
+            renderItem={(item) => (
+              <List.Item key={item.id}>
+                <span>{item.nama}</span>
+              </List.Item>
+            )}
+          />
+        );
+      }
     }
   ];
 

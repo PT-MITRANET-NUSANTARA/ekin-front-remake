@@ -5,8 +5,12 @@ export interface IncomingApiData {
   id: string;
   name: string;
   desc: string;
-  visi_id: string;
-  visi: IncomingVisions;
+  visiId: string;
+  visi: {
+    id: string;
+    name: string;
+    desc: string;
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -14,7 +18,7 @@ export interface IncomingApiData {
 export interface OutgoingApiData {
   name: string;
   desc: string;
-  visi_id: string;
+  visiId: string;
 }
 
 interface FormValue {
@@ -30,8 +34,12 @@ export default class Missions extends Model {
     public id: string,
     public nama: string,
     public deskripsi: string,
-    public id_visi: string,
-    public visi: Visions,
+    public visi_id: string,
+    public visi: {
+      id: string;
+      nama: string;
+      deskripsi: string;
+    },
     public created_at: string,
     public updated_at: string
   ) {
@@ -44,13 +52,11 @@ export default class Missions extends Model {
       apiData.id,
       apiData.name,
       apiData.desc,
-      apiData.visi_id,
+      apiData.visiId,
       {
         id: apiData.visi.id,
         nama: apiData.visi.name,
-        deskripsi: apiData.visi.desc,
-        created_at: apiData.visi.createdAt,
-        updated_at: apiData.visi.updatedAt
+        deskripsi: apiData.visi.desc
       },
       apiData.createdAt,
       apiData.updatedAt
@@ -62,7 +68,7 @@ export default class Missions extends Model {
     const apiData: OutgoingApiData = {
       name: missions.nama,
       desc: missions.deskripsi,
-      visi_id: missions.visi_id
+      visiId: missions.visi_id
     };
 
     return apiData as ReturnType<T, FormValue, OutgoingApiData>;

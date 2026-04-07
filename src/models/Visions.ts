@@ -5,6 +5,12 @@ export interface IncomingApiData {
   id: string;
   name: string;
   desc: string;
+  misi: {
+    id: string;
+    name: string;
+    desc: string;
+    visiId: string;
+  }[];
   createdAt: string;
   updatedAt: string;
 }
@@ -26,6 +32,12 @@ export default class Visions extends Model {
     public id: string,
     public nama: string,
     public deskripsi: string,
+    public misi: {
+      id: string;
+      nama: string;
+      deskripsi: string;
+      visi_id: string;
+    }[],
     public created_at: string,
     public updated_at: string
   ) {
@@ -34,7 +46,19 @@ export default class Visions extends Model {
 
   public static fromApiData<T extends IncomingApiData | IncomingApiData[]>(apiData: T): ReturnType<T, IncomingApiData, Visions> {
     if (Array.isArray(apiData)) return apiData.map((object) => this.fromApiData(object)) as ReturnType<T, IncomingApiData, Visions>;
-    return new Visions(apiData.id, apiData.name, apiData.desc, apiData.createdAt, apiData.updatedAt) as ReturnType<T, IncomingApiData, Visions>;
+    return new Visions(
+      apiData.id,
+      apiData.name,
+      apiData.desc,
+      apiData.misi.map((misi) => ({
+        id: misi.id,
+        nama: misi.name,
+        deskripsi: misi.desc,
+        visi_id: misi.visiId
+      })),
+      apiData.createdAt,
+      apiData.updatedAt
+    ) as ReturnType<T, IncomingApiData, Visions>;
   }
 
   public static toApiData<T extends FormValue | FormValue[]>(visions: T): ReturnType<T, FormValue, OutgoingApiData> {
