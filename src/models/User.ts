@@ -1,155 +1,85 @@
-import { Action, Role } from '@/constants';
+import { Action } from '@/constants';
 import Model, { ModelChildren } from './Model';
-// import Permission from './Permission';
+import Permission from './Permission';
 
 export interface IncomingApiData {
   idASN: number;
-  nipBaru: number;
+  nipBaru: string;
   nama: string;
-  nik: number;
+  nik: string;
   status_asn: string;
   unor: {
     id: number;
     nama: string;
   };
   foto: string;
-  permissions: string[];
-  isAdmin: boolean;
-  isBupati: boolean;
-  isJpt: boolean;
-  pimpinan: {
-    id: string;
-    namaUnor: string;
-    namaJabatan: string;
-    eselon: {
-      id: number;
-      nama: string;
-    };
-    asn: {
-      asn_id: string;
-      asn_nama: string;
-    };
-    atasan: string;
-    induk: {
-      id_sapk: string;
-      id_simpeg: number;
-      nama: string;
-    };
-  };
-  umpegs: {
-    id: string;
-    unit_id: number;
-    jabatan: string[];
-    created_at: string;
-    updated_at: string;
-    unit: {
-      id_sapk: string;
-      id_simpeg: number;
-      nama_unor: string;
-    };
-  }[];
+  roles: string[];
+  authorities: string[];
 }
 
 export default class User extends Model {
   constructor(
-    public idAsn: number,
-    public newNip: number,
-    public name: string,
-    public nik: number,
-    public asn_status: string,
+    public id: number,
+    public nip_baru: string,
+    public nama: string,
+    public nik: string,
+    public status_asn: string,
     public unor: {
       id: number;
       nama: string;
     },
     public photo: string,
-    public isAdmin: boolean,
-    public isBupati: boolean,
-    public isJpt: boolean,
-    public pimpinan: {
-      id: string;
-      unorName: string;
-      jabatanName: string;
-      eselon: {
-        id: number;
-        name: string;
-      };
-      asn: {
-        asn_id: string;
-        asn_name: string;
-      };
-      atasan: string;
-      induk: {
-        id_sapk: string;
-        id_simpeg: number;
-        name: string;
-      };
-    },
-    public permissions: string[] = [],
-    public umpegs: {
-      id: string;
-      unit_id: number;
-      jabatan: string[];
-      created_at: string;
-      updated_at: string;
-      unit: {
-        id_sapk: string;
-        id_simpeg: number;
-        nama_unor: string;
-      };
-    }[]
+    public roles: string[],
+    public permissions: Permission[] = []
   ) {
     super();
   }
 
-  static fromApiData(apiData: IncomingApiData, token: string): User {
-    const adminPermissions = [
-      'lihat_dashboard',
-      'manage_visi',
-      'manage_misi',
-      'manage_renstra',
-      'manage_goals',
-      'manage_skp',
-      'manage_umpegs',
-      'manage_verificator',
-      'manage_kegiatan',
-      'manage_subkegiatan',
-      'manage_rkts',
-      'manage_assessment_period',
-      'manage_perjanjian_kinerja',
-      'manage_settings',
-      'manage_verificate'
-    ];
+  can(action: Action, model: ModelChildren) {
+    return this.permissions.some((permission) => permission.can(action, model));
+  }
 
-    const umpegPermission = ['lihat_dashboard', 'manage_renstra', 'manage_goals', 'manage_skp', 'manage_kegiatan', 'manage_subkegiatan', 'manage_rkts', 'manage_assessment_period', 'manage_perjanjian_kinerja', 'manage_settings'];
+  cant(action: Action, model: ModelChildren) {
+    return !this.can(action, model);
+  }
 
-    const jptPermissions = ['lihat_dashboard', 'manage_skp'];
+  eitherCan(...permissions: [Action, ModelChildren][]) {
+    return permissions.some(([action, model]) => this.can(action, model));
+  }
 
-    // Prioritas: Admin > Bupati > JPT
-    let permissions: string[] = [];
-    if (apiData.isAdmin) {
-      permissions = adminPermissions;
-    } else if (apiData.umpegs) {
-      permissions = umpegPermission;
-    } else if (apiData.isJpt) {
-      permissions = jptPermissions;
+  isRole(role: string) {
+    return this.roles.includes(role);
+  }
+
+  eitherRole(...roles: string[]) {
+    return roles.some((role) => this.isRole(role));
+  }
+
+  canAccess(options: { roles?: string[]; permissions?: [Action, ModelChildren][] }) {
+    const { roles, permissions } = options;
+
+    // ❌ tidak ada constraint → boleh akses
+    if (!roles && !permissions) return true;
+
+    // ✅ hanya role
+    if (roles && !permissions) {
+      return this.eitherRole(...roles);
     }
 
-    const mappedUmpegs =
-      apiData.umpegs?.map((item) => ({
-        id: item.id,
-        unit_id: item.unit_id,
-        jabatan: item.jabatan,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        unit: {
-          id_sapk: item.unit.id_sapk,
-          id_simpeg: item.unit.id_simpeg,
-          nama_unor: item.unit.nama_unor
-        }
-      })) || [];
+    // ✅ hanya permission
+    if (!roles && permissions) {
+      return this.eitherCan(...permissions);
+    }
+
+    // ✅ kombinasi: HARUS dua-duanya lolos
+    return this.eitherRole(...(roles || [])) && this.eitherCan(...(permissions || []));
+  }
+
+  static fromApiData(apiData: IncomingApiData): User {
+    const permissions = Permission.fromApiData(apiData.authorities);
 
     return new User(
-      apiData.idASN,
+      Number(apiData.idASN),
       apiData.nipBaru,
       apiData.nama,
       apiData.nik,
@@ -159,36 +89,10 @@ export default class User extends Model {
         nama: apiData.unor.nama
       },
       apiData.foto,
-      apiData.isAdmin,
-      apiData.isBupati,
-      apiData.isJpt,
-      {
-        id: apiData.pimpinan.id,
-        unorName: apiData.pimpinan.namaUnor,
-        jabatanName: apiData.pimpinan.namaJabatan,
-        eselon: {
-          id: apiData.pimpinan.eselon.id,
-          name: apiData.pimpinan.eselon.nama
-        },
-        asn: {
-          asn_id: apiData.pimpinan.asn.asn_id,
-          asn_name: apiData.pimpinan.asn.asn_nama
-        },
-        atasan: apiData.pimpinan.atasan,
-        induk: {
-          id_sapk: apiData.pimpinan.induk.id_sapk,
-          id_simpeg: apiData.pimpinan.induk.id_simpeg,
-          name: apiData.pimpinan.induk.nama
-        }
-      },
-      permissions,
-      mappedUmpegs
+      apiData.roles || [],
+      permissions
     );
   }
-
-  // static toApiData(user: User): OutgoingApiData {
-  //   return {
-  //     email: user.email
-  //   };
-  // }
 }
+
+Model.children.user = User;

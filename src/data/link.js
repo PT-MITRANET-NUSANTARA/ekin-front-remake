@@ -1,3 +1,4 @@
+import { Role } from '@/constants';
 import * as Auth from '@/pages/auth';
 import * as Dashboard from '@/pages/dashboard';
 import * as Landing from '@/pages/landing';
@@ -41,6 +42,7 @@ export const dashboardLink = [
   {
     label: 'Master Data',
     icon: DatabaseOutlined,
+    roles: [Role.ADMIN],
     children: [
       {
         path: '/dashboard/visions',

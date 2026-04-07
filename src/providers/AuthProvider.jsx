@@ -48,6 +48,8 @@ export default function AuthProvider({ children }) {
     const fetchUser = async () => {
       try {
         const { code, data: userData } = await getUser(token);
+        console.log(userData);
+
         if (code === HttpStatusCode.UNAUTHORIZED) {
           setToken(null);
           return;

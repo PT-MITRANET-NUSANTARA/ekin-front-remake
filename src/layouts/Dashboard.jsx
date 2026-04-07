@@ -1,47 +1,49 @@
 import { DashboardFooter, DashboardSider } from '@/components';
 import { useAuth } from '@/hooks';
-import { LogoutOutlined, MenuOutlined } from '@ant-design/icons';
-import { Button, Layout, theme } from 'antd';
+import { LogoutOutlined, MenuOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Button, Dropdown, Layout, Skeleton, theme } from 'antd';
 import { Content, Header } from 'antd/es/layout/layout';
-import { useEffect, useState } from 'react';
+import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [collapsed, setCollapsed] = useState(false);
-  const { logout, token } = useAuth();
+  const [collapsed, setCollapsed] = React.useState(false);
+  const { logout, token, user } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (token) return;
     navigate(`/auth/login?redirect=${pathname}`);
   }, [navigate, token, pathname]);
 
   // const breadcrumbItems = generateBreadcrumb(dashboardLink, pathname);
 
-  // const items = useMemo(
-  //   () => [
-  //     {
-  //       key: '1',
-  //       label: (
-  //         <button onClick={() => navigate('/dashboard/user_profile')} className="flex min-w-32 items-center gap-x-2">
-  //           <UserOutlined />
-  //           Pengaturan Profil
-  //         </button>
-  //       )
-  //     },
-  //     {
-  //       key: '2',
-  //       label: (
-  //         <button onClick={logout} className="text-color-danger-500 flex min-w-32 items-center gap-x-2">
-  //           <LogoutOutlined />
-  //           Logout
-  //         </button>
-  //       )
-  //     }
-  //   ],
-  //   [logout, navigate]
-  // );
+  const items = React.useMemo(
+    () => [
+      {
+        key: '1',
+        label: (
+          <button onClick={() => navigate('/dashboard/user_profile')} className="flex min-w-32 items-center gap-x-2">
+            <UserOutlined />
+            Pengaturan Profil
+          </button>
+        )
+      },
+      {
+        key: '2',
+        label: (
+          <button onClick={logout} className="text-color-danger-500 flex min-w-32 items-center gap-x-2">
+            <LogoutOutlined />
+            Logout
+          </button>
+        )
+      }
+    ],
+    [logout, navigate]
+  );
+
+  console.log(user);
 
   const {
     token: { colorBgContainer }
@@ -60,7 +62,7 @@ const Dashboard = () => {
           <div className="flex h-full w-full items-center justify-between px-4">
             <Button type="text" icon={<MenuOutlined />} onClick={() => setCollapsed(!collapsed)} color="default"></Button>
             <div className="flex items-center gap-x-2">
-              {/* {!user ? (
+              {!user ? (
                 <>
                   <Skeleton.Button active className="leading-4" size="small" />
                   <Skeleton.Avatar active className="leading-4" />
@@ -71,12 +73,11 @@ const Dashboard = () => {
 
                   <Dropdown menu={{ items }}>
                     <a onClick={(e) => e.preventDefault()}>
-
+                      <Avatar src={user.photo} alt={user.name} size="small" />
                     </a>
                   </Dropdown>
                 </>
-              )} */}
-              <Button icon={<LogoutOutlined />} danger onClick={() => logout()} />
+              )}
             </div>
           </div>
         </Header>
