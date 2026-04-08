@@ -3,17 +3,15 @@ import Model from './Model';
 export interface IncomingApiData {
   id: string;
   name: string;
-  unit_id: {
-    id_sapk: string;
-    id_simpeg: number;
-  };
-  total_anggaran: number;
-  kegiatan_id: {
+  unitId: string;
+  totalAnggaran: number;
+  kegiatanId: string;
+  kegiatan: {
     id: string;
     name: string;
-    total_anggaran: number;
+    totalAnggaran: number;
   };
-  indikator_kinerja_id: {
+  indicators: {
     id: string;
     name: string;
     target: string;
@@ -25,10 +23,10 @@ export interface IncomingApiData {
 
 export interface OutgoingApiData {
   name: string;
-  unit_id: number;
-  total_anggaran: number;
-  kegiatan_id: string;
-  indikator_kinerja: {
+  unitId: number;
+  totalAnggaran: number;
+  kegiatanId: string;
+  indicators: {
     name: string;
     target: string;
     satuan: string;
@@ -53,12 +51,10 @@ export default class SubActivities extends Model {
   constructor(
     public id: string,
     public nama: string,
-    public id_unit: {
-      id_sapk: string;
-      id_simpeg: number;
-    },
+    public id_unit: string,
     public total_anggaran: number,
-    public id_kegiatan: {
+    public id_kegiatan: string,
+    public kegiatan: {
       id: string;
       nama: string;
       total_anggaran: number;
@@ -80,17 +76,15 @@ export default class SubActivities extends Model {
     return new SubActivities(
       apiData.id,
       apiData.name,
+      apiData.unitId,
+      Number(apiData.totalAnggaran),
+      apiData.kegiatanId,
       {
-        id_sapk: apiData.unit_id.id_sapk,
-        id_simpeg: apiData.unit_id.id_simpeg
+        id: apiData.kegiatan.id,
+        nama: apiData.kegiatan.name,
+        total_anggaran: apiData.kegiatan.totalAnggaran
       },
-      Number(apiData.total_anggaran),
-      {
-        id: apiData.kegiatan_id.id,
-        nama: apiData.kegiatan_id.name,
-        total_anggaran: apiData.kegiatan_id.total_anggaran
-      },
-      apiData.indikator_kinerja_id.map((item) => ({
+      apiData.indicators.map((item) => ({
         id: item.id,
         nama: item.name,
         target: item.target,
@@ -105,10 +99,10 @@ export default class SubActivities extends Model {
     if (Array.isArray(subActivities)) return subActivities.map((object) => this.toApiData(object)) as ReturnType<T, FormValue, OutgoingApiData>;
     const apiData: OutgoingApiData = {
       name: subActivities.nama,
-      unit_id: subActivities.id_unit,
-      total_anggaran: subActivities.total_anggaran,
-      kegiatan_id: subActivities.id_kegiatan,
-      indikator_kinerja: subActivities.indikator_kinerja.map((item) => ({
+      unitId: subActivities.id_unit,
+      totalAnggaran: subActivities.total_anggaran,
+      kegiatanId: subActivities.id_kegiatan,
+      indicators: subActivities.indikator_kinerja.map((item) => ({
         name: item.nama,
         target: item.target,
         satuan: item.satuan

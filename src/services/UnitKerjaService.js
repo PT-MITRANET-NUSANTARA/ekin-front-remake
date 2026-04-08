@@ -13,7 +13,7 @@ export default class UnitKerjaService {
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/unit-kerja', { token, params });
+    const response = await api.get('/unor?search', { token, params });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }

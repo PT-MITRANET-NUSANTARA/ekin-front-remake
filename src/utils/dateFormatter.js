@@ -7,7 +7,7 @@
  */
 export default function dateFormatter(dateString, format = 'full') {
   if (!dateString) {
-    throw new Error('Date string is required');
+    return '-';
   }
 
   const date = new Date(dateString);

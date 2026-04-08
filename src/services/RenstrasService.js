@@ -15,6 +15,8 @@ export default class RenstrasService {
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
     const response = await api.get('/renstra', { token, params });
+    console.log(response);
+
     if (!response.data) return response;
     return { ...response, data: Renstras.fromApiData(response.data) };
   }

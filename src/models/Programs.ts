@@ -3,17 +3,18 @@ import Model from './Model';
 export interface IncomingApiData {
   id: string;
   name: string;
-  unit_id: {
-    id_sapk: string;
-    id_simpeg: number;
-    nama_unor: string;
-  };
-  total_anggaran: number;
-  tujuan_id: {
+  unitId: string;
+  totalAnggaran: number;
+  tujuanId: string;
+  tujuan: {
     id: string;
     name: string;
+    unitId: number;
+    renstraId: string;
+    createdAt: string;
+    updatedAt: string;
   };
-  indikator_kinerja_id: {
+  indicators: {
     id: string;
     name: string;
     target: string;
@@ -25,10 +26,10 @@ export interface IncomingApiData {
 
 export interface OutgoingApiData {
   name: string;
-  unit_id: number;
-  total_anggaran: number;
-  tujuan_id: string;
-  indikator_kinerja: {
+  unitId: number;
+  totalAnggaran: number;
+  tujuanId: string;
+  indicators: {
     name: string;
     target: string;
     satuan: string;
@@ -53,15 +54,16 @@ export default class Programs extends Model {
   constructor(
     public id: string,
     public nama: string,
-    public id_unit: {
-      id_sapk: string;
-      id_simpeg: number;
-      nama_unor: string;
-    },
+    public id_unit: string,
     public total_anggaran: number,
-    public id_tujuan: {
+    public id_tujuan: string,
+    public tujuan: {
       id: string;
       nama: string;
+      id_unit: number;
+      renstra_id: string;
+      created_at: string;
+      updated_at: string;
     },
     public indikator_kinerja: {
       id: string;
@@ -80,17 +82,18 @@ export default class Programs extends Model {
     return new Programs(
       apiData.id,
       apiData.name,
+      apiData.unitId,
+      Number(apiData.totalAnggaran),
+      apiData.tujuanId,
       {
-        id_sapk: apiData.unit_id.id_sapk,
-        id_simpeg: apiData.unit_id.id_simpeg,
-        nama_unor: apiData.unit_id.nama_unor
+        id: apiData.tujuanId,
+        nama: apiData.tujuan.name,
+        id_unit: apiData.tujuan.unitId,
+        renstra_id: apiData.tujuan.renstraId,
+        created_at: apiData.tujuan.createdAt,
+        updated_at: apiData.tujuan.updatedAt
       },
-      Number(apiData.total_anggaran),
-      {
-        id: apiData.tujuan_id.id,
-        nama: apiData.tujuan_id.name
-      },
-      apiData.indikator_kinerja_id.map((item) => ({
+      apiData.indicators.map((item) => ({
         id: item.id,
         nama: item.name,
         target: item.target,
@@ -105,10 +108,10 @@ export default class Programs extends Model {
     if (Array.isArray(programs)) return programs.map((object) => this.toApiData(object)) as ReturnType<T, FormValue, OutgoingApiData>;
     const apiData: OutgoingApiData = {
       name: programs.nama,
-      unit_id: programs.id_unit,
-      total_anggaran: programs.total_anggaran,
-      tujuan_id: programs.id_tujuan,
-      indikator_kinerja: programs.indikator_kinerja.map((item) => ({
+      unitId: programs.id_unit,
+      totalAnggaran: programs.total_anggaran,
+      tujuanId: programs.id_tujuan,
+      indicators: programs.indikator_kinerja.map((item) => ({
         name: item.nama,
         target: item.target,
         satuan: item.satuan

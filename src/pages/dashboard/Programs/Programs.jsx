@@ -9,8 +9,8 @@ import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
-import { programFormFields, programsFilterFields } from './FormFields';
-import { InputType } from '@/constants';
+import { programFormFields } from './FormFields';
+import { InputType, Role } from '@/constants';
 
 const Programs = () => {
   const { token, user } = useAuth();
@@ -22,7 +22,10 @@ const Programs = () => {
   const deletePrograms = useService(ProgramsService.delete);
   const storePrograms = useService(ProgramsService.store);
   const updatePrograms = useService(ProgramsService.update);
-  const [filterValues, setFilterValues] = React.useState({ search: '' });
+  const [filterValues, setFilterValues] = React.useState({
+    search: ''
+    // unit_id: user?.isRole(Role.ADMIN) ? [] : user?.unor.id,
+  });
   const pagination = usePagination({ totalData: getAllPrograms.totalData });
   const navigate = useNavigate();
 
@@ -30,11 +33,11 @@ const Programs = () => {
     execute({
       token: token,
       page: pagination.page,
-      per_page: pagination.per_page,
-      search: filterValues.search,
-      unit_id: user?.isAdmin ? filterValues.unit_id : user?.unor.id
+      perPage: pagination.per_page,
+      search: filterValues.search
+      // unit_id: user?.isRole(Role.ADMIN) ? filterValues.unit_id : user?.unor.id
     });
-  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.unor.id]);
+  }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
   React.useEffect(() => {
     fetchPrograms();
@@ -62,8 +65,8 @@ const Programs = () => {
     },
     {
       title: 'Nama Tujuan',
-      dataIndex: ['id_tujuan', 'nama'],
-      sorter: (a, b) => a.id_tujuan.nama.length - b.id_tujuan.nama.length,
+      dataIndex: ['tujuan', 'nama'],
+      sorter: (a, b) => a.tujuan.nama.length - b.tujuan.nama.length,
       searchable: true
     }
   ];
@@ -167,9 +170,36 @@ const Programs = () => {
   const onCreate = () => {
     modal.create({
       title: `Tambah ${Modul.PROGRAM}`,
-      formFields: programFormFields({ options: { goals: goals } }),
+      formFields: [
+        ...programFormFields({ options: { goals: goals } }),
+        ...(user.canAccess({ roles: [Role.ADMIN] })
+          ? [
+              {
+                label: `Nama Unit`,
+                name: 'unit_id',
+                type: InputType.SELECT,
+                rules: [
+                  {
+                    required: true,
+                    message: `Nama Unit harus diisi`
+                  }
+                ],
+                options: unitKerja.map((item) => ({
+                  label: item.name,
+                  value: item.id
+                }))
+              }
+            ]
+          : [])
+      ],
       onSubmit: async (values) => {
-        const { isSuccess, message } = await storePrograms.execute({ ...values, id_unit: user?.unor?.id, indikator_kinerja: [], total_anggaran: parseInt(values.total_anggaran) }, token);
+        const payload = {
+          ...values,
+          indikator_kinerja: [],
+          id_unit: user?.isRole(Role.ADMIN) ? values.unit_id : user?.unor.id,
+          total_anggaran: parseInt(values.total_anggaran)
+        };
+        const { isSuccess, message } = await storePrograms.execute(payload, token);
         if (isSuccess) {
           success('Berhasil', message);
           fetchPrograms({ token: token, page: pagination.page, per_page: pagination.per_page });
@@ -181,39 +211,39 @@ const Programs = () => {
     });
   };
 
-  const filter = {
-    formFields: [
-      ...programsFilterFields(),
-      ...(user?.isAdmin
-        ? [
-            {
-              label: `Nama Unit`,
-              name: 'unit_id',
-              type: InputType.SELECT,
-              mode: 'multiple',
-              options: unitKerja.map((item) => ({
-                label: item.nama_unor,
-                value: item.id_simpeg
-              }))
-            }
-          ]
-        : [])
-    ],
-    initialData: {
-      ...(user?.isAdmin ? { unit_id: filterValues.unit_id } : { unit_id: user?.unor.id })
-    },
-    isLoading: getAllPrograms.isLoading,
-    onSubmit: (values) => {
-      setFilterValues({
-        ...(user?.isAdmin ? { unit_id: values.unit_id } : { unit_id: user?.unor.id })
-      });
-    }
-  };
+  // const filter = {
+  //   formFields: [
+  //     ...programsFilterFields(),
+  //     ...(user?.canAccess({ roles: [Role.ADMIN] })
+  //       ? [
+  //         {
+  //           label: `Nama Unit`,
+  //           name: 'unit_id',
+  //           type: InputType.SELECT,
+  //           options: unitKerja.map((item) => ({
+  //             label: item.name,
+  //             value: item.id
+  //           }))
+  //         }
+  //       ]
+  //       : [])
+  //   ],
+  //   initialData: {
+  //     unit_id: filterValues.unit_id
+  //   },
+  //   isLoading: getAllPrograms.isLoading,
+  //   onSubmit: (values) => {
+  //     setFilterValues({
+  //       ...filterValues,
+  //       unit_id: user.isRole(Role.ADMIN) ? values.unit_id : user?.unor.id
+  //     });
+  //   }
+  // };
 
   return (
     <>
       <PageExplanation title={Modul.PROGRAM} subTitle={'Kelola dan atur data program dengan mudah. Tambahkan, ubah, atau hapus program agar tetap relevan dan terorganisir.'} />
-      <Card title={<DataTableHeader filter={filter} modul={Modul.PROGRAM} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+      <Card title={<DataTableHeader modul={Modul.PROGRAM} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
         <div className="w-full max-w-full overflow-x-auto">
           <Skeleton loading={getAllPrograms.isLoading}>
             <DataTable data={programs} columns={column} loading={getAllPrograms.isLoading} pagination={pagination} />

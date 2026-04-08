@@ -1,4 +1,5 @@
 import { InputType } from '@/constants';
+import dateFormatter from '@/utils/dateFormatter';
 
 export const goalFormFields = ({ options }) => [
   {
@@ -25,7 +26,7 @@ export const goalFormFields = ({ options }) => [
     ],
     size: 'large',
     options: options.renstras.map((item) => ({
-      label: `${item.tanggal_mulai} | Hingga |  ${item.tanggal_selesai}`,
+      label: `${dateFormatter(item.tanggal_mulai)} | Hingga |  ${dateFormatter(item.tanggal_selesai)}`,
       value: item.id
     }))
   }

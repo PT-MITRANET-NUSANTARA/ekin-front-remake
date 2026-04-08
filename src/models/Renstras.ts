@@ -1,25 +1,20 @@
 import Model from './Model';
-import Missions, { IncomingApiData as IncomingMissions } from './Missions';
 
 export interface IncomingApiData {
   id: string;
-  periode_start: string;
-  periode_end: string;
-  unit_id: {
-    id_sapk: string;
-    id_simpeg: number;
-    nama_unor: string;
-  };
-  misi_id: {
+  name: string;
+  desc: string;
+  startDate: string;
+  endDate: string;
+  unitId: string;
+  misis: {
     id: string;
     name: string;
     desc: string;
-    visi_id: string;
+    visiId: string;
     createdAt: string;
     updatedAt: string;
   }[];
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface OutgoingApiData {
@@ -45,13 +40,11 @@ type ReturnType<S, From, To> = S extends From[] ? To[] : To;
 export default class Renstras extends Model {
   constructor(
     public id: string,
+    public name: string,
+    public deskripsi: string,
     public tanggal_mulai: string,
     public tanggal_selesai: string,
-    public id_unit: {
-      id_sapk: string;
-      id_simpeg: number;
-      nama_unor: string;
-    },
+    public id_unit: string,
     public ids_misi: {
       id: string;
       nama: string;
@@ -59,9 +52,7 @@ export default class Renstras extends Model {
       id_visi: string;
       created_at: string;
       updated_at: string;
-    }[],
-    public created_at: string,
-    public updated_at: string
+    }[]
   ) {
     super();
   }
@@ -70,23 +61,19 @@ export default class Renstras extends Model {
     if (Array.isArray(apiData)) return apiData.map((object) => this.fromApiData(object)) as ReturnType<T, IncomingApiData, Renstras>;
     return new Renstras(
       apiData.id,
-      apiData.periode_start,
-      apiData.periode_end,
-      {
-        id_sapk: apiData.unit_id.id_sapk,
-        id_simpeg: apiData.unit_id.id_simpeg,
-        nama_unor: apiData.unit_id.nama_unor
-      },
-      apiData.misi_id.map((mision) => ({
+      apiData.name,
+      apiData.desc,
+      apiData.startDate,
+      apiData.endDate,
+      apiData.unitId,
+      apiData.misis.map((mision) => ({
         id: mision.id,
-        id_visi: mision.visi_id,
+        id_visi: mision.visiId,
         nama: mision.name,
         deskripsi: mision.desc,
         created_at: mision.createdAt,
         updated_at: mision.updatedAt
-      })),
-      apiData.createdAt,
-      apiData.updatedAt
+      }))
     ) as ReturnType<T, IncomingApiData, Renstras>;
   }
 

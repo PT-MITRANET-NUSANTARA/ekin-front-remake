@@ -3,18 +3,15 @@ import Model from './Model';
 export interface IncomingApiData {
   id: string;
   name: string;
-  unit_id: {
-    id_sapk: string;
-    id_simpeg: number;
-    nama_unor: string;
-  };
-  total_anggaran: number;
-  program_id: {
+  unitId: string;
+  totalAnggaran: number;
+  programId: string;
+  program: {
     id: string;
     name: string;
-    total_anggaran: number;
+    totalAnggaran: number;
   };
-  indikator_kinerja_id: {
+  indicators: {
     id: string;
     name: string;
     target: string;
@@ -26,10 +23,10 @@ export interface IncomingApiData {
 
 export interface OutgoingApiData {
   name: string;
-  unit_id: number;
-  total_anggaran: number;
-  program_id: string;
-  indikator_kinerja: {
+  unitId: number;
+  totalAnggaran: number;
+  programId: string;
+  indicators: {
     name: string;
     target: string;
     satuan: string;
@@ -54,13 +51,10 @@ export default class Activities extends Model {
   constructor(
     public id: string,
     public nama: string,
-    public id_unit: {
-      id_sapk: string;
-      id_simpeg: number;
-      nama_unor: string;
-    },
+    public id_unit: string,
     public total_anggaran: number,
-    public id_program: {
+    public id_program: string,
+    public program: {
       id: string;
       nama: string;
       total_anggaran: number;
@@ -82,18 +76,15 @@ export default class Activities extends Model {
     return new Activities(
       apiData.id,
       apiData.name,
+      apiData.unitId,
+      Number(apiData.totalAnggaran),
+      apiData.programId,
       {
-        id_sapk: apiData.unit_id.id_sapk,
-        id_simpeg: apiData.unit_id.id_simpeg,
-        nama_unor: apiData.unit_id.nama_unor
+        id: apiData.program.id,
+        nama: apiData.program.name,
+        total_anggaran: apiData.program.totalAnggaran
       },
-      Number(apiData.total_anggaran),
-      {
-        id: apiData.program_id.id,
-        nama: apiData.program_id.name,
-        total_anggaran: apiData.program_id.total_anggaran
-      },
-      apiData.indikator_kinerja_id.map((item) => ({
+      apiData.indicators.map((item) => ({
         id: item.id,
         nama: item.name,
         target: item.target,
@@ -108,10 +99,10 @@ export default class Activities extends Model {
     if (Array.isArray(activities)) return activities.map((object) => this.toApiData(object)) as ReturnType<T, FormValue, OutgoingApiData>;
     const apiData: OutgoingApiData = {
       name: activities.nama,
-      unit_id: activities.id_unit,
-      total_anggaran: activities.total_anggaran,
-      program_id: activities.id_program,
-      indikator_kinerja: activities.indikator_kinerja.map((item) => ({
+      unitId: activities.id_unit,
+      totalAnggaran: activities.total_anggaran,
+      programId: activities.id_program,
+      indicators: activities.indikator_kinerja.map((item) => ({
         name: item.nama,
         target: item.target,
         satuan: item.satuan
