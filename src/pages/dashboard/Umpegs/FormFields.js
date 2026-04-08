@@ -2,8 +2,19 @@ import { InputType } from '@/constants';
 
 export const unorFormFields = ({ options }) => [
   {
+    label: `Nama`,
+    name: 'name',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Nama harus diisi`
+      }
+    ]
+  },
+  {
     label: `Unit Organisasi`,
-    name: 'unit_id',
+    name: 'unitId',
     type: InputType.SELECT,
     rules: [
       {
@@ -13,26 +24,26 @@ export const unorFormFields = ({ options }) => [
     ],
     size: 'large',
     options: options.unors.map((item) => ({
-      label: item.nama_unor,
-      value: String(item.id_simpeg)
+      label: item.name,
+      value: item.id
     }))
   }
 ];
 
 export const jabatanFormFields = ({ options }) => [
   {
-    label: `Jabatan`,
-    name: 'jabatan',
+    label: `ASN`,
+    name: 'nip',
     type: InputType.SELECT,
     rules: [
       {
         required: true,
-        message: `Jabatan harus diisi`
+        message: `ASN harus diisi`
       }
     ],
-    options: options.jabatans.map((item) => ({
-      label: item,
-      value: item
+    options: options.nips.map((item) => ({
+      label: item.name,
+      value: item.nip
     })),
     size: 'large',
     mode: 'multiple'

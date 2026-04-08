@@ -110,6 +110,12 @@ export const dashboardLink = [
     element: Dashboard.Umpegs
   },
   {
+    label: 'JPT',
+    icon: UsergroupAddOutlined,
+    path: '/dashboard/jpts',
+    element: Dashboard.Jpts
+  },
+  {
     label: 'Verificator',
     icon: UsergroupAddOutlined,
     path: '/dashboard/varificator',

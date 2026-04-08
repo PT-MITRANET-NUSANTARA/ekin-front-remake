@@ -19,6 +19,7 @@ enum Modul {
   FEEDBACK_PERILAKU = 'Feedback Perilaku',
   FEEDBACK_KINERJA = 'Feedback Kinerja',
   UMPEG = 'UMPEG',
+  JPTS = 'JPT',
   VERIFICATOR = 'Verificator',
   ABSENCE = 'Absensi'
 }

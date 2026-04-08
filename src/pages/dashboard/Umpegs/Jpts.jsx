@@ -1,6 +1,6 @@
 import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { UmpegService, UnitKerjaService } from '@/services';
+import { JptService, UnitKerjaService } from '@/services';
 import { Button, Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import Modul from '@/constants/Modul';
@@ -9,21 +9,21 @@ import { unorFormFields } from './FormFields';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-const Umpegs = () => {
+const Jpts = () => {
   const { token, user } = useAuth();
   const modal = useCrudModal();
   const { success, error } = useNotification();
-  const { execute, ...getAllUmpegs } = useService(UmpegService.getAll);
+  const { execute, ...getAllJpts } = useService(JptService.getAll);
   const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
-  const deleteUmpeg = useService(UmpegService.delete);
-  const storeUmpeg = useService(UmpegService.store);
-  const updateUmpeg = useService(UmpegService.update);
+  const deleteJpt = useService(JptService.delete);
+  const storeJpt = useService(JptService.store);
+  const updateJpt = useService(JptService.update);
   const [filterValues, setFilterValues] = React.useState({ search: '' });
-  const pagination = usePagination({ totalData: getAllUmpegs.totalData });
+  const pagination = usePagination({ totalData: getAllJpts.totalData });
 
   const navigate = useNavigate();
 
-  const fetchUmpegs = React.useCallback(() => {
+  const fetchJpts = React.useCallback(() => {
     execute({
       token: token,
       page: pagination.page,
@@ -33,16 +33,16 @@ const Umpegs = () => {
   }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
   React.useEffect(() => {
-    fetchUmpegs();
+    fetchJpts();
     fetchUnitKerja({ token: token });
-  }, [fetchUmpegs, fetchUnitKerja, pagination.page, pagination.per_page, token]);
+  }, [fetchJpts, fetchUnitKerja, pagination.page, pagination.per_page, token]);
 
-  const umpegs = getAllUmpegs.data ?? [];
+  const jpts = getAllJpts.data ?? [];
   const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
     {
-      title: 'Nama UMPEG',
+      title: 'Nama JPT',
       dataIndex: 'name',
       sorter: (a, b) => a.name.length - b.name.length,
       searchable: true
@@ -68,17 +68,17 @@ const Umpegs = () => {
       render: (_, record) => (
         <Space size="small">
           <Edit
-            title={`Edit ${Modul.UMPEG}`}
+            title={`Edit ${Modul.JPTS}`}
             onClick={() => {
               modal.edit({
-                title: `Ubah ${Modul.UMPEG}`,
+                title: `Ubah ${Modul.JPTS}`,
                 formFields: unorFormFields({ options: { unors: unitKerja } }),
                 data: { ...record },
                 onSubmit: async (values) => {
-                  const { isSuccess, message } = await updateUmpeg.execute(record.id, { ...values }, token);
+                  const { isSuccess, message } = await updateJpt.execute(record.id, { ...values }, token);
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchUmpegs({ token: token, page: pagination.page, per_page: pagination.per_page });
+                    fetchJpts({ token: token, page: pagination.page, per_page: pagination.per_page });
                   } else {
                     error('Gagal', message);
                   }
@@ -88,16 +88,16 @@ const Umpegs = () => {
             }}
           />
           <Delete
-            title={`Delete ${Modul.UMPEG}`}
+            title={`Delete ${Modul.JPTS}`}
             onClick={() => {
               modal.delete.default({
-                title: `Delete ${Modul.UMPEG}`,
+                title: `Delete ${Modul.JPTS}`,
                 data: record,
                 onSubmit: async () => {
-                  const { isSuccess, message } = await deleteUmpeg.execute(record.id, token);
+                  const { isSuccess, message } = await deleteJpt.execute(record.id, token);
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchUmpegs({ token: token, page: pagination.page, per_page: pagination.per_page });
+                    fetchJpts({ token: token, page: pagination.page, per_page: pagination.per_page });
                   } else {
                     error('Gagal', message);
                   }
@@ -114,13 +114,13 @@ const Umpegs = () => {
 
   const onCreate = () => {
     modal.create({
-      title: `Tambah ${Modul.UMPEG}`,
+      title: `Tambah ${Modul.JPTS}`,
       formFields: unorFormFields({ options: { unors: unitKerja } }),
       onSubmit: async (values) => {
-        const { isSuccess, message } = await storeUmpeg.execute({ ...values, nip: [] }, token);
+        const { isSuccess, message } = await storeJpt.execute({ ...values, nip: [] }, token);
         if (isSuccess) {
           success('Berhasil', message);
-          fetchUmpegs({ token: token, page: pagination.page, per_page: pagination.per_page });
+          fetchJpts({ token: token, page: pagination.page, per_page: pagination.per_page });
         } else {
           error('Gagal', message);
         }
@@ -131,11 +131,11 @@ const Umpegs = () => {
 
   return (
     <>
-      <PageExplanation title={`${Modul.UMPEG}`} subTitle={'Kelola dan atur data umpeg dengan mudah. Tambahkan, ubah, atau hapus umpeg agar tetap relevan dan terorganisir.'} />
-      <Card title={<DataTableHeader modul={Modul.UMPEG} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>}>
+      <PageExplanation title={`${Modul.JPTS}`} subTitle={'Kelola dan atur data jpt dengan mudah. Tambahkan, ubah, atau hapus jpt agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={Modul.JPTS} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })}></DataTableHeader>}>
         <div className="w-full max-w-full overflow-x-auto">
-          <Skeleton loading={getAllUmpegs.isLoading}>
-            <DataTable data={umpegs} columns={column} loading={getAllUmpegs.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
+          <Skeleton loading={getAllJpts.isLoading}>
+            <DataTable data={jpts} columns={column} loading={getAllJpts.isLoading} map={(vision) => ({ key: vision.id, ...vision })} pagination={pagination} />
           </Skeleton>
         </div>
       </Card>
@@ -143,4 +143,4 @@ const Umpegs = () => {
   );
 };
 
-export default Umpegs;
+export default Jpts;

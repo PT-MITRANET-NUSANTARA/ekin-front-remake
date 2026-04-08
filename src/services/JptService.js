@@ -1,19 +1,19 @@
 /* eslint-disable no-unused-vars */
 import api from '@/utils/api';
 
-export default class UnitKerjaService {
+export default class JptService {
   /**
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
-   *  data?: UnitKerja[];
+   *  data?: Jpt[];
    * }>}
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/unor?search', { token, params });
+    const response = await api.get('/jpt', { token, params });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }
@@ -24,47 +24,17 @@ export default class UnitKerjaService {
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
-   *  data?: UnitKerja[];
+   *  data?: Activities[];
    * }>}
    * */
-  static async getAllJabatan(token, id) {
-    const response = await api.get(`/unit-kerja/${id}/jabatan`, { token });
+  static async getById(token, id) {
+    const response = await api.get(`/jpt/${id}`, { token });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }
 
   /**
-   * @param {string} token
-   * @returns {Promise<{
-   *  code: HTTPStatusCode;
-   *  status: boolean;
-   *  message: string;
-   *  data?: UnitKerja[];
-   * }>}
-   * */
-  static async getAllAsn(token, id) {
-    const response = await api.get(`/unor/${id}/asn`, { token });
-    if (!response.data) return response;
-    return { ...response, data: response.data };
-  }
-
-  /**
-   * @param {string} token
-   * @returns {Promise<{
-   *  code: HTTPStatusCode;
-   *  status: boolean;
-   *  message: string;
-   *  data?: UnitKerja[];
-   * }>}
-   * */
-  static async getAllHirarchy(token, unit_id) {
-    const response = await api.get(`/unit-kerja/${unit_id}/unor-hierarchy`, { token });
-    if (!response.data) return response;
-    return { ...response, data: response.data };
-  }
-
-  /**
-   * @param {UnitKerja} data
+   * @param {Umpeg} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -74,12 +44,12 @@ export default class UnitKerjaService {
    * }}
    */
   static async store(data, token) {
-    return await api.post('/unit-kerja', { body: data, token });
+    return await api.post('/jpt', { body: data, token });
   }
 
   /**
    * @param {number} id
-   * @param {UnitKerja} data
+   * @param {Umpeg} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -89,7 +59,7 @@ export default class UnitKerjaService {
    * }>}
    */
   static async update(id, data, token) {
-    return await api.patch(`/unit-kerja/edit/${id}`, { body: data, token });
+    return await api.patch(`/jpt/${id}`, { body: data, token });
   }
 
   /**
@@ -102,7 +72,7 @@ export default class UnitKerjaService {
    * }>}
    */
   static async delete(id, token) {
-    return await api.delete(`/unit-kerja/delete/${id}`, { token });
+    return await api.delete(`/jpt/${id}`, { token });
   }
 
   /**
@@ -115,6 +85,6 @@ export default class UnitKerjaService {
    * }>}
    */
   static async deleteBatch(ids, token) {
-    return await api.delete(`/unit-kerja/multi-delete/?id=${ids.join(',')}`, { token });
+    return await api.delete(`/jpt/multi-delete/?id=${ids.join(',')}`, { token });
   }
 }
