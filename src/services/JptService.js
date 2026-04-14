@@ -1,28 +1,40 @@
 /* eslint-disable no-unused-vars */
-import { Renstras } from '@/models';
 import api from '@/utils/api';
 
-export default class RenstrasService {
+export default class JptService {
   /**
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
-   *  data?: Renstras[];
+   *  data?: Jpt[];
    * }>}
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/renstra', { token, params });
-    console.log(response);
-
+    const response = await api.get('/jpt', { token, params });
     if (!response.data) return response;
-    return { ...response, data: Renstras.fromApiData(response.data) };
+    return { ...response, data: response.data };
   }
 
   /**
-   * @param {Renstras} data
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: Activities[];
+   * }>}
+   * */
+  static async getById(token, id) {
+    const response = await api.get(`/jpt/${id}`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
+   * @param {Umpeg} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -32,12 +44,12 @@ export default class RenstrasService {
    * }}
    */
   static async store(data, token) {
-    return await api.post('/renstra', { body: Renstras.toApiData(data), token });
+    return await api.post('/jpt', { body: data, token });
   }
 
   /**
    * @param {number} id
-   * @param {Renstras} data
+   * @param {Umpeg} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -47,7 +59,7 @@ export default class RenstrasService {
    * }>}
    */
   static async update(id, data, token) {
-    return await api.patch(`/renstra/${id}`, { body: Renstras.toApiData(data), token });
+    return await api.patch(`/jpt/${id}`, { body: data, token });
   }
 
   /**
@@ -60,7 +72,7 @@ export default class RenstrasService {
    * }>}
    */
   static async delete(id, token) {
-    return await api.delete(`/renstra/${id}`, { token });
+    return await api.delete(`/jpt/${id}`, { token });
   }
 
   /**
@@ -73,6 +85,6 @@ export default class RenstrasService {
    * }>}
    */
   static async deleteBatch(ids, token) {
-    return await api.delete(`/renstra/multi-delete/?id=${ids.join(',')}`, { token });
+    return await api.delete(`/jpt/multi-delete/?id=${ids.join(',')}`, { token });
   }
 }

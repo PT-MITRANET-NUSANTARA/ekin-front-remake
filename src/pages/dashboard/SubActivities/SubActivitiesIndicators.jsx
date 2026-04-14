@@ -165,7 +165,7 @@ const SubAcitivitiesIndicators = () => {
       <Card title={<DataTableHeader onStore={onCreate} modul={`Indikator ${detailSubActivity?.nama ?? ''}`} />}>
         <Descriptions size="default" column={2} bordered className="mb-4">
           <Descriptions.Item label="Judul Kegiatan">{detailSubActivity?.nama}</Descriptions.Item>
-          <Descriptions.Item label="Kegiatan">{detailSubActivity?.id_kegiatan?.nama}</Descriptions.Item>
+          <Descriptions.Item label="Kegiatan">{detailSubActivity?.kegiatanas?.nama}</Descriptions.Item>
           <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailSubActivity.total_anggaran)}</Descriptions.Item>
         </Descriptions>
         <div className="w-full max-w-full overflow-x-auto">

@@ -160,9 +160,8 @@ const ProgramsIndicators = () => {
       <PageExplanation title={`Indikator ${Modul.PROGRAM}`} subTitle={'Kelola dan atur data indikator program dengan mudah. Tambahkan, ubah, atau hapus  indikator program agar tetap relevan dan terorganisir.'} />
       <Card title={<DataTableHeader onStore={onCreate} modul={`Indikator Kinerja - ${detailProgram?.nama ?? ''}`} />}>
         <Descriptions size="default" column={2} bordered className="mb-4">
-          <Descriptions.Item label="Unit Kerja">{detailProgram?.id_unit?.nama_unor}</Descriptions.Item>
           <Descriptions.Item label="Judul Program">{detailProgram?.nama}</Descriptions.Item>
-          <Descriptions.Item label="Tujuan">{detailProgram?.id_tujuan?.nama}</Descriptions.Item>
+          <Descriptions.Item label="Tujuan">{detailProgram?.tujuan?.nama}</Descriptions.Item>
           <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailProgram.total_anggaran)}</Descriptions.Item>
         </Descriptions>
         <div className="w-full max-w-full overflow-x-auto">

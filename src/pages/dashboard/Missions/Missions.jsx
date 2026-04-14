@@ -13,7 +13,7 @@ const Missions = () => {
   const modal = useCrudModal();
   const { success, error } = useNotification();
   const { execute, ...getAllMissions } = useService(MissionsService.getAll);
-  const { execute: fetchVision } = useService(VisionsService.getAll);
+  const { execute: fetchVision, ...getAllVisions } = useService(VisionsService.getAll);
   const deleteMission = useService(MissionsService.delete);
   const storeMission = useService(MissionsService.store);
   const updateMission = useService(MissionsService.update);
@@ -24,16 +24,20 @@ const Missions = () => {
     execute({
       token: token,
       page: pagination.page,
-      per_page: pagination.per_page,
+      perPage: pagination.per_page,
       search: filterValues.search
     });
   }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
   React.useEffect(() => {
     fetchMissions();
+    fetchVision({
+      token: token
+    });
   }, [fetchMissions, fetchVision, pagination.page, pagination.per_page, token]);
 
   const missions = getAllMissions.data ?? [];
+  const visi = getAllVisions.data ?? [];
 
   const column = [
     {
@@ -46,6 +50,12 @@ const Missions = () => {
       title: 'Deksripsi',
       dataIndex: 'deskripsi',
       sorter: (a, b) => a.deskripsi.length - b.deskripsi.length,
+      searchable: true
+    },
+    {
+      title: 'Visi',
+      dataIndex: ['visi', 'nama'],
+      sorter: (a, b) => a.visi.nama.length - b.visi.nama.length,
       searchable: true
     }
   ];
@@ -137,7 +147,7 @@ const Missions = () => {
   const onCreate = () => {
     modal.create({
       title: `Tambah ${Modul.MISSION}`,
-      formFields: formFields({ fetchVision }),
+      formFields: formFields({ options: { visi: visi } }),
       onSubmit: async (values) => {
         const { isSuccess, message } = await storeMission.execute(values, token);
         if (isSuccess) {

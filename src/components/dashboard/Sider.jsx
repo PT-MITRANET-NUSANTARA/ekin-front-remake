@@ -1,6 +1,6 @@
 import { dashboardLink } from '@/data/link';
 import { useAuth } from '@/hooks';
-import { Drawer, Grid, Image, Menu, Tooltip } from 'antd';
+import { Drawer, Grid, Image, Menu } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -16,46 +16,41 @@ const DashboardSider = ({ collapsed, onCloseMenu }) => {
   // Tidak ada filter permission — semua item tampil
   const menuItems = dashboardLink
     .filter((item) => {
-      // Jika ada children → cek permission anak
+      if (!user) return false;
+
+      // 🔥 cek parent
+      const canAccessParent = user.canAccess({
+        roles: item.roles,
+        permissions: item.permissions
+      });
+
       if (item.children && item.children.length > 0) {
-        return item.children.some((child) => {
-          if (!child.permissions || child.permissions.length === 0) return true;
-          return child.permissions.some((perm) => user?.permissions?.includes(perm));
+        const filteredChildren = item.children.filter((child) => {
+          return user.canAccess({
+            roles: child.roles ?? item.roles,
+            permissions: child.permissions ?? item.permissions
+          });
         });
+
+        return filteredChildren.length > 0;
       }
 
-      // Jika tidak ada children → cek permission parent
-      if (item.permissions && item.permissions.length > 0) {
-        return item.permissions.some((perm) => user?.permissions?.includes(perm));
-      }
-
-      // Tidak ada permission → tampilkan
-      return true;
+      return canAccessParent;
     })
     .map(({ label, children, icon: Icon, path }) => ({
       key: path || label,
-      label: (
-        <Tooltip title={label} placement="right" color="blue">
-          <span>{label}</span>
-        </Tooltip>
-      ),
-      icon: Icon && (
-        <Tooltip title={label} placement="right" color="blue">
-          <Icon />
-        </Tooltip>
-      ),
+      label: <span>{label}</span>,
+      icon: Icon && <Icon />,
       children: children
-        ?.filter((child) => {
-          if (!child.permissions || child.permissions.length === 0) return true;
-          return child.permissions.some((perm) => user?.permissions?.includes(perm));
-        })
+        ?.filter((child) =>
+          user?.canAccess({
+            roles: child.roles,
+            permissions: child.permissions
+          })
+        )
         .map(({ path, label }) => ({
           key: path,
-          label: (
-            <Tooltip title={label} placement="right" color="blue">
-              <span>{label}</span>
-            </Tooltip>
-          ),
+          label: <span>{label}</span>,
           onClick: () => path && navigate(path)
         })),
       onClick: !children || children.length === 0 ? () => path && navigate(path) : undefined

@@ -1,25 +1,25 @@
 import { DashboardFooter, DashboardSider } from '@/components';
 import { useAuth } from '@/hooks';
 import { LogoutOutlined, MenuOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Dropdown, Layout, Skeleton, Space, theme } from 'antd';
+import { Avatar, Button, Dropdown, Layout, Skeleton, theme } from 'antd';
 import { Content, Header } from 'antd/es/layout/layout';
-import { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [collapsed, setCollapsed] = useState(false);
-  const { logout, token, user, photoProfile } = useAuth();
+  const [collapsed, setCollapsed] = React.useState(false);
+  const { logout, token, user } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (token) return;
     navigate(`/auth/login?redirect=${pathname}`);
   }, [navigate, token, pathname]);
 
   // const breadcrumbItems = generateBreadcrumb(dashboardLink, pathname);
 
-  const items = useMemo(
+  const items = React.useMemo(
     () => [
       {
         key: '1',
@@ -42,6 +42,8 @@ const Dashboard = () => {
     ],
     [logout, navigate]
   );
+
+  console.log(user);
 
   const {
     token: { colorBgContainer }
@@ -71,9 +73,7 @@ const Dashboard = () => {
 
                   <Dropdown menu={{ items }}>
                     <a onClick={(e) => e.preventDefault()}>
-                      <Space>
-                        <Avatar src={photoProfile} />
-                      </Space>
+                      <Avatar src={user.photo} alt={user.name} size="small" />
                     </a>
                   </Dropdown>
                 </>

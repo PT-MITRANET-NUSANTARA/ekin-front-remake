@@ -7,9 +7,9 @@ import { Goals as GoalModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
-import { goalFormFields, goalsFilterFields } from './FormFields';
+import { goalFormFields } from './FormFields';
 import { useNavigate } from 'react-router-dom';
-import { InputType } from '@/constants';
+import { InputType, Role } from '@/constants';
 
 const Goals = () => {
   const { token, user } = useAuth();
@@ -23,8 +23,8 @@ const Goals = () => {
   const storeGoals = useService(GoalsService.store);
   const updateGoals = useService(GoalsService.update);
   const [filterValues, setFilterValues] = React.useState({
-    unit_id: user?.isAdmin || user?.umpegs?.length ? [] : user?.unor.id,
     search: ''
+    // unit_id: user?.isRole(Role.ADMIN) ? [] : user?.unor.id,
   });
   const pagination = usePagination({ totalData: getAllGoals.totalData });
   const navigate = useNavigate();
@@ -33,11 +33,11 @@ const Goals = () => {
     execute({
       token: token,
       page: pagination.page,
-      per_page: pagination.per_page,
-      search: filterValues.search,
-      unit_id: user?.isAdmin || user?.umpegs ? filterValues.unit_id : user?.unor.id
+      perPage: pagination.per_page,
+      search: filterValues.search
+      //  unit_id: user?.isRole(Role.ADMIN) ? filterValues.unit_id : user?.unor.id
     });
-  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.umpegs, user?.unor.id]);
+  }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
   React.useEffect(() => {
     fetchGoals();
@@ -57,9 +57,9 @@ const Goals = () => {
       searchable: true
     },
     {
-      title: 'Unit ',
-      dataIndex: ['id_unit', 'nama_unor'],
-      sorter: (a, b) => a.id_unit.nama_unor.length - b.id_unit.nama_unor.length,
+      title: 'Renstra ',
+      dataIndex: ['renstra', 'nama'],
+      sorter: (a, b) => a.renstra.nama.length - b.renstra.nama.length,
       searchable: true
     }
   ];
@@ -170,7 +170,7 @@ const Goals = () => {
       title: `Tambah ${Modul.GOAL}`,
       formFields: [
         ...goalFormFields({ options: { renstras: renstras } }),
-        ...(user?.isAdmin || user?.umpegs?.length
+        ...(user.canAccess({ roles: [Role.ADMIN] })
           ? [
               {
                 label: `Nama Unit`,
@@ -182,15 +182,10 @@ const Goals = () => {
                     message: `Nama Unit harus diisi`
                   }
                 ],
-                options: user?.isAdmin
-                  ? unitKerja.map((item) => ({
-                      label: item.nama_unor,
-                      value: item.id_simpeg
-                    }))
-                  : user.umpegs.map((item) => ({
-                      label: item.unit.nama_unor,
-                      value: item.unit.id_simpeg
-                    }))
+                options: unitKerja.map((item) => ({
+                  label: item.name,
+                  value: item.id
+                }))
               }
             ]
           : [])
@@ -199,7 +194,7 @@ const Goals = () => {
         const payload = {
           ...values,
           indikator_kinerja: [],
-          id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
+          id_unit: user?.isRole(Role.ADMIN) ? values.unit_id : user?.unor.id
         };
         const { isSuccess, message } = await storeGoals.execute(payload, token);
         if (isSuccess) {
@@ -213,45 +208,39 @@ const Goals = () => {
     });
   };
 
-  const filter = {
-    formFields: [
-      ...goalsFilterFields(),
-      ...(user?.isAdmin || user?.umpegs?.length
-        ? [
-            {
-              label: `Nama Unit`,
-              name: 'unit_id',
-              type: InputType.SELECT,
-              mode: 'multiple',
-              options: user?.isAdmin
-                ? unitKerja.map((item) => ({
-                    label: item.nama_unor,
-                    value: item.id_simpeg
-                  }))
-                : user.umpegs.map((item) => ({
-                    label: item.unit.nama_unor,
-                    value: item.unit.id_simpeg
-                  }))
-            }
-          ]
-        : [])
-    ],
-    initialData: {
-      unit_id: filterValues.unit_id
-    },
-    isLoading: getAllGoals.isLoading,
-    onSubmit: (values) => {
-      setFilterValues({
-        ...filterValues,
-        unit_id: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user?.unor.id
-      });
-    }
-  };
+  // const filter = {
+  //   formFields: [
+  //     ...goalsFilterFields(),
+  //     ...(user?.canAccess({ roles: [Role.ADMIN] })
+  //       ? [
+  //         {
+  //           label: `Nama Unit`,
+  //           name: 'unit_id',
+  //           type: InputType.SELECT,
+  //           options: unitKerja.map((item) => ({
+  //             label: item.name,
+  //             value: item.id
+  //           }))
+  //         }
+  //       ]
+  //       : [])
+  //   ],
+  //   initialData: {
+  //     unit_id: filterValues.unit_id
+  //   },
+  //   isLoading: getAllGoals.isLoading,
+  //   onSubmit: (values) => {
+  //     setFilterValues({
+  //       ...filterValues,
+  //       unit_id: user.isRole(Role.ADMIN) ? values.unit_id : user?.unor.id
+  //     });
+  //   }
+  // };
 
   return (
     <>
       <PageExplanation title={Modul.GOAL} subTitle={'Kelola dan atur data tujuan dengan mudah. Tambahkan, ubah, atau hapus tujuan agar tetap relevan dan terorganisir.'} />
-      <Card title={<DataTableHeader modul={Modul.GOAL} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+      <Card title={<DataTableHeader modul={Modul.GOAL} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
         <div className="w-full max-w-full overflow-x-auto">
           <Skeleton loading={getAllGoals.isLoading}>
             <DataTable data={goals} columns={column} loading={getAllGoals.isLoading} pagination={pagination} />

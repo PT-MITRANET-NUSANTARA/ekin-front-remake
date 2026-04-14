@@ -22,6 +22,21 @@ export default class AuthService {
     };
   }
 
+  // /**
+  //  * @param {string} token
+  //  * @returns {Promise<Promise<{
+  //  *   code: HTTPStatusCode,
+  //  *   status: boolean,
+  //  *   message: string,
+  //  *   data?: User
+  //  * }>}
+  //  */
+  // static async me(token) {
+  //   const response = await api.get('/auth/profile', { token });
+  //   if (!response.data) return response;
+  //   return { ...response, data: User.fromApiData(response.data, token) };
+  // }
+
   /**
    * @param {string} token
    * @returns {Promise<Promise<{
@@ -31,8 +46,8 @@ export default class AuthService {
    *   data?: User
    * }>}
    */
-  static async me(token) {
-    const response = await api.get('/auth/profile', { token });
+  static async verify(token) {
+    const response = await api.get('/auth/verify', { token });
     if (!response.data) return response;
     return { ...response, data: User.fromApiData(response.data, token) };
   }

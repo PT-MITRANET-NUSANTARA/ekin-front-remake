@@ -1,4 +1,4 @@
-type ModelKeys = 'visi' | 'misi' | 'renstra' | 'tujuan' | 'program' | 'kegiatan' | 'subkegiatan' | 'penduduk' | 'rkt' | 'periode_penilaian' | 'perjanjian_kinerja';
+type ModelKeys = 'visi' | 'misi' | 'renstra' | 'tujuan' | 'program' | 'kegiatan' | 'subkegiatan' | 'penduduk' | 'rkt' | 'periode_penilaian' | 'perjanjian_kinerja' | 'user';
 
 export default abstract class Model {
   static children: { [key in ModelKeys]?: ModelChildren | ModelChildren[] } = {
@@ -12,7 +12,8 @@ export default abstract class Model {
     penduduk: undefined,
     rkt: undefined,
     periode_penilaian: undefined,
-    perjanjian_kinerja: undefined
+    perjanjian_kinerja: undefined,
+    user: undefined
   };
 }
 

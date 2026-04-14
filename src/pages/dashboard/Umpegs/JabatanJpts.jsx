@@ -1,6 +1,6 @@
 import { Delete } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
-import { UmpegService, UnitKerjaService } from '@/services';
+import { JptService, UnitKerjaService } from '@/services';
 import { Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import Modul from '@/constants/Modul';
@@ -8,26 +8,26 @@ import { DataTable, DataTableHeader } from '@/components';
 import { jabatanFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
 
-const Umpegs = () => {
+const Jpts = () => {
   const { token, user } = useAuth();
   const modal = useCrudModal();
   const { id } = useParams();
   const { success, error } = useNotification();
-  const { execute, ...getDetailUmpeg } = useService(UmpegService.getById);
+  const { execute, ...getDetailJpt } = useService(JptService.getById);
   const { execute: fetchAllAsn, ...getAvailableJabatan } = useService(UnitKerjaService.getAllAsn);
-  const updateUmpeg = useService(UmpegService.update);
+  const updateJpt = useService(JptService.update);
 
   const asn = getAvailableJabatan.data ?? [];
-  const detailUmpeg = getDetailUmpeg.data ?? [];
+  const detailJpt = getDetailJpt.data ?? [];
 
-  const fetchUmpegDetail = React.useCallback(() => {
+  const fetchJptDetail = React.useCallback(() => {
     execute(token, id);
   }, [execute, id, token]);
 
   React.useEffect(() => {
-    fetchUmpegDetail();
-    fetchAllAsn(token, detailUmpeg.unitId);
-  }, [detailUmpeg.unitId, detailUmpeg.unit_id, fetchAllAsn, fetchUmpegDetail, id, token]);
+    fetchJptDetail();
+    fetchAllAsn(token, detailJpt.unitId);
+  }, [detailJpt.unitId, detailJpt.unit_id, fetchAllAsn, fetchJptDetail, id, token]);
 
   const column = [
     {
@@ -42,19 +42,19 @@ const Umpegs = () => {
       render: (_, record) => (
         <Space size="small">
           <Delete
-            title={`Delete ${Modul.UMPEG}`}
+            title={`Delete ${Modul.JPTS}`}
             onClick={() => {
               modal.delete.default({
                 title: `Hapus ASN`,
                 data: record,
                 onSubmit: async () => {
-                  const updatedJabatan = (detailUmpeg.jabatan ?? []).filter((j) => j !== record.jabatan);
+                  const updatedJabatan = (detailJpt.jabatan ?? []).filter((j) => j !== record.jabatan);
 
-                  const { isSuccess, message } = await updateUmpeg.execute(id, { ...detailUmpeg, jabatan: updatedJabatan }, token);
+                  const { isSuccess, message } = await updateJpt.execute(id, { ...detailJpt, jabatan: updatedJabatan }, token);
 
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchUmpegDetail(token, id);
+                    fetchJptDetail(token, id);
                   } else {
                     error('Gagal', message);
                   }
@@ -75,13 +75,13 @@ const Umpegs = () => {
       onSubmit: async (values) => {
         const newNips = Array.isArray(values.nip) ? values.nip : [values.nip];
 
-        const updatedJabatan = [...(detailUmpeg.nip ?? []), ...newNips];
+        const updatedJabatan = [...(detailJpt.nip ?? []), ...newNips];
 
-        const { isSuccess, message } = await updateUmpeg.execute(id, { name: detailUmpeg.name, unitId: detailUmpeg.unitId, nip: updatedJabatan }, token);
+        const { isSuccess, message } = await updateJpt.execute(id, { name: detailJpt.name, unitId: detailJpt.unitId, nip: updatedJabatan }, token);
 
         if (isSuccess) {
           success('Berhasil', message);
-          fetchUmpegDetail(token, id);
+          fetchJptDetail(token, id);
         } else {
           error('Gagal', message);
         }
@@ -91,14 +91,14 @@ const Umpegs = () => {
   };
 
   return (
-    <Card title={<DataTableHeader modul={`list ASN - ${detailUmpeg?.name}`} onStore={onCreate}></DataTableHeader>}>
+    <Card title={<DataTableHeader modul={`list ASN - ${detailJpt?.name}`} onStore={onCreate}></DataTableHeader>}>
       <div className="w-full max-w-full overflow-x-auto">
-        <Skeleton loading={getDetailUmpeg.isLoading}>
-          <DataTable data={detailUmpeg?.nip ?? []} columns={column} loading={getDetailUmpeg.isLoading} />
+        <Skeleton loading={getDetailJpt.isLoading}>
+          <DataTable data={detailJpt?.nip ?? []} columns={column} loading={getDetailJpt.isLoading} />
         </Skeleton>
       </div>
     </Card>
   );
 };
 
-export default Umpegs;
+export default Jpts;

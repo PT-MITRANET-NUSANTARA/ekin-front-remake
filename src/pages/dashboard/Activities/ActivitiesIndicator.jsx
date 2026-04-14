@@ -160,9 +160,8 @@ const AcitivitiesIndicators = () => {
       <PageExplanation title={`Indikator ${Modul.ACTIVITY}`} subTitle={'Kelola dan atur data indikator kegiatan dengan mudah. Tambahkan, ubah, atau hapus  indikator kegiatan agar tetap relevan dan terorganisir.'} />
       <Card title={<DataTableHeader onStore={onCreate} modul={detailActivity?.nama ?? ''} />}>
         <Descriptions size="default" column={2} bordered className="mb-4">
-          <Descriptions.Item label="Unit Kerja">{detailActivity?.id_unit?.nama_unor}</Descriptions.Item>
           <Descriptions.Item label="Judul Kegiatan">{detailActivity?.nama}</Descriptions.Item>
-          <Descriptions.Item label="Program">{detailActivity?.id_program?.nama}</Descriptions.Item>
+          <Descriptions.Item label="Program">{detailActivity?.program?.nama}</Descriptions.Item>
           <Descriptions.Item label="Total Anggaran">{rupiahFormat(detailActivity.total_anggaran)}</Descriptions.Item>
         </Descriptions>
         <div className="w-full max-w-full overflow-x-auto">

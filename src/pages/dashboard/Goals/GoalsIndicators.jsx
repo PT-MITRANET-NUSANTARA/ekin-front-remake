@@ -8,6 +8,7 @@ import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { indicatorFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
+import dateFormatter from '@/utils/dateFormatter';
 
 const GoalsIndicators = () => {
   const { id } = useParams();
@@ -156,11 +157,10 @@ const GoalsIndicators = () => {
       <PageExplanation title={`Indikator ${Modul.GOAL}`} subTitle={'Kelola dan atur data indikator tujuan dengan mudah. Tambahkan, ubah, atau hapus indikator tujuan agar tetap relevan dan terorganisir.'} />
       <Card title={<DataTableHeader onStore={onCreate} modul={`Indikator ${detailGoal?.nama ?? ''}`} />}>
         <Descriptions size="default" column={2} bordered className="mb-4">
-          <Descriptions.Item label="Unit Kerja">{detailGoal?.id_unit?.nama_unor}</Descriptions.Item>
           <Descriptions.Item label="Judul Tujuan">{detailGoal?.nama}</Descriptions.Item>
           <Descriptions.Item label="Renstra">
-            <Tag>{detailGoal?.renstra?.tanggal_mulai}</Tag>
-            Hingga <Tag>{detailGoal?.renstra?.tanggal_selesai}</Tag>
+            <Tag>{dateFormatter(detailGoal?.renstra?.tanggal_mulai)}</Tag>
+            Hingga <Tag>{dateFormatter(detailGoal?.renstra?.tanggal_selesai)}</Tag>
           </Descriptions.Item>
         </Descriptions>
         <div className="w-full max-w-full overflow-x-auto">

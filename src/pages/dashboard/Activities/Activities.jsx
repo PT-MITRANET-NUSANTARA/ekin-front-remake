@@ -9,8 +9,8 @@ import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
-import { activiesFilterFields, activitiesFormFields } from './FormFields';
-import { InputType } from '@/constants';
+import { activitiesFormFields } from './FormFields';
+import { InputType, Role } from '@/constants';
 
 const Activities = () => {
   const { token, user } = useAuth();
@@ -23,8 +23,8 @@ const Activities = () => {
   const storeActivity = useService(ActivitiesService.store);
   const updateActivity = useService(ActivitiesService.update);
   const [filterValues, setFilterValues] = React.useState({
-    unit_id: user?.isAdmin || user?.umpegs?.length ? [] : user?.unor.id,
     search: ''
+    // unit_id: user?.isRole(Role.ADMIN) ? [] : user?.unor.id,
   });
   const pagination = usePagination({ totalData: getAllActivities.totalData });
   const navigate = useNavigate();
@@ -33,11 +33,11 @@ const Activities = () => {
     execute({
       token: token,
       page: pagination.page,
-      per_page: pagination.per_page,
-      search: filterValues.search,
-      unit_id: user?.isAdmin || user?.umpegs ? filterValues.unit_id : user?.unor.id
+      perPage: pagination.per_page,
+      search: filterValues.search
+      // unit_id: user?.isRole(Role.ADMIN) ? filterValues.unit_id : user?.unor.id
     });
-  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.umpegs, user?.unor.id]);
+  }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
   React.useEffect(() => {
     fetchActivities();
@@ -65,14 +65,8 @@ const Activities = () => {
     },
     {
       title: 'Nama Program',
-      dataIndex: ['id_program', 'nama'],
-      sorter: (a, b) => a.id_program.nama.length - b.id_program.nama.length,
-      searchable: true
-    },
-    {
-      title: 'Unit ',
-      dataIndex: ['id_unit', 'nama_unor'],
-      sorter: (a, b) => a.id_unit.nama_unor.length - b.id_unit.nama_unor.length,
+      dataIndex: ['program', 'nama'],
+      sorter: (a, b) => a.program.nama.length - b.program.nama.length,
       searchable: true
     }
   ];
@@ -183,7 +177,7 @@ const Activities = () => {
       title: `Tambah ${Modul.ACTIVITY}`,
       formFields: [
         ...activitiesFormFields({ options: { programs: programs } }),
-        ...(user?.isAdmin || user?.umpegs?.length
+        ...(user.canAccess({ roles: [Role.ADMIN] })
           ? [
               {
                 label: `Nama Unit`,
@@ -195,15 +189,10 @@ const Activities = () => {
                     message: `Nama Unit harus diisi`
                   }
                 ],
-                options: user?.isAdmin
-                  ? unitKerja.map((item) => ({
-                      label: item.nama_unor,
-                      value: item.id_simpeg
-                    }))
-                  : user.umpegs.map((item) => ({
-                      label: item.unit.nama_unor,
-                      value: item.unit.id_simpeg
-                    }))
+                options: unitKerja.map((item) => ({
+                  label: item.name,
+                  value: item.id
+                }))
               }
             ]
           : [])
@@ -212,7 +201,8 @@ const Activities = () => {
         const payload = {
           ...values,
           indikator_kinerja: [],
-          id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
+          id_unit: user?.isRole(Role.ADMIN) ? values.unit_id : user?.unor.id,
+          total_anggaran: parseInt(values.total_anggaran)
         };
         const { isSuccess, message } = await storeActivity.execute(payload, token);
         if (isSuccess) {
@@ -226,45 +216,39 @@ const Activities = () => {
     });
   };
 
-  const filter = {
-    formFields: [
-      ...activiesFilterFields(),
-      ...(user?.isAdmin || user?.umpegs?.length
-        ? [
-            {
-              label: `Nama Unit`,
-              name: 'unit_id',
-              type: InputType.SELECT,
-              mode: 'multiple',
-              options: user?.isAdmin
-                ? unitKerja.map((item) => ({
-                    label: item.nama_unor,
-                    value: item.id_simpeg
-                  }))
-                : user.umpegs.map((item) => ({
-                    label: item.unit.nama_unor,
-                    value: item.unit.id_simpeg
-                  }))
-            }
-          ]
-        : [])
-    ],
-    initialData: {
-      unit_id: filterValues.unit_id
-    },
-    isLoading: getAllActivities.isLoading,
-    onSubmit: (values) => {
-      setFilterValues({
-        ...filterValues,
-        unit_id: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user?.unor.id
-      });
-    }
-  };
+  // const filter = {
+  //   formFields: [
+  //     ...activiesFilterFields(),
+  //     ...(user?.canAccess({ roles: [Role.ADMIN] })
+  //       ? [
+  //         {
+  //           label: `Nama Unit`,
+  //           name: 'unit_id',
+  //           type: InputType.SELECT,
+  //           options: unitKerja.map((item) => ({
+  //             label: item.name,
+  //             value: item.id
+  //           }))
+  //         }
+  //       ]
+  //       : [])
+  //   ],
+  //   initialData: {
+  //     unit_id: filterValues.unit_id
+  //   },
+  //   isLoading: getAllActivities.isLoading,
+  //   onSubmit: (values) => {
+  //     setFilterValues({
+  //       ...filterValues,
+  //       unit_id: user.isRole(Role.ADMIN) ? values.unit_id : user?.unor.id
+  //     });
+  //   }
+  // };
 
   return (
     <>
       <PageExplanation title={Modul.ACTIVITY} subTitle={'Kelola dan atur data aktivitas dengan mudah. Tambahkan, ubah, atau hapus aktivitas agar tetap relevan dan terorganisir.'} />
-      <Card title={<DataTableHeader filter={filter} modul={Modul.ACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+      <Card title={<DataTableHeader modul={Modul.ACTIVITY} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
         <div className="w-full max-w-full overflow-x-auto">
           <Skeleton loading={getAllActivities.isLoading}>
             <DataTable data={activities} columns={column} loading={getAllActivities.isLoading} pagination={pagination} />

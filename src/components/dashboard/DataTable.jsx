@@ -169,7 +169,7 @@ export default function DataTable({ columns, data, loading, title = '', handleSe
         }
         {...props}
       />
-      <span className="mb-2 block text-xs italic text-gray-500">
+      <span className="mb-2 mt-2 block text-xs italic text-gray-500">
         table set as bordered:<b> {String(tableSettings.bordered)}</b>, size: <b>{String(tableSettings.size)}</b>, show header: <b>{String(tableSettings.showHeader)}</b> (you can always change this in table settings)
       </span>
       <Drawer open={drawer.open} onClose={() => setDrawer({ open: false })} title="Table Settings" width={300}>

@@ -1,22 +1,21 @@
 import { InputType } from '@/constants';
 import Modul from '@/constants/Modul';
 
-export const formFields = ({ fetchVision }) => [
+export const formFields = ({ options }) => [
   {
     label: `Nama ${Modul.VISION}`,
     name: 'visi_id',
-    type: InputType.SELECT_FETCH,
+    type: InputType.SELECT,
     rules: [
       {
         required: true,
         message: `Nama ${Modul.VISION} harus diisi`
       }
     ],
-    fetchOptions: fetchVision,
-    mapOptions: (item) => ({
+    options: options.visi.map((item) => ({
       label: item.nama,
       value: item.id
-    })
+    }))
   },
   {
     label: `Judul Misi`,

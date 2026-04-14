@@ -13,7 +13,7 @@ export default class UnitKerjaService {
    * */
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/unit-kerja', { token, params });
+    const response = await api.get('/unor?search', { token, params });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }
@@ -29,6 +29,21 @@ export default class UnitKerjaService {
    * */
   static async getAllJabatan(token, id) {
     const response = await api.get(`/unit-kerja/${id}/jabatan`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: UnitKerja[];
+   * }>}
+   * */
+  static async getAllAsn(token, id) {
+    const response = await api.get(`/unor/${id}/asn`, { token });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }

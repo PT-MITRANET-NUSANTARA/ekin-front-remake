@@ -3,6 +3,28 @@ import Modul from '@/constants/Modul';
 
 export const formFields = ({ options }) => [
   {
+    label: `Nama ${Modul.RENSTRA}`,
+    name: 'nama',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Nama ${Modul.RENSTRA} harus diisi`
+      }
+    ]
+  },
+  {
+    label: `Deskripsi ${Modul.RENSTRA}`,
+    name: 'deskripsi',
+    type: InputType.LONGTEXT,
+    rules: [
+      {
+        required: true,
+        message: `Deskripsi ${Modul.RENSTRA} harus diisi`
+      }
+    ]
+  },
+  {
     label: `Nama ${Modul.MISSION}`,
     name: 'ids_misi',
     type: InputType.SELECT,
