@@ -10,9 +10,35 @@ export default class SkpsService {
    *  status: boolean;
    *  message: string;
    *  data?: Skps[];
+   *  pagination?: { page: number; perPage: number; totalItems: number; totalPages: number };
    * }>}
    * */
-  static async getAll({ token, user_id, ...filters }) {
+  static async getAll({ token, page = 1, perPage = 10, search = '' }) {
+    const params = {
+      page,
+      perPage,
+      ...(search && { search })
+    };
+    const response = await api.get('/skp', { token, params });
+    if (!response.data) return response;
+    return {
+      ...response,
+      data: response.data,
+      totalData: response.pagination?.totalItems || 0,
+      pagination: response.pagination
+    };
+  }
+
+  /**
+   * @param {string} token
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: Skps[];
+   * }>}
+   * */
+  static async getAllByUserId({ token, user_id, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
     const response = await api.get(`/skp/user/${user_id}`, { token, params });
     if (!response.data) return response;
@@ -108,7 +134,7 @@ export default class SkpsService {
    * }}
    */
   static async store(data, token) {
-    return await api.post('/skp', { body: Skps.toApiData(data), token });
+    return await api.post('/skp', { body: data, token });
   }
 
   /**

@@ -1,14 +1,78 @@
 import { InputType } from '@/constants';
+import dayjs from 'dayjs';
 
-export const formFields = ({ options }) => [
+export const formFields = ({ options = {}, onRenstraChange } = {}) => [
+  {
+    label: `Renstra`,
+    name: 'renstraId',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Rencana Strategi harus diisi`
+      }
+    ],
+    size: 'large',
+    options: options.renstras
+      ? options.renstras.map((item) => ({
+          label: item.name || `${item.startDate} - ${item.endDate}`,
+          value: item.id
+        }))
+      : [],
+    onChange: onRenstraChange
+  },
+  {
+    label: `Unit Kerja`,
+    name: 'unitId',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Unit Kerja harus diisi`
+      }
+    ],
+    size: 'large',
+    options: options.unitKerja
+      ? options.unitKerja.map((item) => ({
+          label: item.nama_unor || item.name,
+          value: String(item.id_simpeg || item.id)
+        }))
+      : []
+  },
   {
     label: `Periode Mulai`,
-    name: 'tanggal_mulai',
+    name: 'startDate',
     type: InputType.DATE,
     rules: [
       {
         required: true,
         message: `Periode mulai harus diisi`
+      },
+      {
+        validator: (_, value, callback, formInstance) => {
+          if (!value) {
+            callback();
+            return;
+          }
+          const renstraId = formInstance?.getFieldValue?.('renstraId');
+          if (!renstraId) {
+            callback();
+            return;
+          }
+          const renstra = options.renstras?.find((r) => r.id === renstraId);
+          if (renstra) {
+            const startDate = dayjs(value);
+            const renstraStart = dayjs(renstra.startDate);
+            const renstraEnd = dayjs(renstra.endDate);
+            if (startDate.isBefore(renstraStart) || startDate.isAfter(renstraEnd)) {
+              callback(`Periode mulai harus dalam range renstra (${renstraStart.format('DD/MM/YYYY')} - ${renstraEnd.format('DD/MM/YYYY')})`);
+            } else {
+              callback();
+            }
+          } else {
+            callback();
+          }
+        }
       }
     ],
     size: 'large',
@@ -20,12 +84,38 @@ export const formFields = ({ options }) => [
   },
   {
     label: `Periode Akhir`,
-    name: 'tanggal_selesai',
+    name: 'endDate',
     type: InputType.DATE,
     rules: [
       {
         required: true,
         message: `Periode akhir harus diisi`
+      },
+      {
+        validator: (_, value, callback, formInstance) => {
+          if (!value) {
+            callback();
+            return;
+          }
+          const renstraId = formInstance?.getFieldValue?.('renstraId');
+          if (!renstraId) {
+            callback();
+            return;
+          }
+          const renstra = options.renstras?.find((r) => r.id === renstraId);
+          if (renstra) {
+            const endDate = dayjs(value);
+            const renstraStart = dayjs(renstra.startDate);
+            const renstraEnd = dayjs(renstra.endDate);
+            if (endDate.isBefore(renstraStart) || endDate.isAfter(renstraEnd)) {
+              callback(`Periode akhir harus dalam range renstra (${renstraStart.format('DD/MM/YYYY')} - ${renstraEnd.format('DD/MM/YYYY')})`);
+            } else {
+              callback();
+            }
+          } else {
+            callback();
+          }
+        }
       }
     ],
     size: 'large',
@@ -34,44 +124,6 @@ export const formFields = ({ options }) => [
       disabledTime: true,
       showTime: false
     }
-  },
-  {
-    label: `Pendekatan`,
-    name: 'pendekatan',
-    type: InputType.SELECT,
-    rules: [
-      {
-        required: true,
-        message: `Pendekatan visi harus diisi`
-      }
-    ],
-    size: 'large',
-    options: [
-      {
-        label: 'Kuantitatif',
-        value: 'KUANTITATIF'
-      },
-      {
-        label: 'Kualitatif',
-        value: 'KUALITATIF'
-      }
-    ]
-  },
-  {
-    label: `Renstra`,
-    name: 'renstra_id',
-    type: InputType.SELECT,
-    rules: [
-      {
-        required: true,
-        message: `Rencana Strategi harus diisi`
-      }
-    ],
-    size: 'large',
-    options: options.renstras.map((item) => ({
-      label: `${item.tanggal_mulai} | Hingga |  ${item.tanggal_selesai}`,
-      value: item.id
-    }))
   }
 ];
 
