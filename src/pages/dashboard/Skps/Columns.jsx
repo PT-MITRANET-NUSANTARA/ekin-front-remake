@@ -102,18 +102,18 @@ export const lampiranColumn = (deleteLampiran, type) => {
 };
 
 export const skpBawahanColumns = (props) => {
-  const { deleteSkpBawahan, navigate, ajukanSkp, navItems } = props ?? {};
+  const { deleteSkpBawahan, navigate, navItems } = props ?? {};
 
   const baseColumns = [
     {
       title: 'Nama ASN',
-      dataIndex: 'posjab',
-      render: (_, record) => record.posjab?.[0]?.nama_asn ?? '-'
+      dataIndex: 'jabatan',
+      render: (_, record) => record.jabatan?.[0]?.nama_asn ?? '-'
     },
     {
       title: 'NIP',
-      dataIndex: 'posjab',
-      render: (_, record) => record.posjab?.[0]?.nip_asn ?? '-'
+      dataIndex: 'nip',
+      render: (nip) => nip ?? '-'
     },
     {
       title: 'Pendekatan',
@@ -152,24 +152,16 @@ export const skpBawahanColumns = (props) => {
             </Button>
           ))}
 
-        {deleteSkpBawahan && (
+        {deleteSkpBawahan && record.status === 'DRAFT' && (
           <Button variant="solid" color="danger" icon={<DeleteOutlined />} onClick={() => deleteSkpBawahan(record)}>
             Hapus
           </Button>
-        )}
-
-        {ajukanSkp && (
-          <Popconfirm title="Apakah anda yakin ingin mengajukan SKP?" onConfirm={() => ajukanSkp(record)}>
-            <Button variant="solid" color="primary" icon={<SendOutlined />} disabled={record.status !== 'DRAFT'}>
-              Ajukan
-            </Button>
-          </Popconfirm>
         )}
       </div>
     )
   };
 
-  if (deleteSkpBawahan || navigate || ajukanSkp) {
+  if (deleteSkpBawahan || navigate) {
     baseColumns.push(aksiColumn);
   }
 

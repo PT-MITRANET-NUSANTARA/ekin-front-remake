@@ -7,36 +7,36 @@ import { InputType } from '@/constants';
 export interface IncomingApiData {
   id: string;
   name: string;
-  unit_id: number;
-  label: 'KINERJA_BERBASIS_ANGGARAN' | 'KINERJA_NON_ANGGARAN';
-  total_anggaran: number;
-  renstra_id: string;
-  sub_kegiatan_id: {
+  unitId: number;
+  label?: 'KINERJA_BERBASIS_ANGGARAN' | 'KINERJA_NON_ANGGARAN' | null;
+  totalAnggaran: number;
+  renstraId: string;
+  subKegiatan: {
     id: string;
     name: string;
-    unit_id: number;
-    total_anggaran: number;
+    unitId: number;
+    totalAnggaran: number;
   }[];
-  input_indikator_kinerja: {
-    id: string;
-    name: string;
-    target: string;
-    satuan: string;
-  }[];
-  output_indikator_kinerja: {
+  input: {
     id: string;
     name: string;
     target: string;
     satuan: string;
   }[];
-  outcome_indikator_kinerja: {
+  output: {
     id: string;
     name: string;
     target: string;
     satuan: string;
   }[];
-  created_at: string;
-  updated_at: string;
+  outcome: {
+    id: string;
+    name: string;
+    target: string;
+    satuan: string;
+  }[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface OutgoingApiData {
@@ -131,36 +131,36 @@ export default class Rkts extends Model {
     return new Rkts(
       apiData.id,
       apiData.name,
-      apiData.unit_id,
-      apiData.label,
-      Number(apiData.total_anggaran),
-      apiData.renstra_id,
-      apiData.sub_kegiatan_id.map((item) => ({
+      apiData.unitId,
+      apiData.label || 'KINERJA_NON_ANGGARAN',
+      Number(apiData.totalAnggaran),
+      apiData.renstraId,
+      apiData.subKegiatan?.map((item) => ({
         id: item.id,
         nama: item.name,
-        total_anggaran: item.total_anggaran,
-        id_unit: item.unit_id
-      })),
-      apiData.input_indikator_kinerja.map((item) => ({
-        id: item.id,
-        nama: item.name,
-        target: item.target,
-        satuan: item.satuan
-      })),
-      apiData.output_indikator_kinerja.map((item) => ({
+        total_anggaran: item.totalAnggaran,
+        id_unit: item.unitId
+      })) || [],
+      apiData.input?.map((item) => ({
         id: item.id,
         nama: item.name,
         target: item.target,
         satuan: item.satuan
-      })),
-      apiData.outcome_indikator_kinerja.map((item) => ({
+      })) || [],
+      apiData.output?.map((item) => ({
         id: item.id,
         nama: item.name,
         target: item.target,
         satuan: item.satuan
-      })),
-      apiData.created_at,
-      apiData.updated_at
+      })) || [],
+      apiData.outcome?.map((item) => ({
+        id: item.id,
+        nama: item.name,
+        target: item.target,
+        satuan: item.satuan
+      })) || [],
+      apiData.createdAt,
+      apiData.updatedAt
     ) as ReturnType<T, IncomingApiData, Rkts>;
   }
 

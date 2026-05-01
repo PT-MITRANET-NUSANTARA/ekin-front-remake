@@ -35,6 +35,17 @@ export default class RhkService {
   }
 
   /**
+   * Add RHK to SKP (new endpoint)
+   * @param {string} skpId - SKP ID
+   * @param {object} data - RHK data
+   * @param {string} token
+   * @returns {Promise<Response>}
+   */
+  static async addToSkp(skpId, data, token) {
+    return await api.post(`/skp/${skpId}/rhk/add`, { body: data, token });
+  }
+
+  /**
    * @param {Rhk} data
    * @param {string} token
    * @returns {Promise<{
@@ -64,7 +75,20 @@ export default class RhkService {
   }
 
   /**
-   * @param {number} id
+   * Update RHK for SKP (with skpId and rhkId)
+   * @param {string} skpId - SKP ID
+   * @param {string} rhkId - RHK ID
+   * @param {object} data - RHK data
+   * @param {string} token
+   * @returns {Promise<Response>}
+   */
+  static async updateInSkp(skpId, rhkId, data, token) {
+    return await api.patch(`/skp/${skpId}/rhk/${rhkId}`, { body: data, token });
+  }
+
+  /**
+   * @param {string} skpId
+   * @param {string} rhkId
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -72,8 +96,8 @@ export default class RhkService {
    *  message: string;
    * }>}
    */
-  static async delete(id, token) {
-    return await api.delete(`/rhk/${id}`, { token });
+  static async delete(skpId, rhkId, token) {
+    return await api.delete(`/skp/${skpId}/rhk/${rhkId}`, { token });
   }
 
   /**

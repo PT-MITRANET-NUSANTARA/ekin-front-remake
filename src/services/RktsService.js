@@ -15,8 +15,14 @@ export default class RktsService {
   static async getAll({ token, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
     const response = await api.get('/rkt', { token, params });
-    if (!response.data) return response;
-    return { ...response, data: Rkts.fromApiData(response.data) };
+
+    let dataArray = response.data;
+    if (!Array.isArray(dataArray)) {
+      dataArray = dataArray?.data || dataArray?.items || [];
+    }
+
+    if (!dataArray) return response;
+    return { ...response, data: Rkts.fromApiData(dataArray), totalData: response.pagination?.totalItems || 0, pagination: response.pagination };
   }
 
   /**

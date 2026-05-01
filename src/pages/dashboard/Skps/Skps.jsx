@@ -42,7 +42,6 @@ const Skps = () => {
   const skps = getAllSkps.data ?? [];
   const renstras = getAllRenstras.data ?? [];
   const unitKerja = getAllUnitKerja.data ?? [];
-  
 
   const onEdit = (data) => {
     modal.edit({
@@ -114,6 +113,8 @@ const Skps = () => {
 
   const renderSkpCard = (item) => {
     const isJpt = user?.roles?.includes('JPT');
+    const isDraft = item.status === 'DRAFT';
+
     return (
       <Card key={item.id} className="mb-4">
         <div>
@@ -135,12 +136,8 @@ const Skps = () => {
                 }
               })()}
             </Descriptions.Item>
-            <Descriptions.Item label="Periode Mulai">
-              {dayjs(item.startDate).format('DD/MM/YYYY')}
-            </Descriptions.Item>
-            <Descriptions.Item label="Periode Akhir">
-              {dayjs(item.endDate).format('DD/MM/YYYY')}
-            </Descriptions.Item>
+            <Descriptions.Item label="Periode Mulai">{dayjs(item.startDate).format('DD/MM/YYYY')}</Descriptions.Item>
+            <Descriptions.Item label="Periode Akhir">{dayjs(item.endDate).format('DD/MM/YYYY')}</Descriptions.Item>
             <Descriptions.Item label="Pendekatan">{item.pendekatan}</Descriptions.Item>
             <Descriptions.Item label="Cascading">{item.cascading}</Descriptions.Item>
             <Descriptions.Item label="Jabatan" span={2}>
@@ -153,39 +150,29 @@ const Skps = () => {
 
           <div className="mt-4 flex w-full items-center justify-between">
             <Space size="small" wrap>
-              <Button
-                type="primary"
-                size="small"
-                icon={<InfoCircleOutlined />}
-                onClick={() => navigate(window.location.pathname + '/' + item.id)}
-              >
+              <Button type="primary" size="small" icon={<InfoCircleOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id)}>
                 Detail SKP
               </Button>
-              {user?.pimpinan && (
+
+              <Button size="small" icon={<TableOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/matriks')}>
+                Matriks Peran Hasil
+              </Button>
+
+              {item.status === 'APROVED' && (
                 <>
-                  <Button
-                    size="small"
-                    icon={<TableOutlined />}
-                    onClick={() => navigate(window.location.pathname + '/' + item.id + '/matriks')}
-                  >
-                    Matriks Peran Hasil
-                  </Button>
-                  <Button
-                    size="small"
-                    icon={<UserSwitchOutlined />}
-                    onClick={() => navigate(window.location.pathname + '/' + item.id + '/skp_bawahan')}
-                  >
+                  <Button size="small" icon={<UserSwitchOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/skp_bawahan')}>
                     SKP Bawahan
+                  </Button>
+                  {user?.pimpinan && (
+                    <>
+                    
+                    </>
+                  )}
+                  <Button size="small" icon={<CheckSquareOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/assessment_periods')}>
+                    Penilaian
                   </Button>
                 </>
               )}
-              <Button
-                size="small"
-                icon={<CheckSquareOutlined />}
-                onClick={() => navigate(window.location.pathname + '/' + item.id + '/assessment_periods')}
-              >
-                Penilaian
-              </Button>
             </Space>
 
             <Space size="small">
@@ -200,12 +187,7 @@ const Skps = () => {
                   >
                     Edit
                   </Button> */}
-                  <Button
-                    danger
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    onClick={() => onDelete(item)}
-                  >
+                  <Button danger size="small" icon={<DeleteOutlined />} onClick={() => onDelete(item)}>
                     Hapus
                   </Button>
                 </>
@@ -219,36 +201,16 @@ const Skps = () => {
 
   return (
     <>
-      <PageExplanation
-        title={Modul.SKP}
-        subTitle={'Kelola dan atur data SKP (Sasaran Kinerja Pegawai) dengan mudah. Tambahkan, ubah, atau hapus data agar tetap relevan dan terorganisir.'}
-      />
-      <Card
-        title={
-          <DataTableHeader
-            modul={Modul.SKP}
-            {...(user?.roles?.includes('JPT') ? { onStore: onCreate } : {})}
-            onSearch={(values) => setFilterValues({ search: values })}
-          />
-        }
-      >
+      <PageExplanation title={Modul.SKP} subTitle={'Kelola dan atur data SKP (Sasaran Kinerja Pegawai) dengan mudah. Tambahkan, ubah, atau hapus data agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={Modul.SKP} {...(user?.roles?.includes('JPT') ? { onStore: onCreate } : {})} onSearch={(values) => setFilterValues({ search: values })} />}>
         <Skeleton loading={getAllSkps.isLoading}>
           <div className="flex w-full max-w-full flex-col gap-y-4">
             {skps.map((item) => renderSkpCard(item))}
-            {skps.length === 0 && (
-              <div className="py-8 text-center text-gray-500">
-                Tidak ada data SKP tersedia
-              </div>
-            )}
+            {skps.length === 0 && <div className="py-8 text-center text-gray-500">Tidak ada data SKP tersedia</div>}
           </div>
           {skps.length > 0 && (
             <div className="mt-6 flex justify-end">
-              <Pagination
-                current={pagination.page}
-                pageSize={pagination.per_page}
-                total={pagination.totalData}
-                onChange={pagination.onChange}
-              />
+              <Pagination current={pagination.page} pageSize={pagination.per_page} total={pagination.totalData} onChange={pagination.onChange} />
             </div>
           )}
         </Skeleton>

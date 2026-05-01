@@ -106,14 +106,31 @@ export default class UnitKerjaService {
   }
 
   /**
-   * @param {number[]} ids
+   * Get Jabatan with Bawahan from Unor
+   * @param {string} token
+   * @param {number} id - Unor ID
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: any[];
+   * }>}
+   * */
+  static async getJabatanWithBawahan(token, id) {
+    const response = await api.get(`/unor/${id}/jabatan`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
+   *  data?: UnitKerja[];
    * }>}
-   */
+   * */
   static async deleteBatch(ids, token) {
     return await api.delete(`/unit-kerja/multi-delete/?id=${ids.join(',')}`, { token });
   }

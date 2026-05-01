@@ -15,7 +15,7 @@ export const formFields = ({ options = {}, onRenstraChange } = {}) => [
     size: 'large',
     options: options.renstras
       ? options.renstras.map((item) => ({
-          label: item.name || `${item.startDate} - ${item.endDate}`,
+          label: `${item.name || 'Renstra'} (${dayjs(item.startDate).format('DD/MM/YYYY')} - ${dayjs(item.endDate).format('DD/MM/YYYY')})`,
           value: item.id
         }))
       : [],
@@ -147,18 +147,18 @@ export const rhkFormFields = ({ options }) => [
     rules: [
       {
         required: true,
-        message: `Periode akhir harus diisi`
+        message: `Jenis RHK harus diisi`
       }
     ],
     size: 'large',
     options: [
       {
-        label: 'UTAMA',
-        value: 'UTAMA'
+        label: 'Utama',
+        value: 'Utama'
       },
       {
-        label: 'TAMBAHAN',
-        value: 'TAMBAHAN'
+        label: 'Tambahan',
+        value: 'Tambahan'
       }
     ]
   },
@@ -175,12 +175,12 @@ export const rhkFormFields = ({ options }) => [
     size: 'large',
     options: [
       {
-        label: 'ORGANISASI',
-        value: 'ORGANISASI'
+        label: 'Organisasi',
+        value: 'Organisasi'
       },
       {
-        label: 'INDIVIDU',
-        value: 'INDIVIDU'
+        label: 'Individu',
+        value: 'Individu'
       }
     ]
   },
@@ -191,7 +191,7 @@ export const rhkFormFields = ({ options }) => [
     rules: [
       {
         required: true,
-        message: `Penugasan visi harus diisi`
+        message: `Penugasan harus diisi`
       }
     ],
     size: 'large'
@@ -203,15 +203,19 @@ export const rhkFormFields = ({ options }) => [
     rules: [
       {
         required: true,
-        message: `Penugasan visi harus diisi`
+        message: `Rencana Kerja Tahunan harus diisi`
       }
     ],
     size: 'large',
     mode: 'multiple',
-    options: options.rkts.map((item) => ({
-      label: item.nama,
-      value: item.id
-    }))
+    options: (() => {
+      if (!options.rkts) return [];
+      const rktArray = Array.isArray(options.rkts) ? options.rkts : [options.rkts];
+      return rktArray.map((item) => ({
+        label: item.nama || item.name,
+        value: item.id
+      }));
+    })()
   }
 ];
 
@@ -277,105 +281,132 @@ export const filterMphFormFields = ({ options }) => [
     size: 'large',
     options: Array.isArray(options.skpBawahan)
       ? options.skpBawahan.map((item) => ({
-          label: item.posjab[0].nama_asn,
+          label: item.posjab?.[0]?.nama_asn || item.nama_asn || 'Unknown',
           value: item.id
         }))
       : []
   }
 ];
 
-export const mphFormFields = ({ options }) => [
-  {
-    label: `Rencana Hasil Kerja`,
-    name: 'desc',
-    type: InputType.TEXT,
-    rules: [
+export const mphFormFields = ({ options }) => {
+  const baseFields = [
+    {
+      label: `Rencana Hasil Kerja`,
+      name: 'desc',
+      type: InputType.TEXT,
+      rules: [
+        {
+          required: true,
+          message: `Rencana Hasil Kerja harus diisi`
+        }
+      ],
+      size: 'large'
+    },
+    {
+      label: `Jenis RHK`,
+      name: 'jenis',
+      type: InputType.SELECT,
+      rules: [
+        {
+          required: true,
+          message: `Jenis RHK harus diisi`
+        }
+      ],
+      size: 'large',
+      options: [
+        {
+          label: 'Utama',
+          value: 'Utama'
+        },
+        {
+          label: 'Tambahan',
+          value: 'Tambahan'
+        }
+      ]
+    },
+    {
+      label: `Klasifikasi`,
+      name: 'klasifikasi',
+      type: InputType.SELECT,
+      rules: [
+        {
+          required: true,
+          message: `Klasifikasi harus diisi`
+        }
+      ],
+      size: 'large',
+      options: [
+        {
+          label: 'Organisasi',
+          value: 'Organisasi'
+        },
+        {
+          label: 'Individu',
+          value: 'Individu'
+        }
+      ]
+    }
+  ];
+
+  // Only add penugasan and rktIds if isJPT is true
+  if (options?.isJPT) {
+    baseFields.push(
       {
-        required: true,
-        message: `Rencana Hasil Kerja harus diisi`
-      }
-    ],
-    size: 'large'
-  },
-  {
-    label: `Jenis RHK`,
-    name: 'jenis',
-    type: InputType.SELECT,
-    rules: [
-      {
-        required: true,
-        message: `Periode akhir harus diisi`
-      }
-    ],
-    size: 'large',
-    options: [
-      {
-        label: 'UTAMA',
-        value: 'UTAMA'
+        label: `Penugasan`,
+        name: 'penugasan',
+        type: InputType.LONGTEXT,
+        rules: [
+          {
+            required: true,
+            message: `Penugasan harus diisi`
+          }
+        ],
+        size: 'large'
       },
       {
-        label: 'TAMBAHAN',
-        value: 'TAMBAHAN'
+        label: `Rencana Kerja Tahunan`,
+        name: 'rkts',
+        type: InputType.SELECT,
+        rules: [
+          {
+            required: true,
+            message: `Rencana Kerja Tahunan harus diisi`
+          }
+        ],
+        size: 'large',
+        mode: 'multiple',
+        options: Array.isArray(options.rkts)
+          ? options.rkts.map((item) => ({
+              label: item.name || item.nama,
+              value: item.id
+            }))
+          : []
       }
-    ]
-  },
-  {
-    label: `Klasifikasi`,
-    name: 'klasifikasi',
-    type: InputType.SELECT,
-    rules: [
-      {
-        required: true,
-        message: `Klasifikasi harus diisi`
-      }
-    ],
-    size: 'large',
-    options: [
-      {
-        label: 'ORGANISASI',
-        value: 'ORGANISASI'
-      },
-      {
-        label: 'INDIVIDU',
-        value: 'INDIVIDU'
-      }
-    ]
-  },
-  {
-    label: `SKP Bawahan`,
-    name: 'skp_id',
-    type: InputType.SELECT,
-    size: 'large',
-    options: Array.isArray(options.skpBawahan)
-      ? options.skpBawahan.map((item) => ({
-          label: item.posjab[0].nama_asn,
-          value: item.id
-        }))
-      : [],
-    rules: [
-      {
-        required: true,
-        message: `SKP Bawahan harus diisi`
-      }
-    ]
-  },
-  {
-    label: `RHK Atasan`,
-    name: 'rhk_atasan_id',
-    type: InputType.SELECT,
-    size: 'large',
-    options: options.matriksSkp.rhk.map((item) => ({
-      label: item.desc,
-      value: item.id
-    })),
-    rules: [
-      {
-        required: true,
-        message: `RHK Atasan harus diisi`
-      }
-    ]
+    );
+  } else {
+    // Only add parentRhkId if isJPT is false
+    baseFields.push({
+      label: `RHK Pimpinan`,
+      name: 'parentRhkId',
+      type: InputType.SELECT,
+      rules: [
+        {
+          required: true,
+          message: `RHK Pimpinan harus dipilih`
+        }
+      ],
+      size: 'large',
+      options: Array.isArray(options.parentRhks)
+        ? options.parentRhks.map((item) => ({
+            label: item.desc || item.nama,
+            value: item.id
+          }))
+        : []
+    });
   }
-];
+
+  return baseFields;
+};
 
 export const perjanjianKinerjaFormFields = () => [
   {
