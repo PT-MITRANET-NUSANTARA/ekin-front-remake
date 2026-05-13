@@ -49,3 +49,35 @@ export const jabatanFormFields = ({ options }) => [
     mode: 'multiple'
   }
 ];
+
+export const pimpinanUnitKerjaFormFields = ({ options, nameDisabled = false }) => [
+  {
+    label: `Nama JPT`,
+    name: 'name',
+    type: InputType.TEXT,
+    rules: [
+      {
+        required: true,
+        message: `Nama JPT harus diisi`
+      }
+    ],
+    disabled: nameDisabled
+  },
+  {
+    label: `NIP`,
+    name: 'nip',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: false,
+        message: `NIP dapat dikosongkan`
+      }
+    ],
+    size: 'large',
+    mode: 'multiple',
+    options: (options.asn || []).map((item) => ({
+      label: `${item.nip} - ${item.nama || item.name}`,
+      value: item.nip
+    }))
+  }
+];
