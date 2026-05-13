@@ -138,7 +138,7 @@ export const dashboardLink = [
     roles: [Role.ADMIN]
   },
   {
-    label: 'JPT',
+    label: 'Manajemen Pimpinan',
     icon: UsergroupAddOutlined,
     path: '/dashboard/jpts',
     element: Dashboard.Jpts,

@@ -50,20 +50,26 @@ export const jabatanFormFields = ({ options }) => [
   }
 ];
 
-export const pimpinanUnitKerjaFormFields = ({ options, nameDisabled = false }) => [
-  {
-    label: `Nama JPT`,
-    name: 'name',
-    type: InputType.TEXT,
-    rules: [
-      {
-        required: true,
-        message: `Nama JPT harus diisi`
-      }
-    ],
-    disabled: nameDisabled
-  },
-  {
+export const pimpinanUnitKerjaFormFields = ({ options, nameDisabled = false, hideNameField = false }) => {
+  const fields = [];
+  
+  // Only include name field if not hidden
+  if (!hideNameField) {
+    fields.push({
+      label: `Nama JPT`,
+      name: 'name',
+      type: InputType.TEXT,
+      rules: [
+        {
+          required: true,
+          message: `Nama JPT harus diisi`
+        }
+      ],
+      disabled: nameDisabled
+    });
+  }
+  
+  fields.push({
     label: `NIP`,
     name: 'nip',
     type: InputType.SELECT,
@@ -79,5 +85,7 @@ export const pimpinanUnitKerjaFormFields = ({ options, nameDisabled = false }) =
       label: `${item.nip} - ${item.nama || item.name}`,
       value: item.nip
     }))
-  }
-];
+  });
+  
+  return fields;
+};

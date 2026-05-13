@@ -188,7 +188,7 @@ const JabatanJpts = () => {
               onClick={() => {
                 modal.edit({
                   title: `Edit ${jabatanName}`,
-                  formFields: pimpinanUnitKerjaFormFields({ options: { asn: asnList }, nameDisabled: true }),
+                  formFields: pimpinanUnitKerjaFormFields({ options: { asn: asnList }, nameDisabled: true, hideNameField: false }),
                   data: { 
                     ...record,
                     name: jabatanName
@@ -229,7 +229,7 @@ const JabatanJpts = () => {
               onClick={() => {
                 modal.create({
                   title: `Tambah ${jabatanName}`,
-                  formFields: pimpinanUnitKerjaFormFields({ options: { asn: asnList }, nameDisabled: true }),
+                  formFields: pimpinanUnitKerjaFormFields({ options: { asn: asnList }, hideNameField: true }),
                   initialValues: { name: jabatanName },
                   onSubmit: async (values) => {
                     let isSuccess, message;
@@ -239,11 +239,11 @@ const JabatanJpts = () => {
                     };
                     
                     if (node.level === 0) {
-                      // Top level - create JPT record
+                      // Top level - create JPT record using the organization unit ID from page params
                       const result = await storeJpt.execute(
                         {
                           ...createData,
-                          unitId: node.key
+                          unitId: id  // Use the organization unit ID from page params
                         },
                         token
                       );

@@ -303,7 +303,7 @@ const DetailSkp = () => {
                 </Button>
               </Popconfirm>
             )}
-            {isReviewer && detailSkp.status === 'SUBMITTED' && (
+            {isReviewer && detailSkp.status === 'SUBMITEED' && (
               <Button 
                 variant="solid" 
                 color="primary"
