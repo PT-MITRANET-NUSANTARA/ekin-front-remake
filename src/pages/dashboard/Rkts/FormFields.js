@@ -1,4 +1,5 @@
 import { InputType } from '@/constants';
+import dateFormatter from '@/utils/dateFormatter';
 
 export const rktFormFields = ({ options }) => [
   {
@@ -26,12 +27,12 @@ export const rktFormFields = ({ options }) => [
     size: 'large',
     options: [
       {
-        label: 'KINERJA_BERBASIS_ANGGARAN',
-        value: 'KINERJA_BERBASIS_ANGGARAN'
+        label: 'Kinerja Berbasis Anggaran',
+        value: 'Kinerja Berbasis Anggaran'
       },
       {
-        label: 'KINERJA_NON_ANGGARAN',
-        value: 'KINERJA_NON_ANGGARAN'
+        label: 'Kinerja Berbasis Non-Anggaran',
+        value: 'Kinerja Berbasis Non-Anggaran'
       }
     ]
   },
@@ -63,7 +64,7 @@ export const rktFormFields = ({ options }) => [
     ],
     size: 'large',
     options: options.renstras.map((item) => ({
-      label: `${item.tanggal_mulai} | Hingga | ${item.tanggal_selesai}`,
+      label: `${dateFormatter(item.tanggal_mulai)} | Hingga | ${dateFormatter(item.tanggal_selesai)}`,
       value: item.id
     }))
   },

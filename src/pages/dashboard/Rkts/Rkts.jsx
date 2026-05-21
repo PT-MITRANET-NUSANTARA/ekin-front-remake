@@ -10,9 +10,9 @@ import { DatabaseOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
 import { rktFormFields, rktsFilterFields } from './FormFields';
-import { InputType } from '@/constants';
+import { InputType, Role } from '@/constants';
 
-const SubActivities = () => {
+const Rkts = () => {
   const { token, user } = useAuth();
   const modal = useCrudModal();
   const { success, error } = useNotification();
@@ -34,9 +34,9 @@ const SubActivities = () => {
     execute({
       token: token,
       page: pagination.page,
-      per_page: pagination.per_page,
+      perPage: pagination.per_page,
       search: filterValues.search,
-      unit_id: user?.isAdmin || user?.umpegs ? filterValues.unit_id : user?.unor.id
+      unitIds: user?.isAdmin || user?.umpegs?.length ? filterValues.unit_id : user?.unor.id
     });
   }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.umpegs, user?.unor.id]);
 
@@ -60,9 +60,15 @@ const SubActivities = () => {
       searchable: true
     },
     {
+      title: 'Renstra',
+      dataIndex: ['renstra', 'nama'],
+      sorter: (a, b) => (a.renstra?.nama || '').length - (b.renstra?.nama || '').length,
+      searchable: true
+    },
+    {
       title: 'Total Anggaran',
       dataIndex: 'total_anggaran',
-      sorter: (a, b) => a.total_anggaran.length - b.total_anggaran.length,
+      sorter: (a, b) => a.total_anggaran - b.total_anggaran,
       searchable: true,
       render: (record) => rupiahFormat(record, true)
     }
@@ -79,25 +85,32 @@ const SubActivities = () => {
             onClick={() => {
               const formData = {
                 ...record,
-                id_sub_kegiatan: record.id_sub_kegiatan.map((item) => item.id)
+                id_sub_kegiatan: (record.id_sub_kegiatan ?? []).map((item) => item.id),
+                id_renstra: record.renstra?.id
               };
 
               modal.edit({
                 title: `Ubah ${Modul.RKT}`,
-                formFields: rktFormFields({ options: { renstras: renstras, subActivities: subActivities } }),
+                formFields: rktFormFields({ options: { renstras, subActivities } }),
                 data: formData,
                 onSubmit: async (values) => {
                   const payload = {
-                    ...record,
-                    ...values,
-                    id_unit: record.id_unit
+                    nama: values.nama,
+                    label: values.label,
+                    total_anggaran: values.total_anggaran,
+                    id_renstra: values.id_renstra,
+                    id_sub_kegiatan: values.id_sub_kegiatan,
+                    id_unit: formData.id_unit,
+                    input_indikador_kinerja: formData.input || [],
+                    output_indikador_kinerja: formData.output || [],
+                    outcome_indikador_kinerja: formData.outcome || []
                   };
 
                   const { isSuccess, message } = await updateRkt.execute(record.id, payload, token);
 
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchRkts({ token, page: pagination.page, per_page: pagination.per_page });
+                    fetchRkts();
                   } else {
                     error('Gagal', message);
                   }
@@ -119,7 +132,7 @@ const SubActivities = () => {
                   const { isSuccess, message } = await deleteRkt.execute(record.id, token);
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchRkts({ token: token, page: pagination.page, per_page: pagination.per_page });
+                    fetchRkts();
                   } else {
                     error('Gagal', message);
                   }
@@ -138,7 +151,7 @@ const SubActivities = () => {
                   {
                     key: 'id_unit',
                     label: `Unit Kerja`,
-                    children: record.id_unit.nama_unor
+                    children: record.id_unit
                   },
                   {
                     key: 'nama',
@@ -228,8 +241,8 @@ const SubActivities = () => {
     modal.create({
       title: `Tambah ${Modul.RKT}`,
       formFields: [
-        ...rktFormFields({ options: { renstras: renstras, subActivities: subActivities } }),
-        ...(user?.isAdmin || user?.umpegs?.length
+        ...rktFormFields({ options: { renstras, subActivities } }),
+        ...(user.canAccess({ roles: [Role.ADMIN] })
           ? [
               {
                 label: `Nama Unit`,
@@ -241,31 +254,31 @@ const SubActivities = () => {
                     message: `Nama Unit harus diisi`
                   }
                 ],
-                options: user?.isAdmin
-                  ? unitKerja.map((item) => ({
-                      label: item.nama_unor,
-                      value: item.id_simpeg
-                    }))
-                  : user.umpegs.map((item) => ({
-                      label: item.unit.nama_unor,
-                      value: item.unit.id_simpeg
-                    }))
+                size: 'large',
+                options: (unitKerja ?? []).map((item) => ({
+                  label: item.name,
+                  value: item.id
+                }))
               }
             ]
           : [])
       ],
       onSubmit: async (values) => {
         const payload = {
-          ...values,
-          input_indikator_kinerja: [],
-          output_indikator_kinerja: [],
-          outcome_indikator_kinerja: [],
-          id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
+          nama: values.nama,
+          label: values.label,
+          total_anggaran: values.total_anggaran,
+          id_renstra: values.id_renstra,
+          id_sub_kegiatan: values.id_sub_kegiatan,
+          id_unit: user.canAccess({ roles: [Role.ADMIN] }) ? values.unit_id : user.unor.id,
+          input_indikador_kinerja: [],
+          output_indikador_kinerja: [],
+          outcome_indikador_kinerja: []
         };
         const { isSuccess, message } = await storeRkt.execute(payload, token);
         if (isSuccess) {
           success('Berhasil', message);
-          fetchRkts({ token: token, page: pagination.page, per_page: pagination.per_page });
+          fetchRkts();
         } else {
           error('Gagal', message);
         }
@@ -323,4 +336,4 @@ const SubActivities = () => {
   );
 };
 
-export default SubActivities;
+export default Rkts;

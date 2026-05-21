@@ -2,29 +2,26 @@ import Model from './Model';
 
 export interface IncomingApiData {
   id: string;
-  periode_start: string;
-  periode_end: string;
-  unit_id: number;
-  renstra_id: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
+  startDate: string;
+  endDate: string;
+  unitId: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface OutgoingApiData {
   name: string;
-  periode_start: string;
-  periode_end: string;
-  unit_id: number;
-  renstra_id: string;
+  startDate: string;
+  endDate: string;
+  unitId: string;
 }
 
 interface FormValue {
   nama: string;
   tanggal_mulai: string;
   tanggal_selesai: string;
-  id_unit: number;
-  id_renstra: string;
+  id_unit: string;
 }
 
 type ReturnType<S, From, To> = S extends From[] ? To[] : To;
@@ -32,34 +29,29 @@ type ReturnType<S, From, To> = S extends From[] ? To[] : To;
 export default class AssessmentPeriod extends Model {
   constructor(
     public id: string,
+    public nama: string,
     public tanggal_mulai: string,
     public tanggal_selesai: string,
-    public id_unit: number,
-    public id_renstra: string,
-    public nama: string,
-    public created_at: string,
-    public updated_at: string
+    public id_unit: string,
+    public created_at?: string,
+    public updated_at?: string
   ) {
     super();
   }
 
   public static fromApiData<T extends IncomingApiData | IncomingApiData[]>(apiData: T): ReturnType<T, IncomingApiData, AssessmentPeriod> {
     if (Array.isArray(apiData)) return apiData.map((object) => this.fromApiData(object)) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
-    return new AssessmentPeriod(apiData.id, apiData.periode_start, apiData.periode_end, apiData.unit_id, apiData.renstra_id, apiData.name, apiData.createdAt, apiData.updatedAt) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
+    return new AssessmentPeriod(apiData.id, apiData.name, apiData.startDate, apiData.endDate, apiData.unitId, apiData.createdAt, apiData.updatedAt) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
   }
 
   public static toApiData<T extends FormValue | FormValue[]>(assessmentPeriod: T): ReturnType<T, FormValue, OutgoingApiData> {
     if (Array.isArray(assessmentPeriod)) return assessmentPeriod.map((object) => this.toApiData(object)) as ReturnType<T, FormValue, OutgoingApiData>;
     const apiData: OutgoingApiData = {
       name: assessmentPeriod.nama,
-      periode_start: assessmentPeriod.tanggal_selesai,
-      periode_end: assessmentPeriod.tanggal_mulai,
-      unit_id: assessmentPeriod.id_unit,
-      renstra_id: assessmentPeriod.id_renstra
+      startDate: assessmentPeriod.tanggal_mulai,
+      endDate: assessmentPeriod.tanggal_selesai,
+      unitId: assessmentPeriod.id_unit
     };
-
-    console.log(apiData);
-
     return apiData as ReturnType<T, FormValue, OutgoingApiData>;
   }
 }

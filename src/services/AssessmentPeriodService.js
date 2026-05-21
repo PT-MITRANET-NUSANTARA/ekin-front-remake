@@ -12,9 +12,9 @@ export default class AssessmentPeriodService {
    *  data?: AssessmentPeriod[];
    * }>}
    * */
-  static async getAll({ token, ...filters }) {
+  static async getAll({ token, page, perPage, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/periode-penilaian', { token, params });
+    const response = await api.get('/periode-penilaian', { token, page, perPage, params });
     if (!response.data) return response;
     return { ...response, data: AssessmentPeriod.fromApiData(response.data) };
   }

@@ -13,16 +13,29 @@ export default class RktsService {
    * }>}
    * */
   static async getAll({ token, ...filters }) {
-    const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get('/rkt', { token, params });
-
-    let dataArray = response.data;
-    if (!Array.isArray(dataArray)) {
-      dataArray = dataArray?.data || dataArray?.items || [];
+    // Transform filters to match API parameter names
+    const transformedFilters = {};
+    for (const [key, value] of Object.entries(filters)) {
+      if (value === null || value === undefined || value === '') continue;
+      if (key === 'perPage') transformedFilters.perPage = value;
+      else if (key === 'page') transformedFilters.page = value;
+      else if (key === 'search') transformedFilters.search = value;
+      else if (key === 'unitIds') {
+        transformedFilters.unitIds = Array.isArray(value) ? value : [value];
+      } else {
+        transformedFilters[key] = value;
+      }
     }
+    const response = await api.get('/rkt', { token, params: transformedFilters });
 
-    if (!dataArray) return response;
-    return { ...response, data: Rkts.fromApiData(dataArray), totalData: response.pagination?.totalItems || 0, pagination: response.pagination };
+    if (!response.data) return response;
+    const dataArray = Array.isArray(response.data) ? response.data : [];
+    return { 
+      ...response, 
+      data: Rkts.fromApiData(dataArray), 
+      totalData: response.pagination?.totalItems || 0, 
+      pagination: response.pagination 
+    };
   }
 
   /**

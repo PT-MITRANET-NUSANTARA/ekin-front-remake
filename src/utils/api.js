@@ -81,18 +81,25 @@ function createCustomFetch(method) {
       controllers[cleanEndpoint] = new AbortController();
     }
 
-    const searchParams = {};
-    if (params) for (const key in params) searchParams[key] = params[key];
-
-    if (page) {
-      searchParams.page = page;
-      if (perPage === PAGINATION_ALL) searchParams.per_page = 'all';
-      else searchParams.per_page = perPage;
+    const searchParams = new URLSearchParams();
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          searchParams.append(key, JSON.stringify(value));
+        } else {
+          searchParams.append(key, value);
+        }
+      });
     }
 
-    const searchParamsString = Object.entries(searchParams)
-      .map(([key, value]) => `${key}=${value}`)
-      .join('&');
+    if (page) {
+      searchParams.append('page', page);
+      if (perPage === PAGINATION_ALL) searchParams.append('perPage', 'all');
+      else searchParams.append('perPage', perPage);
+    }
+
+    const searchParamsString = searchParams.toString();
     const hasSearchParams = endpoint.includes('?');
     let concatenatedEndpoint = endpoint;
     if (searchParamsString !== '') {

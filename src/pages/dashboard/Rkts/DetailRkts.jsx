@@ -1,9 +1,9 @@
-import { Delete, Edit } from '@/components/dashboard/button';
+﻿import { Delete, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
 import { RktsService } from '@/services';
 import { Card, Space } from 'antd';
 import React from 'react';
-import { SubActivities as SubActivityModel } from '@/models';
+import { Rkts as RktModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
 import { indicatorFormFields } from './FormFields';
@@ -29,9 +29,9 @@ const Rkts = () => {
 
   React.useEffect(() => {
     if (detailRkt) {
-      setInputndicators(detailRkt.input_indikator_kinerja);
-      setOutputIndicators(detailRkt.output_indikator_kinerja);
-      setOutcomeIndicators(detailRkt.outcome_indikator_kinerja);
+      setInputndicators(detailRkt.input_indikador_kinerja ?? []);
+      setOutputIndicators(detailRkt.output_indikador_kinerja ?? []);
+      setOutcomeIndicators(detailRkt.outcome_indikador_kinerja ?? []);
     }
   }, [detailRkt]);
 
@@ -62,8 +62,8 @@ const Rkts = () => {
         title: 'Aksi',
         render: (_, record) => (
           <Space size="small">
-            <Edit title={`Edit ${Modul.SUBACTIVITY}`} model={SubActivityModel} onClick={() => onEdit(type, record)} />
-            <Delete title={`Delete ${Modul.SUBACTIVITY}`} model={SubActivityModel} onClick={() => onDelete(type, record)} />
+            <Edit title={`Edit ${Modul.SUBACTIVITY}`} model={RktModel} onClick={() => onEdit(type, record)} />
+            <Delete title={`Delete ${Modul.SUBACTIVITY}`} model={RktModel} onClick={() => onDelete(type, record)} />
           </Space>
         )
       });
@@ -77,34 +77,37 @@ const Rkts = () => {
       title: `Hapus Indikator`,
       data: record,
       onSubmit: async () => {
-        let updatedIndicators = [];
+        let updatedInput = inputIndicators;
+        let updatedOutput = outputIndicators;
+        let updatedOutcome = outcomeIndicators;
 
         if (type === 'input') {
-          updatedIndicators = inputIndicators.filter((item) => item.id !== record.id);
+          updatedInput = inputIndicators.filter((item) => item.id !== record.id);
         } else if (type === 'output') {
-          updatedIndicators = outputIndicators.filter((item) => item.id !== record.id);
+          updatedOutput = outputIndicators.filter((item) => item.id !== record.id);
         } else if (type === 'outcome') {
-          updatedIndicators = outcomeIndicators.filter((item) => item.id !== record.id);
+          updatedOutcome = outcomeIndicators.filter((item) => item.id !== record.id);
         }
 
         const payload = {
-          ...detailRkt,
-          id_sub_kegiatan: detailRkt.id_sub_kegiatan.map((item) => item.id),
-          input_indikator_kinerja: inputIndicators ?? [],
-          output_indikator_kinerja: outputIndicators ?? [],
-          outcome_indikator_kinerja: outcomeIndicators ?? []
+          nama: detailRkt.nama,
+          label: detailRkt.label,
+          total_anggaran: detailRkt.total_anggaran,
+          id_renstra: detailRkt.renstra?.id,
+          id_sub_kegiatan: (detailRkt.id_sub_kegiatan ?? []).map((item) => item.id),
+          id_unit: detailRkt.id_unit,
+          input_indikador_kinerja: updatedInput,
+          output_indikador_kinerja: updatedOutput,
+          outcome_indikador_kinerja: updatedOutcome
         };
-
-        // replace yang sesuai
-        if (type === 'input') payload.input_indikator_kinerja = updatedIndicators;
-        if (type === 'output') payload.output_indikator_kinerja = updatedIndicators;
-        if (type === 'outcome') payload.outcome_indikator_kinerja = updatedIndicators;
 
         const { isSuccess, message } = await updateRkt.execute(id, payload, token);
 
         if (isSuccess) {
           success('Berhasil', message);
-          fetchRktDetail(token, id);
+          if (type === 'input') setInputndicators(updatedInput);
+          if (type === 'output') setOutputIndicators(updatedOutput);
+          if (type === 'outcome') setOutcomeIndicators(updatedOutcome);
         } else {
           error('Gagal', message);
         }
@@ -120,32 +123,37 @@ const Rkts = () => {
       formFields: indicatorFormFields(),
       data: { ...record },
       onSubmit: async (values) => {
-        // pilih indikator sesuai type
-        let updatedInput = inputIndicators ?? [];
-        let updatedOutput = outputIndicators ?? [];
-        let updatedOutcome = outcomeIndicators ?? [];
+        let updatedInput = inputIndicators;
+        let updatedOutput = outputIndicators;
+        let updatedOutcome = outcomeIndicators;
 
         if (type === 'input') {
-          updatedInput = updatedInput.map((item) => (item.id === record.id ? { ...item, ...values } : item));
+          updatedInput = inputIndicators.map((item) => (item.id === record.id ? { ...item, ...values } : item));
         } else if (type === 'output') {
-          updatedOutput = updatedOutput.map((item) => (item.id === record.id ? { ...item, ...values } : item));
+          updatedOutput = outputIndicators.map((item) => (item.id === record.id ? { ...item, ...values } : item));
         } else if (type === 'outcome') {
-          updatedOutcome = updatedOutcome.map((item) => (item.id === record.id ? { ...item, ...values } : item));
+          updatedOutcome = outcomeIndicators.map((item) => (item.id === record.id ? { ...item, ...values } : item));
         }
 
         const payload = {
-          ...detailRkt,
-          id_sub_kegiatan: detailRkt.id_sub_kegiatan.map((item) => item.id),
-          input_indikator_kinerja: updatedInput,
-          output_indikator_kinerja: updatedOutput,
-          outcome_indikator_kinerja: updatedOutcome
+          nama: detailRkt.nama,
+          label: detailRkt.label,
+          total_anggaran: detailRkt.total_anggaran,
+          id_renstra: detailRkt.renstra?.id,
+          id_sub_kegiatan: (detailRkt.id_sub_kegiatan ?? []).map((item) => item.id),
+          id_unit: detailRkt.id_unit,
+          input_indikador_kinerja: updatedInput,
+          output_indikador_kinerja: updatedOutput,
+          outcome_indikador_kinerja: updatedOutcome
         };
 
         const { isSuccess, message } = await updateRkt.execute(id, payload, token);
 
         if (isSuccess) {
           success('Berhasil', message);
-          fetchRktDetail(token, id);
+          if (type === 'input') setInputndicators(updatedInput);
+          if (type === 'output') setOutputIndicators(updatedOutput);
+          if (type === 'outcome') setOutcomeIndicators(updatedOutcome);
         } else {
           error('Gagal', message);
         }
@@ -160,27 +168,37 @@ const Rkts = () => {
       title: `Tambah ${type} indikator`,
       formFields: indicatorFormFields(),
       onSubmit: async (values) => {
-        let payload = {
-          ...detailRkt,
-          id_sub_kegiatan: detailRkt.id_sub_kegiatan.map((item) => item.id),
-          input_indikator_kinerja: inputIndicators ?? [],
-          output_indikator_kinerja: outputIndicators ?? [],
-          outcome_indikator_kinerja: outcomeIndicators ?? []
-        };
+        let updatedInput = inputIndicators;
+        let updatedOutput = outputIndicators;
+        let updatedOutcome = outcomeIndicators;
 
         if (type === 'input') {
-          payload.input_indikator_kinerja = [...(inputIndicators || []), values];
+          updatedInput = [...(inputIndicators || []), values];
         } else if (type === 'output') {
-          payload.output_indikator_kinerja = [...(outputIndicators || []), values];
+          updatedOutput = [...(outputIndicators || []), values];
         } else if (type === 'outcome') {
-          payload.outcome_indikator_kinerja = [...(outcomeIndicators || []), values];
+          updatedOutcome = [...(outcomeIndicators || []), values];
         }
+
+        const payload = {
+          nama: detailRkt.nama,
+          label: detailRkt.label,
+          total_anggaran: detailRkt.total_anggaran,
+          id_renstra: detailRkt.renstra?.id,
+          id_sub_kegiatan: (detailRkt.id_sub_kegiatan ?? []).map((item) => item.id),
+          id_unit: detailRkt.id_unit,
+          input_indikador_kinerja: updatedInput,
+          output_indikador_kinerja: updatedOutput,
+          outcome_indikador_kinerja: updatedOutcome
+        };
 
         const { isSuccess, message } = await updateRkt.execute(id, payload, token);
 
         if (isSuccess) {
           success('Berhasil', message);
-          fetchRktDetail(token, id);
+          if (type === 'input') setInputndicators(updatedInput);
+          if (type === 'output') setOutputIndicators(updatedOutput);
+          if (type === 'outcome') setOutcomeIndicators(updatedOutcome);
         } else {
           error('Gagal', message);
         }
@@ -204,7 +222,7 @@ const Rkts = () => {
       </Card>
       <Card title={<DataTableHeader onStore={() => onCreate('outcome')} modul={`Rkt ${detailRkt?.nama ?? ''}- Outcome`} />}>
         <div className="w-full max-w-full overflow-x-auto">
-          <DataTable data={outcomeIndicators ?? []} columns={getColumns('output')} loading={getDetailRkt.isLoading} map={(outcome) => ({ key: outcome.id, ...outcome })} />
+          <DataTable data={outcomeIndicators ?? []} columns={getColumns('outcome')} loading={getDetailRkt.isLoading} map={(outcome) => ({ key: outcome.id, ...outcome })} />
         </div>
       </Card>
     </div>

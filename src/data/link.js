@@ -107,7 +107,6 @@ export const dashboardLink = [
         label: 'RKT',
         element: Dashboard.Rkts,
         roles: [Role.ADMIN, Role.UMPEG],
-        permissions: ['manage_rkts']
       },
       {
         path: '/dashboard/assessment_periods',

@@ -7,15 +7,25 @@ import { InputType } from '@/constants';
 export interface IncomingApiData {
   id: string;
   name: string;
-  unitId: number;
-  label?: 'KINERJA_BERBASIS_ANGGARAN' | 'KINERJA_NON_ANGGARAN' | null;
-  totalAnggaran: number;
+  unitId: string;
+  label?: 'Kinerja Berbasis Anggaran' | 'Kinerja Berbasis Non-Anggaran' | null;
+  total_anggaran: number;
   renstraId: string;
+  renstra: {
+    id: string;
+    name: string;
+    desc: string;
+    startDate: string;
+    endDate: string;
+    unitId: string;
+    createdAt: string;
+    updatedAt: string;
+  };
   subKegiatan: {
     id: string;
     name: string;
-    unitId: number;
-    totalAnggaran: number;
+    unitId: string;
+    total_anggaran: number;
   }[];
   input: {
     id: string;
@@ -41,22 +51,22 @@ export interface IncomingApiData {
 
 export interface OutgoingApiData {
   name: string;
-  unit_id: number;
+  unitId: number;
   label: string;
   total_anggaran: number;
-  renstra_id: string;
-  sub_kegiatan_id: string[];
-  input_indikator_kinerja: {
+  renstraId: string;
+  subKegiatan: string[];
+  input: {
     name: string;
     target: string;
     satuan: string;
   }[];
-  output_indikator_kinerja: {
+  output: {
     name: string;
     target: string;
     satuan: string;
   }[];
-  outcome_indikator_kinerja: {
+  outcome: {
     name: string;
     target: string;
     satuan: string;
@@ -93,29 +103,39 @@ export default class Rkts extends Model {
   constructor(
     public id: string,
     public nama: string,
-    public id_unit: number,
-    public label: 'KINERJA_BERBASIS_ANGGARAN' | 'KINERJA_NON_ANGGARAN',
+    public id_unit: string,
+    public label: 'Kinerja Berbasis Anggaran' | 'Kinerja Berbasis Non-Anggaran' | null,
     public total_anggaran: number,
     public id_renstra: string,
+    public renstra: {
+      id: string;
+      nama: string;
+      deskripsi: string;
+      tanggal_mulai: string;
+      tanggal_selesai: string;
+      id_unit: string;
+      created_at: string;
+      updated_at: string;
+    },
     public id_sub_kegiatan: {
       id: string;
       nama: string;
-      id_unit: number;
+      id_unit: string;
       total_anggaran: number;
     }[],
-    public input_indikator_kinerja: {
+    public input: {
       id: string;
       nama: string;
       target: string;
       satuan: string;
     }[],
-    public output_indikator_kinerja: {
+    public output: {
       id: string;
       nama: string;
       target: string;
       satuan: string;
     }[],
-    public outcome_indikator_kinerja: {
+    public outcome: {
       id: string;
       nama: string;
       target: string;
@@ -135,6 +155,16 @@ export default class Rkts extends Model {
       apiData.label || 'KINERJA_NON_ANGGARAN',
       Number(apiData.totalAnggaran),
       apiData.renstraId,
+      {
+        id: apiData.renstra?.id || '',
+        nama: apiData.renstra?.name || '',
+        deskripsi: apiData.renstra?.desc || '',
+        tanggal_mulai: apiData.renstra?.startDate || '',
+        tanggal_selesai: apiData.renstra?.endDate || '',
+        id_unit: apiData.renstra?.unitId || '',
+        created_at: apiData.renstra?.createdAt || '',
+        updated_at: apiData.renstra?.updatedAt || ''
+      },
       apiData.subKegiatan?.map((item) => ({
         id: item.id,
         nama: item.name,
@@ -166,24 +196,28 @@ export default class Rkts extends Model {
 
   public static toApiData<T extends FormValue | FormValue[]>(rkts: T): ReturnType<T, FormValue, OutgoingApiData> {
     if (Array.isArray(rkts)) return rkts.map((object) => this.toApiData(object)) as ReturnType<T, FormValue, OutgoingApiData>;
+    // Handle both array of IDs (from form) and array of objects (from edit)
+    const subKegiatanIds = Array.isArray(rkts.id_sub_kegiatan)
+      ? rkts.id_sub_kegiatan.map((item) => (typeof item === 'string' ? item : item.id))
+      : [];
     const apiData: OutgoingApiData = {
       name: rkts.nama,
-      unit_id: rkts.id_unit,
+      unitId: Number(rkts.id_unit),
       label: rkts.label,
-      total_anggaran: rkts.total_anggaran,
-      renstra_id: rkts.id_renstra,
-      sub_kegiatan_id: rkts.id_sub_kegiatan,
-      input_indikator_kinerja: rkts.input_indikator_kinerja.map((item) => ({
+      totalAnggaran: rkts.total_anggaran,
+      renstraId: rkts.id_renstra,
+      subKegiatan: subKegiatanIds,
+      input: (rkts.input_indikador_kinerja ?? []).map((item) => ({
         name: item.nama,
         target: item.target,
         satuan: item.satuan
       })),
-      output_indikator_kinerja: rkts.output_indikator_kinerja.map((item) => ({
+      output: (rkts.output_indikador_kinerja ?? []).map((item) => ({
         name: item.nama,
         target: item.target,
         satuan: item.satuan
       })),
-      outcome_indikator_kinerja: rkts.outcome_indikator_kinerja.map((item) => ({
+      outcome: (rkts.outcome_indikador_kinerja ?? []).map((item) => ({
         name: item.nama,
         target: item.target,
         satuan: item.satuan

@@ -1,27 +1,26 @@
-import { Delete, Edit } from '@/components/dashboard/button';
+import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { AssessmentPeriodService, RenstrasService, UnitKerjaService } from '@/services';
+import { AssessmentPeriodService, UnitKerjaService } from '@/services';
 import { Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { AssessmentPeriod as AssessmentPeriodModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader, PageExplanation } from '@/components';
-import { assessmentPeriodFilterFields, formFields } from './FormFields';
+import { formFields } from './FormFields';
 import dayjs from 'dayjs';
-import { InputType } from '@/constants';
+import { InputType, Role } from '@/constants';
+import dateFormatter from '@/utils/dateFormatter';
 
 const AssessmentPeriods = () => {
   const { token, user } = useAuth();
   const modal = useCrudModal();
   const { success, error } = useNotification();
   const { execute, ...getAllAssessmentPeriods } = useService(AssessmentPeriodService.getAll);
-  const { execute: fetchRenstras, ...getAllRenstras } = useService(RenstrasService.getAll);
   const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
   const deleteAssessmentPeriod = useService(AssessmentPeriodService.delete);
   const storeAssessmentPeriod = useService(AssessmentPeriodService.store);
   const updateAssessmentPeriod = useService(AssessmentPeriodService.update);
   const [filterValues, setFilterValues] = React.useState({
-    unit_id: user?.isAdmin || user?.umpegs?.length ? [] : user?.unor.id,
     search: ''
   });
   const pagination = usePagination({ totalData: getAllAssessmentPeriods.totalData });
@@ -30,40 +29,41 @@ const AssessmentPeriods = () => {
     execute({
       token: token,
       page: pagination.page,
-      per_page: pagination.per_page,
-      search: filterValues.search,
-      unit_id: user?.isAdmin || user?.umpegs ? filterValues.unit_id : user?.unor.id
+      perPage: pagination.per_page,
+      search: filterValues.search
     });
-  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.umpegs, user?.unor.id]);
+  }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
   React.useEffect(() => {
-    fetchAssessmentPeriods();
-    fetchRenstras({ token: token });
-    fetchUnitKerja({ token: token });
-  }, [fetchAssessmentPeriods, fetchRenstras, fetchUnitKerja, pagination.page, pagination.per_page, token]);
+    if (user) {
+      fetchAssessmentPeriods();
+    }
+    fetchUnitKerja({ token: token, search: '' });
+  }, [fetchAssessmentPeriods, fetchUnitKerja, pagination.page, pagination.per_page, token, user]);
 
   const assessmentPeriods = getAllAssessmentPeriods.data ?? [];
-  const renstras = getAllRenstras.data ?? [];
   const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
     {
       title: 'Nama Periode',
       dataIndex: 'nama',
-      sorter: (a, b) => a.nama.length - b.nama.length,
+      sorter: (a, b) => a.nama.localeCompare(b.nama),
       searchable: true
     },
     {
       title: 'Tanggal Mulai',
       dataIndex: 'tanggal_mulai',
-      sorter: (a, b) => a.tanggal_mulai.length - b.tanggal_mulai.length,
-      searchable: true
+      sorter: (a, b) => a.tanggal_mulai.localeCompare(b.tanggal_mulai),
+      searchable: true,
+      render: (record) => dateFormatter(record)
     },
     {
       title: 'Tanggal Selesai',
       dataIndex: 'tanggal_selesai',
-      sorter: (a, b) => a.tanggal_selesai.length - b.tanggal_selesai.length,
-      searchable: true
+      sorter: (a, b) => a.tanggal_selesai.localeCompare(b.tanggal_selesai),
+      searchable: true,
+      render: (record) => dateFormatter(record)
     }
   ];
 
@@ -78,21 +78,22 @@ const AssessmentPeriods = () => {
             onClick={() => {
               modal.edit({
                 title: `Ubah ${Modul.ASSESSMENTPERIOD}`,
-                formFields: formFields({ options: { renstras: renstras } }),
-                data: { ...record, tanggal_mulai: dayjs(record.tanggal_mulai), tanggal_selesai: dayjs(record.tanggal_selesai), id_renstra: record.id_renstra },
+                formFields: formFields(),
+                data: { ...record, tanggal_mulai: dayjs(record.tanggal_mulai), tanggal_selesai: dayjs(record.tanggal_selesai) },
                 onSubmit: async (values) => {
                   const { isSuccess, message } = await updateAssessmentPeriod.execute(
                     record.id,
                     {
-                      ...values,
-                      tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DD'),
-                      tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DD')
+                      nama: values.nama,
+                      tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DDTHH:mm:ssZ'),
+                      tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DDTHH:mm:ssZ'),
+                      id_unit: record.id_unit
                     },
                     token
                   );
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchAssessmentPeriods({ token: token, page: pagination.page, per_page: pagination.per_page });
+                    fetchAssessmentPeriods();
                   } else {
                     error('Gagal', message);
                   }
@@ -112,12 +113,43 @@ const AssessmentPeriods = () => {
                   const { isSuccess, message } = await deleteAssessmentPeriod.execute(record.id, token);
                   if (isSuccess) {
                     success('Berhasil', message);
-                    fetchAssessmentPeriods({ token: token, page: pagination.page, per_page: pagination.per_page });
+                    fetchAssessmentPeriods();
                   } else {
                     error('Gagal', message);
                   }
                   return isSuccess;
                 }
+              });
+            }}
+          />
+          <Detail
+            title={`Detail ${Modul.ASSESSMENTPERIOD}`}
+            model={AssessmentPeriodModel}
+            onClick={() => {
+              modal.show.description({
+                title: `Detail ${Modul.ASSESSMENTPERIOD}`,
+                data: [
+                  {
+                    key: 'nama',
+                    label: 'Nama Periode',
+                    children: record.nama
+                  },
+                  {
+                    key: 'tanggal_mulai',
+                    label: 'Tanggal Mulai',
+                    children: record.tanggal_mulai
+                  },
+                  {
+                    key: 'tanggal_selesai',
+                    label: 'Tanggal Selesai',
+                    children: record.tanggal_selesai
+                  },
+                  {
+                    key: 'id_unit',
+                    label: 'Unit ID',
+                    children: record.id_unit
+                  }
+                ]
               });
             }}
           />
@@ -130,44 +162,38 @@ const AssessmentPeriods = () => {
     modal.create({
       title: `Tambah ${Modul.ASSESSMENTPERIOD}`,
       formFields: [
-        ...formFields({ options: { renstras: renstras } }),
-        ...(user?.isAdmin || user?.umpegs?.length
+        ...formFields(),
+        ...(user?.canAccess({ roles: [Role.ADMIN] })
           ? [
               {
-                label: `Nama Unit`,
-                name: 'unit_id',
+                label: 'Nama Unit',
+                name: 'id_unit',
                 type: InputType.SELECT,
                 rules: [
                   {
                     required: true,
-                    message: `Nama Unit harus diisi`
+                    message: 'Nama Unit harus diisi'
                   }
                 ],
-                options: user?.isAdmin
-                  ? unitKerja.map((item) => ({
-                      label: item.nama_unor,
-                      value: item.id_simpeg
-                    }))
-                  : user.umpegs.map((item) => ({
-                      label: item.unit.nama_unor,
-                      value: item.unit.id_simpeg
-                    }))
+                options: unitKerja.map((item) => ({
+                  label: item.name || item.nama_unor,
+                  value: item.id || item.id_simpeg
+                }))
               }
             ]
           : [])
       ],
       onSubmit: async (values) => {
         const payload = {
-          ...values,
-          tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DD'),
-          tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DD'),
-          id_unit: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user.unor.id
+          nama: values.nama,
+          tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DDTHH:mm:ssZ'),
+          tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DDTHH:mm:ssZ'),
+          id_unit: user?.canAccess({ roles: [Role.ADMIN] }) ? values.id_unit : user?.unor.id
         };
-
         const { isSuccess, message } = await storeAssessmentPeriod.execute(payload, token);
         if (isSuccess) {
           success('Berhasil', message);
-          fetchAssessmentPeriods({ token: token, page: pagination.page, per_page: pagination.per_page });
+          fetchAssessmentPeriods();
         } else {
           error('Gagal', message);
         }
@@ -176,48 +202,13 @@ const AssessmentPeriods = () => {
     });
   };
 
-  const filter = {
-    formFields: [
-      ...assessmentPeriodFilterFields(),
-      ...(user?.isAdmin || user?.umpegs?.length
-        ? [
-            {
-              label: `Nama Unit`,
-              name: 'unit_id',
-              type: InputType.SELECT,
-              mode: 'multiple',
-              options: user?.isAdmin
-                ? unitKerja.map((item) => ({
-                    label: item.nama_unor,
-                    value: item.id_simpeg
-                  }))
-                : user.umpegs.map((item) => ({
-                    label: item.unit.nama_unor,
-                    value: item.unit.id_simpeg
-                  }))
-            }
-          ]
-        : [])
-    ],
-    initialData: {
-      unit_id: filterValues.unit_id
-    },
-    isLoading: getAllAssessmentPeriods.isLoading,
-    onSubmit: (values) => {
-      setFilterValues({
-        ...filterValues,
-        unit_id: user?.isAdmin || user?.umpegs?.length ? values.unit_id : user?.unor.id
-      });
-    }
-  };
-
   return (
     <>
-      <PageExplanation title={`${Modul.ASSESSMENTPERIOD}`} subTitle={'Kelola dan atur data periode asesmen dengan mudah. Tambahkan, ubah, atau hapus periode asesmen agar tetap relevan dan terorganisir.'} />
-      <Card title={<DataTableHeader modul={Modul.ASSESSMENTPERIOD} filter={filter} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+      <PageExplanation title={Modul.ASSESSMENTPERIOD} subTitle="Kelola dan atur data periode penilaian dengan mudah. Tambahkan, ubah, atau hapus periode penilaian agar tetap relevan dan terorganisir." />
+      <Card title={<DataTableHeader modul={Modul.ASSESSMENTPERIOD} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
         <div className="w-full max-w-full overflow-x-auto">
           <Skeleton loading={getAllAssessmentPeriods.isLoading}>
-            <DataTable data={assessmentPeriods} columns={column} loading={getAllAssessmentPeriods.isLoading} map={(mission) => ({ key: mission.id, ...mission })} pagination={pagination} />
+            <DataTable data={assessmentPeriods} columns={column} loading={getAllAssessmentPeriods.isLoading} map={(period) => ({ key: period.id, ...period })} pagination={pagination} />
           </Skeleton>
         </div>
       </Card>
