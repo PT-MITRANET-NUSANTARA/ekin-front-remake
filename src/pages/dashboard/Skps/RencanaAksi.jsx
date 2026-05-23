@@ -218,20 +218,22 @@ const RencanaAksi = () => {
             </div>
           </div>
 
-          <div className="col-span-9 items-start gap-2 px-4" style={{ height: '600px', marginBottom: '24px' }}>
-            <Timeline
-              groups={groups}
-              items={items}
-              defaultTimeStart={moment(periodePenilaian.startDate).toDate()}
-              defaultTimeEnd={moment(periodePenilaian.endDate).toDate()}
-              onItemClick={(itemId) => {
-                const item = items.find((i) => i.id === itemId);
-                setDrawer({ data: item, open: true, placement: 'right' });
-              }}
-              itemHeightRatio={0.65}
-              stackItems={true}
-            />
-          </div>
+          {rhkPeriodePenilaians.length > 0 && items.length > 0 && (
+            <div className="col-span-9 items-start gap-2 px-4" style={{ height: '600px', marginBottom: '24px' }}>
+              <Timeline
+                groups={groups}
+                items={items}
+                defaultTimeStart={moment(periodePenilaian.startDate).toDate()}
+                defaultTimeEnd={moment(periodePenilaian.endDate).toDate()}
+                onItemClick={(itemId) => {
+                  const item = items.find((i) => i.id === itemId);
+                  setDrawer({ data: item, open: true, placement: 'right' });
+                }}
+                itemHeightRatio={0.65}
+                stackItems={true}
+              />
+            </div>
+          )}
 
 
         </Skeleton>
