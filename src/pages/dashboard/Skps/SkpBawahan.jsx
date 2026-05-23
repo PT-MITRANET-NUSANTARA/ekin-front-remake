@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { skpBawahanColumns } from './Columns';
 import dayjs from 'dayjs';
 import { InputType } from '@/constants';
+import { SKP_STATUS } from '@/constants/SkpStatus';
 
 const SkpBawahan = () => {
   const { token, user } = useAuth();
@@ -131,13 +132,13 @@ const SkpBawahan = () => {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'DRAFT':
+      case SKP_STATUS.DRAFT:
         return <Badge status="processing" text="Draft" />;
-      case 'SUBMITTED':
+      case SKP_STATUS.SUBMITTED:
         return <Badge status="warning" text="Submitted" />;
-      case 'REJECTED':
+      case SKP_STATUS.REJECTED:
         return <Badge status="error" text="Rejected" />;
-      case 'APPROVED':
+      case SKP_STATUS.APPROVED:
         return <Badge status="success" text="Approved" />;
       default:
         return <Badge status="default" text={status} />;

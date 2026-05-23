@@ -1,7 +1,11 @@
 import { InputType } from '@/constants';
 import Modul from '@/constants/Modul';
+import dateFormatter from '@/utils/dateFormatter';
 
-export const formFields = (options = {}) => [
+export const formFields = (options = {}) => {
+  const renstras = options.renstras ?? [];
+  
+  return [
   {
     label: `Nama ${Modul.ASSESSMENTPERIOD}`,
     name: 'nama',
@@ -46,7 +50,24 @@ export const formFields = (options = {}) => [
       disabledTime: true,
       showTime: false
     }
+  },
+  {
+    label: `Renstra`,
+    name: 'id_renstra',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Renstra harus diisi`
+      }
+    ],
+    size: 'large',
+    options: renstras.map((item) => ({
+      label: `${dateFormatter(item.tanggal_mulai)} | Hingga | ${dateFormatter(item.tanggal_selesai)}`,
+      value: item.id
+    }))
   }
 ];
+};
 
 export const assessmentPeriodFilterFields = () => [];

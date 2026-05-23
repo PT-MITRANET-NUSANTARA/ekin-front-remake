@@ -24,21 +24,27 @@ const Rkts = () => {
   const storeRkt = useService(RktsService.store);
   const updateRkt = useService(RktsService.update);
   const [filterValues, setFilterValues] = React.useState({
-    unit_id: user?.isAdmin || user?.umpegs?.length ? [] : user?.unor.id,
+    unit_id: [],
     search: ''
   });
   const pagination = usePagination({ totalData: getAllRkts.totalData });
   const navigate = useNavigate();
 
   const fetchRkts = React.useCallback(() => {
-    execute({
+    const params = {
       token: token,
       page: pagination.page,
       perPage: pagination.per_page,
-      search: filterValues.search,
-      unitIds: user?.isAdmin || user?.umpegs?.length ? filterValues.unit_id : user?.unor.id
-    });
-  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.umpegs, user?.unor.id]);
+      search: filterValues.search
+    };
+
+    // Only add unitIds filter for admin users when they select specific units
+    if ((user?.isAdmin || user?.umpegs?.length) && filterValues.unit_id?.length > 0) {
+      params.unitIds = filterValues.unit_id;
+    }
+
+    execute(params);
+  }, [execute, filterValues.search, filterValues.unit_id, pagination.page, pagination.per_page, token, user?.isAdmin, user?.umpegs]);
 
   React.useEffect(() => {
     fetchRkts();

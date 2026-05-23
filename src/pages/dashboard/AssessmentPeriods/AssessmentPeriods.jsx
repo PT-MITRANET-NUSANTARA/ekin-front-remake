@@ -1,6 +1,6 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { AssessmentPeriodService, UnitKerjaService } from '@/services';
+import { AssessmentPeriodService, UnitKerjaService, RenstrasService } from '@/services';
 import { Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { AssessmentPeriod as AssessmentPeriodModel } from '@/models';
@@ -17,6 +17,7 @@ const AssessmentPeriods = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllAssessmentPeriods } = useService(AssessmentPeriodService.getAll);
   const { execute: fetchUnitKerja, ...getAllUnitKerja } = useService(UnitKerjaService.getAll);
+  const { execute: fetchRenstras, ...getAllRenstras } = useService(RenstrasService.getAll);
   const deleteAssessmentPeriod = useService(AssessmentPeriodService.delete);
   const storeAssessmentPeriod = useService(AssessmentPeriodService.store);
   const updateAssessmentPeriod = useService(AssessmentPeriodService.update);
@@ -34,12 +35,16 @@ const AssessmentPeriods = () => {
     });
   }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
+  const renstras = getAllRenstras.data ?? [];
+  const formFieldsWithOptions = formFields({ renstras });
+
   React.useEffect(() => {
     if (user) {
       fetchAssessmentPeriods();
     }
     fetchUnitKerja({ token: token, search: '' });
-  }, [fetchAssessmentPeriods, fetchUnitKerja, pagination.page, pagination.per_page, token, user]);
+    fetchRenstras({ token: token });
+  }, [fetchAssessmentPeriods, fetchUnitKerja, fetchRenstras, pagination.page, pagination.per_page, token, user]);
 
   const assessmentPeriods = getAllAssessmentPeriods.data ?? [];
   const unitKerja = getAllUnitKerja.data ?? [];
@@ -78,7 +83,7 @@ const AssessmentPeriods = () => {
             onClick={() => {
               modal.edit({
                 title: `Ubah ${Modul.ASSESSMENTPERIOD}`,
-                formFields: formFields(),
+                formFields: formFieldsWithOptions,
                 data: { ...record, tanggal_mulai: dayjs(record.tanggal_mulai), tanggal_selesai: dayjs(record.tanggal_selesai) },
                 onSubmit: async (values) => {
                   const { isSuccess, message } = await updateAssessmentPeriod.execute(
@@ -87,7 +92,8 @@ const AssessmentPeriods = () => {
                       nama: values.nama,
                       tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DDTHH:mm:ssZ'),
                       tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DDTHH:mm:ssZ'),
-                      id_unit: record.id_unit
+                      id_unit: record.id_unit,
+                      id_renstra: values.id_renstra
                     },
                     token
                   );
@@ -162,7 +168,7 @@ const AssessmentPeriods = () => {
     modal.create({
       title: `Tambah ${Modul.ASSESSMENTPERIOD}`,
       formFields: [
-        ...formFields(),
+        ...formFieldsWithOptions,
         ...(user?.canAccess({ roles: [Role.ADMIN] })
           ? [
               {
@@ -188,7 +194,8 @@ const AssessmentPeriods = () => {
           nama: values.nama,
           tanggal_mulai: values.tanggal_mulai.format('YYYY-MM-DDTHH:mm:ssZ'),
           tanggal_selesai: values.tanggal_selesai.format('YYYY-MM-DDTHH:mm:ssZ'),
-          id_unit: user?.canAccess({ roles: [Role.ADMIN] }) ? values.id_unit : user?.unor.id
+          id_unit: user?.canAccess({ roles: [Role.ADMIN] }) ? values.id_unit : user?.unor.id,
+          id_renstra: values.id_renstra
         };
         const { isSuccess, message } = await storeAssessmentPeriod.execute(payload, token);
         if (isSuccess) {

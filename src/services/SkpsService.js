@@ -135,7 +135,7 @@ export default class SkpsService {
    * }>}
    * */
   static async getDetailSkpByAssessmentPeriod({ token, id, assessment_period_id }) {
-    const response = await api.get(`/skp/${id}/penilaian/${assessment_period_id}`, { token });
+    const response = await api.get(`/skp/${id}/periode-penilaian/${assessment_period_id}`, { token });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }

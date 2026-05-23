@@ -5,8 +5,8 @@ import { AssessmentPeriodService, SkpsService } from '@/services';
 import { Badge, Button, Card, Descriptions, Skeleton, Select } from 'antd';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import dayjs from 'dayjs';
 import dateFormatter from '@/utils/dateFormatter';
+import { SKP_STATUS } from '@/constants/SkpStatus';
 
 const SkpAssessmentPeriod = () => {
   const { token } = useAuth();
@@ -28,7 +28,8 @@ const SkpAssessmentPeriod = () => {
       token: token,
       page: pagination.page,
       perPage: pagination.per_page,
-      renstra_id: detailSkp.renstra_id
+      renstra_id: detailSkp.renstra_id,
+      renstraId: detailSkp.renstra_id
     };
     
     const unitId = currentJabatan?.unor?.induk?.id_simpeg;
@@ -67,13 +68,15 @@ const SkpAssessmentPeriod = () => {
       title: 'Tanggal Mulai',
       dataIndex: 'tanggal_mulai',
       sorter: (a, b) => a.tanggal_mulai.length - b.tanggal_mulai.length,
-      searchable: true
+      searchable: true,
+      render: (record) => dateFormatter(record)
     },
     {
       title: 'Tanggal Selesai',
       dataIndex: 'tanggal_selesai',
       sorter: (a, b) => a.tanggal_selesai.length - b.tanggal_selesai.length,
-      searchable: true
+      searchable: true,
+      render: (record) => dateFormatter(record)
     },
     {
       title: 'Aksi',
@@ -142,13 +145,13 @@ const SkpAssessmentPeriod = () => {
               <Descriptions.Item label="Status SKP" span={3}>
                 {(() => {
                   switch (detailSkp.status) {
-                    case 'DRAFT':
+                    case SKP_STATUS.DRAFT:
                       return <Badge status="processing" text="Draft" />;
-                    case 'SUBMITTED':
+                    case SKP_STATUS.SUBMITTED:
                       return <Badge status="warning" text="Submitted" />;
-                    case 'REJECTED':
+                    case SKP_STATUS.REJECTED:
                       return <Badge status="error" text="Rejected" />;
-                    case 'APPROVED':
+                    case SKP_STATUS.APPROVED:
                       return <Badge status="success" text="Approved" />;
                     default:
                       return <Badge status="default" text={detailSkp.status} />;

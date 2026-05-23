@@ -430,42 +430,58 @@ export const perjanjianKinerjaFormFields = () => [
   }
 ];
 
-export const rencanaAksiFormFields = ({ options }) => [
-  {
-    label: `Rencana Aksi`,
-    name: 'desc',
-    type: InputType.TEXT,
-    rules: [{ required: true, message: 'Rencana aksi harus diisi' }]
-  },
-  {
-    label: `Tanggal Mulai`,
-    name: 'periode_start',
-    type: InputType.DATE,
-    rules: [{ required: true, message: 'Tanggal mulai harus diisi' }]
-  },
-  {
-    label: `Tanggal Berakhir`,
-    name: 'periode_end',
-    type: InputType.DATE,
-    rules: [{ required: true, message: 'Tanggal selesai harus diisi' }]
-  },
-  {
-    label: `Rencana Hasil Kerja`,
-    name: 'rhk_id',
-    type: InputType.SELECT,
-    size: 'large',
-    options: options.rhks.map((item) => ({
-      label: item.desc,
-      value: item.id
-    })),
-    rules: [
-      {
-        required: true,
-        message: `RHK harus diisi`
+export const rencanaAksiFormFields = ({ options, dateRange = {} }) => {
+  const startDateLimit = dateRange.start ? dayjs(dateRange.start) : null;
+  const endDateLimit = dateRange.end ? dayjs(dateRange.end) : null;
+
+  return [
+    {
+      label: `Rencana Aksi`,
+      name: 'desc',
+      type: InputType.TEXT,
+      rules: [{ required: true, message: 'Rencana aksi harus diisi' }]
+    },
+    {
+      label: `Tanggal Mulai`,
+      name: 'startDate',
+      type: InputType.DATE,
+      rules: [{ required: true, message: 'Tanggal mulai harus diisi' }],
+      disabledDate: (current) => {
+        if (!startDateLimit || !endDateLimit) return false;
+        return current < startDateLimit || current > endDateLimit;
       }
-    ]
-  }
-];
+    },
+    {
+      label: `Tanggal Berakhir`,
+      name: 'endDate',
+      type: InputType.DATE,
+      rules: [{ required: true, message: 'Tanggal selesai harus diisi' }],
+      disabledDate: (current) => {
+        if (!startDateLimit || !endDateLimit) return false;
+        return current < startDateLimit || current > endDateLimit;
+      }
+    },
+    {
+      label: `Rencana Hasil Kerja`,
+      name: 'rhkPeriodePenilaianId',
+      type: InputType.SELECT,
+      size: 'large',
+      options: options.rhkPeriodePenilaians
+        ? options.rhkPeriodePenilaians.map((item) => ({
+            label: item.rhk?.desc || 'RHK',
+            value: item.id
+          }))
+        : [],
+      rules: [
+        {
+          required: true,
+          message: `RHK harus diisi`
+        }
+      ]
+    }
+  ];
+};
+
 
 export const descFormField = () => [
   {

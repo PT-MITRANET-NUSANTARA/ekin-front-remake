@@ -138,7 +138,7 @@ const Renstras = () => {
             model={RenstraModel}
             onClick={() => {
               modal.show.description({
-                title: 'Detail data rencana strategi',
+                title: 'Detail data sasaran',
                 data: [
                   {
                     key: 'id_unit',
@@ -257,8 +257,8 @@ const Renstras = () => {
 
   return (
     <>
-      <PageExplanation title={Modul.RENSTRA} subTitle={'Kelola dan atur data rencana strategi dengan mudah. Tambahkan, ubah, atau hapus rencana strategi agar tetap relevan dan terorganisir.'} />
-      <Card title={<DataTableHeader modul={'Sinkronisasi Rencana Strategi Dengan Visi Misi Kepala Daerah'} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
+      <PageExplanation title={Modul.RENSTRA} subTitle={'Kelola dan atur data sasaran dengan mudah. Tambahkan, ubah, atau hapus sasaran agar tetap relevan dan terorganisir.'} />
+      <Card title={<DataTableHeader modul={'Sinkronisasi Sasaran Dengan Visi Misi Kepala Daerah'} onStore={onCreate} onSearch={(values) => setFilterValues({ search: values })} />}>
         <div className="w-full max-w-full overflow-x-auto">
           <Skeleton loading={getAllRenstras.isLoading}>
             <DataTable data={renstras} columns={column} loading={getAllRenstras.isLoading} map={(renstra) => ({ key: renstra.id, ...renstra })} pagination={pagination} />

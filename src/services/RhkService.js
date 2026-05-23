@@ -29,7 +29,7 @@ export default class RhkService {
    * */
   static async getBySkp({ token, skp_id, ...filters }) {
     const params = Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
-    const response = await api.get(`/rhk/skp/${skp_id}`, { token, params });
+    const response = await api.get(`/skp/${skp_id}/rhk`, { token, params });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }

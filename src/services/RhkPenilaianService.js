@@ -29,7 +29,7 @@ export default class RhkPenilaianService {
    * }}
    */
   static async store(data, token) {
-    return await api.post('/rhk-penilaian', { body: data, token });
+    return await api.post('/rhk-periode-penilaian', { body: data, token });
   }
 
   /**
@@ -48,7 +48,8 @@ export default class RhkPenilaianService {
   }
 
   /**
-   * @param {number} id
+   * @param {string} rhkId
+   * @param {string} periodePenilaianId
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -56,8 +57,8 @@ export default class RhkPenilaianService {
    *  message: string;
    * }>}
    */
-  static async delete(id, token) {
-    return await api.delete(`/rhk-penilaian/delete/${id}`, { token });
+  static async delete(rhkId, periodePenilaianId, token) {
+    return await api.delete(`/rhk-periode-penilaian/rhk/${rhkId}/periode-penilaian/${periodePenilaianId}`, { token });
   }
 
   /**

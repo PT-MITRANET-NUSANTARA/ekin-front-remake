@@ -6,6 +6,7 @@ export interface IncomingApiData {
   startDate: string;
   endDate: string;
   unitId: string;
+  renstraId?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -15,6 +16,7 @@ export interface OutgoingApiData {
   startDate: string;
   endDate: string;
   unitId: string;
+  renstraId?: string;
 }
 
 interface FormValue {
@@ -22,6 +24,7 @@ interface FormValue {
   tanggal_mulai: string;
   tanggal_selesai: string;
   id_unit: string;
+  id_renstra?: string;
 }
 
 type ReturnType<S, From, To> = S extends From[] ? To[] : To;
@@ -33,6 +36,7 @@ export default class AssessmentPeriod extends Model {
     public tanggal_mulai: string,
     public tanggal_selesai: string,
     public id_unit: string,
+    public id_renstra?: string,
     public created_at?: string,
     public updated_at?: string
   ) {
@@ -41,7 +45,7 @@ export default class AssessmentPeriod extends Model {
 
   public static fromApiData<T extends IncomingApiData | IncomingApiData[]>(apiData: T): ReturnType<T, IncomingApiData, AssessmentPeriod> {
     if (Array.isArray(apiData)) return apiData.map((object) => this.fromApiData(object)) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
-    return new AssessmentPeriod(apiData.id, apiData.name, apiData.startDate, apiData.endDate, apiData.unitId, apiData.createdAt, apiData.updatedAt) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
+    return new AssessmentPeriod(apiData.id, apiData.name, apiData.startDate, apiData.endDate, apiData.unitId, apiData.renstraId, apiData.createdAt, apiData.updatedAt) as ReturnType<T, IncomingApiData, AssessmentPeriod>;
   }
 
   public static toApiData<T extends FormValue | FormValue[]>(assessmentPeriod: T): ReturnType<T, FormValue, OutgoingApiData> {
@@ -52,6 +56,9 @@ export default class AssessmentPeriod extends Model {
       endDate: assessmentPeriod.tanggal_selesai,
       unitId: assessmentPeriod.id_unit
     };
+    if (assessmentPeriod.id_renstra) {
+      apiData.renstraId = assessmentPeriod.id_renstra;
+    }
     return apiData as ReturnType<T, FormValue, OutgoingApiData>;
   }
 }

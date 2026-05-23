@@ -10,6 +10,7 @@ import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icon
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { PageExplanation } from '@/components';
+import { SKP_STATUS } from '@/constants/SkpStatus';
 
 const DetailSkp = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const DetailSkp = () => {
     fetchDetailSkp();
     // Fetch RKTs with unitIds filter based on selected jabatan
     if (currentUnitId) {
-      fetchRkts({ token: token, unitIds: JSON.stringify([currentUnitId]), page: 1, perPage: 100 });
+      fetchRkts({ token: token, unitIds: [currentUnitId], page: 1, perPage: 100 });
     }
   }, [fetchDetailSkp, fetchRkts, token, user?.nip_baru, currentUnitId]);
 
@@ -153,7 +154,7 @@ const DetailSkp = () => {
 
   const handleAjukanSkp = async (data) => {
     const isOwner = data.nip === user?.nip_baru;
-    const canSubmit = data.status === 'DRAFT' || data.status === 'REJECTED';
+    const canSubmit = data.status === SKP_STATUS.DRAFT || data.status === SKP_STATUS.REJECTED;
     
     if (!isOwner || !canSubmit) {
       error('Gagal', 'Hanya pemilik SKP dalam status DRAFT atau REJECTED yang dapat mengajukan');
@@ -218,13 +219,13 @@ const DetailSkp = () => {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'DRAFT':
+      case SKP_STATUS.DRAFT:
         return <Badge status="processing" text="Draft" />;
-      case 'SUBMITTED':
+      case SKP_STATUS.SUBMITTED:
         return <Badge status="warning" text="Submitted" />;
-      case 'REJECTED':
+      case SKP_STATUS.REJECTED:
         return <Badge status="error" text="Rejected" />;
-      case 'APPROVED':
+      case SKP_STATUS.APPROVED:
         return <Badge status="success" text="Approved" />;
       default:
         return <Badge status="default" text={status} />;
@@ -241,7 +242,7 @@ const DetailSkp = () => {
   
   // Get rejection or approval status info
   const getRejectionOrApprovalInfo = () => {
-    if (detailSkp.status === 'REJECTED' || detailSkp.status === 'APPROVED') {
+    if (detailSkp.status === SKP_STATUS.REJECTED || detailSkp.status === SKP_STATUS.APPROVED) {
       const statusHistory = detailSkp?.statuses ?? [];
       const rejectionOrApproval = statusHistory.find(
         (s) => s.value === detailSkp.status
@@ -277,7 +278,7 @@ const DetailSkp = () => {
             >
               Download SKP
             </Button>
-            {isSkpOwner && (detailSkp.status === 'DRAFT' || detailSkp.status === 'REJECTED') && (
+            {isSkpOwner && (detailSkp.status === SKP_STATUS.DRAFT || detailSkp.status === SKP_STATUS.REJECTED) && (
               <Popconfirm 
                 title="Apakah anda yakin ingin mengajukan SKP?" 
                 onConfirm={() => handleAjukanSkp(detailSkp)}
@@ -290,7 +291,7 @@ const DetailSkp = () => {
                 </Button>
               </Popconfirm>
             )}
-            {isSkpOwner && detailSkp.status === 'DRAFT' && (
+            {isSkpOwner && detailSkp.status === SKP_STATUS.DRAFT && (
               <Popconfirm 
                 title="Apakah anda yakin ingin menghapus SKP?" 
                 onConfirm={() => handleDeleteSkp(detailSkp)}
@@ -318,8 +319,8 @@ const DetailSkp = () => {
 
       {statusInfo && (
         <Alert
-          message={detailSkp.status === 'REJECTED' ? '❌ SKP Ditolak' : '✅ SKP Disetujui'}
-          type={detailSkp.status === 'REJECTED' ? 'error' : 'success'}
+          message={detailSkp.status === SKP_STATUS.REJECTED ? '❌ SKP Ditolak' : '✅ SKP Disetujui'}
+          type={detailSkp.status === SKP_STATUS.REJECTED ? 'error' : 'success'}
           description={
             <div className="flex flex-col gap-y-2 mt-1">
               {statusInfo?.remarks && (

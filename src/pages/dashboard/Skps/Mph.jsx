@@ -8,6 +8,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { aspekFormFields, mphFormFields } from './FormFields';
 import Modul from '@/constants/Modul';
 import dayjs from 'dayjs';
+import { SKP_STATUS } from '@/constants/SkpStatus';
 
 const Mph = () => {
   const navigate = useNavigate();
@@ -48,13 +49,13 @@ const Mph = () => {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'DRAFT':
+      case SKP_STATUS.DRAFT:
         return <Badge status="processing" text="Draft" />;
-      case 'SUBMITTED':
+      case SKP_STATUS.SUBMITTED:
         return <Badge status="warning" text="Submitted" />;
-      case 'REJECTED':
+      case SKP_STATUS.REJECTED:
         return <Badge status="error" text="Rejected" />;
-      case 'APPROVED':
+      case SKP_STATUS.APPROVED:
         return <Badge status="success" text="Approved" />;
       default:
         return <Badge status="default" text={status} />;

@@ -2,53 +2,44 @@ import api from '@/utils/api';
 
 export default class RencanaAksiService {
   /**
-   * @param {string} token
+   * Get rencana aksi and RHK periode penilaians for a SKP
+   * @param {{ token: string, skpId: string }} params
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
-   *  data?: RencanaAksi[];
+   *  data?: { rhkPeriodePenilaians: Array, rencanaAksis: Array };
    * }>}
-   * */
-  static async getAll(token) {
-    const response = await api.get('/rencana-aksi', { token });
+   */
+  static async getBySkp(params) {
+    const { token, skpId } = params;
+    const response = await api.get(`/skp/${skpId}/rencana-aksi`, { token });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }
 
   /**
-   * @param {{ token: string, rhk_id: number }} params
-   * @returns {Promise<{
-   *  code: HTTPStatusCode;
-   *  status: boolean;
-   *  message: string;
-   *  data?: RencanaAksi[];
-   * }>}
-   * */
-  static async getByRhk(params) {
-    const { token, rhk_id } = params;
-    const response = await api.get(`/rencana-aksi/rhk/${rhk_id}`, { token });
-    if (!response.data) return response;
-    return { ...response, data: response.data };
-  }
-
-  /**
-   * @param {RencanaAksi} data
+   * Create rencana aksi for a RHK periode penilaian
+   * @param {{ rhkPeriodePenilaianId: string, desc: string, startDate: string, endDate: string }} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
    *  status: boolean;
    *  message: string;
    *  errors?: { [key: string]: string[] };
-   * }}
+   * }>}
    */
   static async store(data, token) {
-    return await api.post('/rencana-aksi', { body: data, token });
+    const { rhkPeriodePenilaianId, desc, startDate, endDate } = data;
+    return await api.post(`/rhk-periode-penilaian/${rhkPeriodePenilaianId}/rencana-aksi`, {
+      body: { desc, startDate, endDate },
+      token
+    });
   }
 
   /**
-   * @param {number} id
-   * @param {RencanaAksi} data
+   * Update rencana aksi
+   * @param {{ rhkPeriodePenilaianId: string, rencanaAksiId: string, desc: string, startDate: string, endDate: string }} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -57,12 +48,17 @@ export default class RencanaAksiService {
    *  errors?: { [key: string]: string[] };
    * }>}
    */
-  static async update(id, data, token) {
-    return await api.patch(`/rencana-aksi/${id}`, { body: data, token });
+  static async update(data, token) {
+    const { rhkPeriodePenilaianId, rencanaAksiId, desc, startDate, endDate } = data;
+    return await api.patch(
+      `/rhk-periode-penilaian/${rhkPeriodePenilaianId}/rencana-aksi/${rencanaAksiId}`,
+      { body: { desc, startDate, endDate }, token }
+    );
   }
 
   /**
-   * @param {number} id
+   * Delete rencana aksi
+   * @param {{ rhkPeriodePenilaianId: string, rencanaAksiId: string }} data
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -70,8 +66,12 @@ export default class RencanaAksiService {
    *  message: string;
    * }>}
    */
-  static async delete(id, token) {
-    return await api.delete(`/rencana-aksi/${id}`, { token });
+  static async delete(data, token) {
+    const { rhkPeriodePenilaianId, rencanaAksiId } = data;
+    return await api.delete(
+      `/rhk-periode-penilaian/${rhkPeriodePenilaianId}/rencana-aksi/${rencanaAksiId}`,
+      { token }
+    );
   }
 
   /**

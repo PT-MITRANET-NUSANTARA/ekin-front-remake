@@ -8,6 +8,7 @@ import React from 'react';
 import { formFields } from './FormFields';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
+import { SKP_STATUS } from '@/constants/SkpStatus';
 
 const Skps = () => {
   const { token, user } = useAuth();
@@ -123,13 +124,13 @@ const Skps = () => {
             <Descriptions.Item label="Status">
               {(() => {
                 switch (item.status) {
-                  case 'DRAFT':
+                  case SKP_STATUS.DRAFT:
                     return <Badge status="processing" text="Draft" />;
-                  case 'SUBMITTED':
+                  case SKP_STATUS.SUBMITTED:
                     return <Badge status="warning" text="Submitted" />;
-                  case 'REJECTED':
+                  case SKP_STATUS.REJECTED:
                     return <Badge status="error" text="Rejected" />;
-                  case 'APPROVED':
+                  case SKP_STATUS.APPROVED:
                     return <Badge status="success" text="Approved" />;
                   default:
                     return <Badge status="default" text={item.status} />;
@@ -158,7 +159,7 @@ const Skps = () => {
                 Matriks Peran Hasil
               </Button>
 
-              {item.status === 'APROVED' && (
+              {item.status === SKP_STATUS.APPROVED && (
                 <>
                   <Button size="small" icon={<UserSwitchOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/skp_bawahan')}>
                     SKP Bawahan
