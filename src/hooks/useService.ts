@@ -8,10 +8,14 @@ export interface Response<T> {
   message: string;
   data: T;
   pagination?: {
-    total: number;
-    per_page: number;
-    current_page: number;
-    last_page: number;
+    total?: number;
+    per_page?: number;
+    current_page?: number;
+    last_page?: number;
+    totalItems?: number;
+    perPage?: number;
+    page?: number;
+    totalPages?: number;
   };
 }
 
@@ -48,7 +52,8 @@ export default function useService<T, P extends any[]>(serviceMethod: (...params
           data = response.data;
         }
         setData(response.data);
-        setTotalData(response.pagination?.total || 0);
+        // Support both legacy pagination keys and new API keys.
+        setTotalData(response.pagination?.total ?? response.pagination?.totalItems ?? 0);
         message = response.message;
         code = response.code;
         if (onUnauthorized && code === HttpStatusCode.UNAUTHORIZED) onUnauthorized();

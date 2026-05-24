@@ -90,10 +90,10 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
 
   return (
     <>
-      <div className="my-4 inline-flex w-full items-center justify-between">
-        <div className="">
+      <div className="my-4 flex w-full flex-wrap items-start justify-between gap-2 md:items-center">
+        <div className="min-w-0 flex-1">
           {modul ? (
-            <Title level={5} style={{ margin: 0 }}>
+            <Title level={5} style={{ margin: 0 }} className="break-words">
               Data {modul}
             </Title>
           ) : (
@@ -107,7 +107,7 @@ export default function DataHeader({ modul, selectedData, onStore, onDeleteBatch
             </Button>
           </Dropdown>
         </div>
-        <div className="hidden flex-col-reverse items-center justify-end gap-2 empty:hidden md:flex md:flex-row">
+        <div className="hidden flex-wrap items-center justify-end gap-2 empty:hidden md:flex">
           <div className="mt-6 inline-flex items-center gap-x-2 lg:mt-0">
             {onSearch && <Input.Search style={{ margin: 0 }} onSearch={onSearch} className="mt-6 w-full lg:mt-0 lg:w-fit" placeholder="Cari Data" allowClear />}
             {filter && (

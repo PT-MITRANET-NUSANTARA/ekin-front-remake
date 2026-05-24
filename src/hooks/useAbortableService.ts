@@ -8,10 +8,14 @@ export interface Response<T> {
   message: string;
   data?: T;
   pagination?: {
-    total: number;
-    per_page: number;
-    current_page: number;
-    last_page: number;
+    total?: number;
+    per_page?: number;
+    current_page?: number;
+    last_page?: number;
+    totalItems?: number;
+    perPage?: number;
+    page?: number;
+    totalPages?: number;
   };
 }
 
@@ -65,7 +69,8 @@ export default function useAbortableService<P extends any[], ApiData, Model>(
         setData(result.data);
         if (onResolved) onResolved({ apiData: awaitedResponse.data, model: result.data ?? undefined });
 
-        setTotalData(awaitedResponse.pagination?.total || 0);
+        // Support both legacy pagination keys and new API keys.
+        setTotalData(awaitedResponse.pagination?.total ?? awaitedResponse.pagination?.totalItems ?? 0);
         result.message = awaitedResponse.message;
         result.code = awaitedResponse.code;
         if (onUnauthorized && result.code === HttpStatusCode.UNAUTHORIZED) onUnauthorized();
