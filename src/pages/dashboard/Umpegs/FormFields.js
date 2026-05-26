@@ -42,8 +42,8 @@ export const jabatanFormFields = ({ options }) => [
       }
     ],
     options: options.nips.map((item) => ({
-      label: item.name,
-      value: item.nip
+      label: item.name || item.nama_asn || item.nama || '-',
+      value: item.nip || item.nip_asn
     })),
     size: 'large',
     mode: 'multiple'

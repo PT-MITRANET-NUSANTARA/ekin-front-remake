@@ -34,6 +34,22 @@ export default class UmpegService {
   }
 
   /**
+   * @param {string} token
+   * @param {number|string} unitId
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: Activities[];
+   * }>}
+   * */
+  static async getByUnitId(token, unitId) {
+    const response = await api.get(`/umpeg/unit/${unitId}`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
    * @param {Umpeg} data
    * @param {string} token
    * @returns {Promise<{
