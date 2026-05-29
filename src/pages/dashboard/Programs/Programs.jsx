@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
 import { programFormFields } from './FormFields';
 import { InputType, Role } from '@/constants';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const Programs = () => {
   const { token, user } = useAuth();
@@ -26,8 +27,39 @@ const Programs = () => {
     search: ''
     // unit_id: user?.isRole(Role.ADMIN) ? [] : user?.unor.id,
   });
+  const [allGoals, setAllGoals] = React.useState([]);
+  const [allUnitKerja, setAllUnitKerja] = React.useState([]);
+  const [isLoadingDropdowns, setIsLoadingDropdowns] = React.useState(false);
   const pagination = usePagination({ totalData: getAllPrograms.totalData });
   const navigate = useNavigate();
+
+  // Fetch all pages for dropdown options
+  React.useEffect(() => {
+    const loadDropdownData = async () => {
+      if (!token) return;
+      
+      try {
+        setIsLoadingDropdowns(true);
+        
+        // Fetch all goals
+        const allGoalsData = await fetchAllFromService(GoalsService.getAll, token, {}, 100);
+        setAllGoals(allGoalsData);
+
+        // Fetch all unit kerja
+        const allUnitKerjaData = await fetchAllFromService(UnitKerjaService.getAll, token, {}, 100);
+        setAllUnitKerja(allUnitKerjaData);
+      } catch (err) {
+        console.error('Error loading dropdown data:', err);
+        // Fallback to initial fetch data if full fetch fails
+        setAllGoals(getAllGoals.data || []);
+        setAllUnitKerja(getAllUnitKerja.data || []);
+      } finally {
+        setIsLoadingDropdowns(false);
+      }
+    };
+
+    loadDropdownData();
+  }, [token]);
 
   const fetchPrograms = React.useCallback(() => {
     execute({
@@ -46,8 +78,8 @@ const Programs = () => {
   }, [fetchPrograms, fetchGoals, pagination.page, pagination.per_page, token, fetchUnitKerja]);
 
   const programs = getAllPrograms.data ?? [];
-  const goals = getAllGoals.data ?? [];
-  const unitKerja = getAllUnitKerja.data ?? [];
+  const goals = allGoals.length > 0 ? allGoals : (getAllGoals.data ?? []);
+  const unitKerja = allUnitKerja.length > 0 ? allUnitKerja : (getAllUnitKerja.data ?? []);
 
   const column = [
     {

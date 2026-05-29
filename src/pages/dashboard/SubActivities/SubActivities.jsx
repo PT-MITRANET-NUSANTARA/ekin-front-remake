@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
 import { subActivitiesFormFields } from './FormFields';
 import { InputType, Role } from '@/constants';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const SubActivities = () => {
   const { token, user } = useAuth();
@@ -26,8 +27,39 @@ const SubActivities = () => {
     search: ''
     // unit_id: user?.isRole(Role.ADMIN) ? [] : user?.unor.id,
   });
+  const [allActivities, setAllActivities] = React.useState([]);
+  const [allUnitKerja, setAllUnitKerja] = React.useState([]);
+  const [isLoadingDropdowns, setIsLoadingDropdowns] = React.useState(false);
   const pagination = usePagination({ totalData: getAllSubActivities.totalData });
   const navigate = useNavigate();
+
+  // Fetch all pages for dropdown options
+  React.useEffect(() => {
+    const loadDropdownData = async () => {
+      if (!token) return;
+      
+      try {
+        setIsLoadingDropdowns(true);
+        
+        // Fetch all activities
+        const allActivitiesData = await fetchAllFromService(ActivitiesService.getAll, token, {}, 100);
+        setAllActivities(allActivitiesData);
+
+        // Fetch all unit kerja
+        const allUnitKerjaData = await fetchAllFromService(UnitKerjaService.getAll, token, {}, 100);
+        setAllUnitKerja(allUnitKerjaData);
+      } catch (err) {
+        console.error('Error loading dropdown data:', err);
+        // Fallback to initial fetch data if full fetch fails
+        setAllActivities(getAllActivities.data || []);
+        setAllUnitKerja(getAllUnitKerja.data || []);
+      } finally {
+        setIsLoadingDropdowns(false);
+      }
+    };
+
+    loadDropdownData();
+  }, [token]);
 
   const fetchSubActivities = React.useCallback(() => {
     execute({
@@ -46,8 +78,8 @@ const SubActivities = () => {
   }, [fetchSubActivities, fetchActivities, pagination.page, pagination.per_page, token, fetchUnitKerja]);
 
   const subActivities = getAllSubActivities.data ?? [];
-  const activities = getAllActivities.data ?? [];
-  const unitKerja = getAllUnitKerja.data ?? [];
+  const activities = allActivities.length > 0 ? allActivities : (getAllActivities.data ?? []);
+  const unitKerja = allUnitKerja.length > 0 ? allUnitKerja : (getAllUnitKerja.data ?? []);
 
   const column = [
     {

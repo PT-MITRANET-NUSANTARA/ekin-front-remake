@@ -13,7 +13,8 @@ enum InputType {
   DOCUMENT_EDITOR = 'document-editor',
   SELECT_SEARCH = 'select-search',
   MAP_PICKER = 'map-picker',
-  SELECT_WITH_PARENT = 'map-picker'
+  SELECT_WITH_PARENT = 'map-picker',
+  SELECT_REMOTE = 'select-remote'
 }
 
 export default InputType;

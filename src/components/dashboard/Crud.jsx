@@ -8,7 +8,7 @@ import TextArea from 'antd/es/input/TextArea';
 import Dragger from 'antd/es/upload/Dragger';
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { SelectWithParent } from './input';
+import { SelectWithParent, SelectRemote } from './input';
 
 const Crud = ({ formFields, initialData, onSubmit = () => {}, type = '', isLoading }) => {
   const [form] = Form.useForm();
@@ -58,10 +58,13 @@ const Crud = ({ formFields, initialData, onSubmit = () => {}, type = '', isLoadi
         );
 
       case InputType.SELECT:
-        return <Select placeholder="Pilih" size="large" {...field} />;
+        return <Select placeholder="Pilih" size="large" showSearch filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())} {...field} />;
 
       case InputType.SELECT_WITH_PARENT:
         return <SelectWithParent form={form} field={field} parentName={field.parentName} fetchOptions={field.fetchOptions} mapOptions={field.mapOptions} readOnly={field.readOnly} />;
+
+      case InputType.SELECT_REMOTE:
+        return <SelectRemote label={field.label} fetchFn={field.fetchFn} mapOptions={field.mapOptions} filterParams={field.filterParams} perPage={field.perPage} readOnly={field.readOnly} {...(field.extra || {})} />;
 
       case InputType.SELECT_LOGO:
         return (

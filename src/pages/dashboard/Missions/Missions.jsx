@@ -7,6 +7,7 @@ import { Missions as MissionModel } from '@/models';
 import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader, PageExplanation } from '@/components';
 import { formFields } from './FormFields';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const Missions = () => {
   const { token, user } = useAuth();
@@ -18,7 +19,32 @@ const Missions = () => {
   const storeMission = useService(MissionsService.store);
   const updateMission = useService(MissionsService.update);
   const [filterValues, setFilterValues] = React.useState({ search: '' });
+  const [allVisions, setAllVisions] = React.useState([]);
+  const [isLoadingDropdowns, setIsLoadingDropdowns] = React.useState(false);
   const pagination = usePagination({ totalData: getAllMissions.totalData });
+
+  // Fetch all pages for dropdown options
+  React.useEffect(() => {
+    const loadDropdownData = async () => {
+      if (!token) return;
+      
+      try {
+        setIsLoadingDropdowns(true);
+        
+        // Fetch all visions
+        const allVisionsData = await fetchAllFromService(VisionsService.getAll, token, {}, 100);
+        setAllVisions(allVisionsData);
+      } catch (err) {
+        console.error('Error loading dropdown data:', err);
+        // Fallback to initial fetch data if full fetch fails
+        setAllVisions(getAllVisions.data || []);
+      } finally {
+        setIsLoadingDropdowns(false);
+      }
+    };
+
+    loadDropdownData();
+  }, [token]);
 
   const fetchMissions = React.useCallback(() => {
     execute({
@@ -37,7 +63,7 @@ const Missions = () => {
   }, [fetchMissions, fetchVision, pagination.page, pagination.per_page, token]);
 
   const missions = getAllMissions.data ?? [];
-  const visi = getAllVisions.data ?? [];
+  const visi = allVisions.length > 0 ? allVisions : (getAllVisions.data ?? []);
 
   const column = [
     {

@@ -10,6 +10,7 @@ import { formFields } from './FormFields';
 import dayjs from 'dayjs';
 import { InputType, Role } from '@/constants';
 import dateFormatter from '@/utils/dateFormatter';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const AssessmentPeriods = () => {
   const { token, user } = useAuth();
@@ -24,7 +25,32 @@ const AssessmentPeriods = () => {
   const [filterValues, setFilterValues] = React.useState({
     search: ''
   });
+  const [allRenstras, setAllRenstras] = React.useState([]);
+  const [isLoadingDropdowns, setIsLoadingDropdowns] = React.useState(false);
   const pagination = usePagination({ totalData: getAllAssessmentPeriods.totalData });
+
+  // Fetch all pages for dropdown options
+  React.useEffect(() => {
+    const loadDropdownData = async () => {
+      if (!token) return;
+      
+      try {
+        setIsLoadingDropdowns(true);
+        
+        // Fetch all renstras
+        const allRenstrasData = await fetchAllFromService(RenstrasService.getAll, token, {}, 100);
+        setAllRenstras(allRenstrasData);
+      } catch (err) {
+        console.error('Error loading dropdown data:', err);
+        // Fallback to initial fetch data if full fetch fails
+        setAllRenstras(getAllRenstras.data || []);
+      } finally {
+        setIsLoadingDropdowns(false);
+      }
+    };
+
+    loadDropdownData();
+  }, [token]);
 
   const fetchAssessmentPeriods = React.useCallback(() => {
     execute({
@@ -35,7 +61,7 @@ const AssessmentPeriods = () => {
     });
   }, [execute, filterValues.search, pagination.page, pagination.per_page, token]);
 
-  const renstras = getAllRenstras.data ?? [];
+  const renstras = allRenstras.length > 0 ? allRenstras : (getAllRenstras.data ?? []);
   const formFieldsWithOptions = formFields({ renstras });
 
   React.useEffect(() => {

@@ -98,22 +98,23 @@ export const dashboardLink = [
     ]
   },
   {
-    label: 'Rencana Kerja Tahunan',
+    label: 'Rencana Kerja',
     icon: ClusterOutlined,
     roles: [Role.ADMIN, Role.UMPEG],
     children: [
-      {
-        path: '/dashboard/rkts',
-        label: 'RKT',
-        element: Dashboard.Rkts,
-        roles: [Role.ADMIN, Role.UMPEG],
-      },
       {
         path: '/dashboard/assessment_periods',
         label: 'Periode Penilaian',
         element: Dashboard.AssessmentPeriod,
         roles: [Role.ADMIN, Role.UMPEG]
       },
+      {
+        path: '/dashboard/rkts',
+        label: 'RKT',
+        element: Dashboard.Rkts,
+        roles: [Role.ADMIN, Role.UMPEG]
+      },
+
       {
         path: '/dashboard/perjanjian_kinerja',
         label: 'Perjanjian Kinerja',

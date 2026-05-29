@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { PageExplanation } from '@/components';
 import { SKP_STATUS } from '@/constants/SkpStatus';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const DetailSkp = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const DetailSkp = () => {
   const modal = useCrudModal();
   const { success, error } = useNotification();
   const { execute, ...getAllDetailSkp } = useService(SkpsService.getById);
-  const { execute: fetchRkts, ...getAllRkts } = useService(RktsService.getAll);
+  const { ...getAllRkts } = useService(RktsService.getAll);
   const updateSkp = useService(SkpsService.update);
   const deleteSKp = useService(SkpsService.delete);
   const addRhk = useService(RhkService.addToSkp);
@@ -35,12 +36,29 @@ const DetailSkp = () => {
   const [statusHistoryModal, setStatusHistoryModal] = React.useState(false);
   const [reviewModalOpen, setReviewModalOpen] = React.useState(false);
   const [reviewRemarks, setReviewRemarks] = React.useState('');
+  const [allRkts, setAllRkts] = React.useState([]);
+
+  // Fetch all pages for RKTs dropdown
+  React.useEffect(() => {
+    const loadRktsData = async () => {
+      if (!token) return;
+      
+      try {
+        const allRktsData = await fetchAllFromService(RktsService.getAll, token, {}, 100);
+        setAllRkts(allRktsData);
+      } catch (err) {
+        console.error('Error loading RKTs data:', err);
+        setAllRkts(getAllRkts.data || []);
+      }
+    };
+
+    loadRktsData();
+  }, [token, getAllRkts.data]);
 
   // Define data variables first
   const detailSkp = getAllDetailSkp.data ?? {};
-  const rkts = getAllRkts.data ?? [];
+  const rkts = allRkts.length > 0 ? allRkts : (getAllRkts.data ?? []);
   const currentJabatan = selectedJabatan || detailSkp?.jabatan?.[0];
-  const currentUnitId = detailSkp?.unitId?.[selectedJabatanIndex] || currentJabatan?.unor?.id;
 
   const fetchDetailSkp = React.useCallback(() => {
     execute({ token, id, page: pagination.page, per_page: pagination.per_page });
@@ -48,11 +66,7 @@ const DetailSkp = () => {
 
   React.useEffect(() => {
     fetchDetailSkp();
-    // Fetch RKTs with unitIds filter based on selected jabatan
-    if (currentUnitId) {
-      fetchRkts({ token: token, unitIds: [currentUnitId], page: 1, perPage: 100 });
-    }
-  }, [fetchDetailSkp, fetchRkts, token, user?.nip_baru, currentUnitId]);
+  }, [fetchDetailSkp, token]);
 
   React.useEffect(() => {
     if (detailSkp?.jabatan && detailSkp.jabatan.length > 0 && !selectedJabatan) {

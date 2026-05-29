@@ -9,6 +9,7 @@ import { aspekFormFields, mphFormFields } from './FormFields';
 import Modul from '@/constants/Modul';
 import dayjs from 'dayjs';
 import { SKP_STATUS } from '@/constants/SkpStatus';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const Mph = () => {
   const navigate = useNavigate();
@@ -18,15 +19,33 @@ const Mph = () => {
   const { success, error } = useNotification();
   const { execute, ...getAllRhks } = useService(SkpsService.getSkpRhks);
   const { execute: fetchDetailSkp, ...getAllDetailSkp } = useService(SkpsService.getById);
-  const { execute: fetchRkts, ...getAllRkts } = useService(RktsService.getAll);
+  const { ...getAllRkts } = useService(RktsService.getAll);
   const addRhk = useService(RhkService.addToSkp);
   const deleteRhk = useService(RhkService.delete);
   const updateRhk = useService(RhkService.updateInSkp);
   const updateAspek = useService(SkpsService.aspekUpdate);
   const pagination = usePagination({ totalData: getAllRhks.totalData });
   const [drawer, setDrawer] = React.useState({ open: false, data: {}, placement: 'right' });
+  const [allRkts, setAllRkts] = React.useState([]);
 
   const isJpt = user?.roles?.includes('JPT');
+
+  // Fetch all pages for RKTs dropdown
+  React.useEffect(() => {
+    const loadRktsData = async () => {
+      if (!token) return;
+      
+      try {
+        const allRktsData = await fetchAllFromService(RktsService.getAll, token, {}, 100);
+        setAllRkts(allRktsData);
+      } catch (err) {
+        console.error('Error loading RKTs data:', err);
+        setAllRkts(getAllRkts.data || []);
+      }
+    };
+
+    loadRktsData();
+  }, [token, getAllRkts.data]);
 
   const fetchMatriks = React.useCallback(() => {
     execute({ token, id, page: pagination.page, per_page: pagination.per_page });
@@ -35,8 +54,7 @@ const Mph = () => {
   React.useEffect(() => {
     fetchMatriks();
     fetchDetailSkp({ token, id });
-    fetchRkts({ token: token, page: 1, perPage: 1000 });
-  }, [fetchMatriks, fetchDetailSkp, fetchRkts, id, token]);
+  }, [fetchMatriks, fetchDetailSkp, id, token]);
 
   const rhksData = getAllRhks.data?.rhks ?? [];
   const parentSkpRhks = getAllRhks.data?.parentSkpRhk ?? [];
@@ -84,7 +102,7 @@ const Mph = () => {
   const handleEditRhk = (item) => {
     modal.edit({
       title: `Ubah ${Modul.RHK}`,
-      formFields: mphFormFields({ options: { rkts: getAllRkts.data ?? [], isJPT: canEdit, parentRhks: parentSkpRhks } }),
+      formFields: mphFormFields({ options: { rkts: allRkts.length > 0 ? allRkts : (getAllRkts.data ?? []), isJPT: canEdit, parentRhks: parentSkpRhks } }),
       data: { 
         desc: item.desc, 
         jenis: item.jenis, 
@@ -192,7 +210,7 @@ const Mph = () => {
                     onClick={() => {
                       modal.create({
                         title: `Tambah ${Modul.RHK}`,
-                        formFields: mphFormFields({ options: { rkts: getAllRkts.data ?? [], isJPT: canEdit, parentRhks: parentSkpRhks } }),
+                        formFields: mphFormFields({ options: { rkts: allRkts.length > 0 ? allRkts : (getAllRkts.data ?? []), isJPT: canEdit, parentRhks: parentSkpRhks } }),
                         onSubmit: async (values) => {
                           const payload = {
                             desc: values.desc,

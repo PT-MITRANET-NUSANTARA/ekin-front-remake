@@ -10,6 +10,7 @@ import { DatabaseOutlined } from '@ant-design/icons';
 import { goalFormFields } from './FormFields';
 import { useNavigate } from 'react-router-dom';
 import { InputType, Role } from '@/constants';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const Goals = () => {
   const { token, user } = useAuth();
@@ -26,8 +27,39 @@ const Goals = () => {
     search: ''
     // unit_id: user?.isRole(Role.ADMIN) ? [] : user?.unor.id,
   });
+  const [allRenstras, setAllRenstras] = React.useState([]);
+  const [allUnitKerja, setAllUnitKerja] = React.useState([]);
+  const [isLoadingDropdowns, setIsLoadingDropdowns] = React.useState(false);
   const pagination = usePagination({ totalData: getAllGoals.totalData });
   const navigate = useNavigate();
+
+  // Fetch all pages for dropdown options
+  React.useEffect(() => {
+    const loadDropdownData = async () => {
+      if (!token) return;
+      
+      try {
+        setIsLoadingDropdowns(true);
+        
+        // Fetch all renstras
+        const allRenstrasData = await fetchAllFromService(RenstrasService.getAll, token, {}, 100);
+        setAllRenstras(allRenstrasData);
+
+        // Fetch all unit kerja
+        const allUnitKerjaData = await fetchAllFromService(UnitKerjaService.getAll, token, {}, 100);
+        setAllUnitKerja(allUnitKerjaData);
+      } catch (err) {
+        console.error('Error loading dropdown data:', err);
+        // Fallback to initial fetch data if full fetch fails
+        setAllRenstras(getAllRenstras.data || []);
+        setAllUnitKerja(getAllUnitKerja.data || []);
+      } finally {
+        setIsLoadingDropdowns(false);
+      }
+    };
+
+    loadDropdownData();
+  }, [token]);
 
   const fetchGoals = React.useCallback(() => {
     execute({
@@ -46,8 +78,8 @@ const Goals = () => {
   }, [fetchGoals, fetchRenstras, fetchUnitKerja, pagination.page, pagination.per_page, token]);
 
   const goals = getAllGoals.data ?? [];
-  const renstras = getAllRenstras.data ?? [];
-  const unitKerja = getAllUnitKerja.data ?? [];
+  const renstras = allRenstras.length > 0 ? allRenstras : (getAllRenstras.data ?? []);
+  const unitKerja = allUnitKerja.length > 0 ? allUnitKerja : (getAllUnitKerja.data ?? []);
 
   const column = [
     {

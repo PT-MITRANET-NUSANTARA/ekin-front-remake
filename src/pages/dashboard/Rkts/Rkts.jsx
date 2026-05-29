@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { rupiahFormat } from '@/utils/rupiahFormat';
 import { rktFormFields, rktsFilterFields } from './FormFields';
 import { InputType, Role } from '@/constants';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const Rkts = () => {
   const { token, user } = useAuth();
@@ -27,8 +28,34 @@ const Rkts = () => {
     unit_id: [],
     search: ''
   });
+  const [allRenstras, setAllRenstras] = React.useState([]);
+  const [allSubActivities, setAllSubActivities] = React.useState([]);
   const pagination = usePagination({ totalData: getAllRkts.totalData });
   const navigate = useNavigate();
+
+  // Fetch all pages for dropdown options
+  React.useEffect(() => {
+    const loadDropdownData = async () => {
+      if (!token) return;
+      
+      try {
+        // Fetch all renstras
+        const allRenstrasData = await fetchAllFromService(RenstrasService.getAll, token, {}, 100);
+        setAllRenstras(allRenstrasData);
+
+        // Fetch all sub activities
+        const allSubActivitiesData = await fetchAllFromService(SubActivitiesService.getAll, token, {}, 100);
+        setAllSubActivities(allSubActivitiesData);
+      } catch (err) {
+        console.error('Error loading dropdown data:', err);
+        // Fallback to initial fetch data if full fetch fails
+        setAllRenstras(getAllRenstras.data || []);
+        setAllSubActivities(getAllSubActivities.data || []);
+      }
+    };
+
+    loadDropdownData();
+  }, [token, getAllRenstras.data, getAllSubActivities.data]);
 
   const fetchRkts = React.useCallback(() => {
     const params = {
@@ -49,13 +76,13 @@ const Rkts = () => {
   React.useEffect(() => {
     fetchRkts();
     fetchRenstras({ token: token });
-    fetchSubActivities({ token: token, page: 1, perPage: 99999 });
+    fetchSubActivities({ token: token });
     fetchUnitKerja({ token: token });
   }, [fetchRkts, fetchRenstras, pagination.page, pagination.per_page, token, fetchSubActivities, fetchUnitKerja]);
 
   const rkts = getAllRkts.data ?? [];
-  const renstras = getAllRenstras.data ?? [];
-  const subActivities = getAllSubActivities.data ?? [];
+  const renstras = allRenstras.length > 0 ? allRenstras : (getAllRenstras.data ?? []);
+  const subActivities = allSubActivities.length > 0 ? allSubActivities : (getAllSubActivities.data ?? []);
   const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [

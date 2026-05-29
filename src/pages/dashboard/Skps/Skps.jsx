@@ -9,6 +9,7 @@ import { formFields } from './FormFields';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { SKP_STATUS } from '@/constants/SkpStatus';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const Skps = () => {
   const { token, user } = useAuth();
@@ -21,8 +22,34 @@ const Skps = () => {
   const storeSkp = useService(SkpsService.store);
   const updateSkp = useService(SkpsService.update);
   const [filterValues, setFilterValues] = React.useState({ search: '' });
+  const [allRenstras, setAllRenstras] = React.useState([]);
+  const [allUnitKerja, setAllUnitKerja] = React.useState([]);
   const pagination = usePagination({ totalData: getAllSkps.totalData });
   const navigate = useNavigate();
+
+  // Fetch all pages for dropdown options
+  React.useEffect(() => {
+    const loadDropdownData = async () => {
+      if (!token) return;
+      
+      try {
+        // Fetch all renstras
+        const allRenstrasData = await fetchAllFromService(RenstrasService.getAll, token, {}, 100);
+        setAllRenstras(allRenstrasData);
+
+        // Fetch all unit kerja
+        const allUnitKerjaData = await fetchAllFromService(UnitKerjaService.getAll, token, {}, 100);
+        setAllUnitKerja(allUnitKerjaData);
+      } catch (err) {
+        console.error('Error loading dropdown data:', err);
+        // Fallback to initial fetch data if full fetch fails
+        setAllRenstras(getAllRenstras.data || []);
+        setAllUnitKerja(getAllUnitKerja.data || []);
+      }
+    };
+
+    loadDropdownData();
+  }, [token, getAllRenstras.data, getAllUnitKerja.data]);
 
   const fetchSkps = React.useCallback(() => {
     execute({
@@ -41,8 +68,8 @@ const Skps = () => {
   }, [token, fetchSkps, fetchRenstras, fetchUnitKerja]);
 
   const skps = getAllSkps.data ?? [];
-  const renstras = getAllRenstras.data ?? [];
-  const unitKerja = getAllUnitKerja.data ?? [];
+  const renstras = allRenstras.length > 0 ? allRenstras : (getAllRenstras.data ?? []);
+  const unitKerja = allUnitKerja.length > 0 ? allUnitKerja : (getAllUnitKerja.data ?? []);
 
   const onEdit = (data) => {
     modal.edit({

@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import { CheckCircleFilled } from '@ant-design/icons';
 import { InputType, Role } from '@/constants';
 import dateFormatter from '@/utils/dateFormatter';
+import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const Renstras = () => {
   const { token, user } = useAuth();
@@ -26,7 +27,27 @@ const Renstras = () => {
     search: ''
     // unit_id: user?.isRole(Role.ADMIN) ? [] : user?.unor.id,
   });
+  const [allMissions, setAllMissions] = React.useState([]);
   const pagination = usePagination({ totalData: getAllRenstras.totalData });
+
+  // Fetch all pages for dropdown options
+  React.useEffect(() => {
+    const loadDropdownData = async () => {
+      if (!token) return;
+      
+      try {
+        // Fetch all missions
+        const allMissionsData = await fetchAllFromService(MissionsService.getAll, token, {}, 100);
+        setAllMissions(allMissionsData);
+      } catch (err) {
+        console.error('Error loading dropdown data:', err);
+        // Fallback to initial fetch data if full fetch fails
+        setAllMissions(getAllMissions.data || []);
+      }
+    };
+
+    loadDropdownData();
+  }, [token, getAllMissions.data]);
 
   const fetchRenstras = React.useCallback(() => {
     execute({
@@ -47,7 +68,7 @@ const Renstras = () => {
   }, [fetchMissions, fetchRenstras, fetchUnitKerja, pagination.page, pagination.per_page, token, user]);
 
   const renstras = getAllRenstras.data ?? [];
-  const missions = getAllMissions.data ?? [];
+  const missions = allMissions.length > 0 ? allMissions : (getAllMissions.data ?? []);
   const unitKerja = getAllUnitKerja.data ?? [];
 
   const column = [
