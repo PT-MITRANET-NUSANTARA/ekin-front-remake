@@ -17,7 +17,7 @@ const Rkts = () => {
   const { success, error } = useNotification();
   const { execute: fetchRktDetail, ...getDetailRkt } = useService(RktsService.getById);
   const updateRkt = useService(RktsService.update);
-  const [inputIndicators, setInputndicators] = React.useState([]);
+  const [inputIndicators, setInputIndicators] = React.useState([]);
   const [outputIndicators, setOutputIndicators] = React.useState([]);
   const [outcomeIndicators, setOutcomeIndicators] = React.useState([]);
 
@@ -25,13 +25,13 @@ const Rkts = () => {
     fetchRktDetail(token, id);
   }, [fetchRktDetail, id, token]);
 
-  const detailRkt = React.useMemo(() => getDetailRkt.data ?? [], [getDetailRkt.data]);
+  const detailRkt = React.useMemo(() => getDetailRkt.data ?? {}, [getDetailRkt.data]);
 
   React.useEffect(() => {
     if (detailRkt) {
-      setInputndicators(detailRkt.input_indikador_kinerja ?? []);
-      setOutputIndicators(detailRkt.output_indikador_kinerja ?? []);
-      setOutcomeIndicators(detailRkt.outcome_indikador_kinerja ?? []);
+      setInputIndicators(detailRkt.input ?? []);
+      setOutputIndicators(detailRkt.output ?? []);
+      setOutcomeIndicators(detailRkt.outcome ?? []);
     }
   }, [detailRkt]);
 
@@ -90,12 +90,12 @@ const Rkts = () => {
         }
 
         const payload = {
-          nama: detailRkt.nama,
+          nama: detailRkt.name || detailRkt.nama,
           label: detailRkt.label,
-          total_anggaran: detailRkt.total_anggaran,
-          id_renstra: detailRkt.renstra?.id,
-          id_sub_kegiatan: (detailRkt.id_sub_kegiatan ?? []).map((item) => item.id),
-          id_unit: detailRkt.id_unit,
+          total_anggaran: detailRkt.totalAnggaran || detailRkt.total_anggaran,
+          id_renstra: detailRkt.renstraId || detailRkt.id_renstra || detailRkt.renstra?.id,
+          id_sub_kegiatan: (detailRkt.subKegiatan || detailRkt.id_sub_kegiatan || []).map((item) => item.id),
+          id_unit: detailRkt.unitId || detailRkt.id_unit,
           input_indikador_kinerja: updatedInput,
           output_indikador_kinerja: updatedOutput,
           outcome_indikador_kinerja: updatedOutcome
@@ -105,9 +105,7 @@ const Rkts = () => {
 
         if (isSuccess) {
           success('Berhasil', message);
-          if (type === 'input') setInputndicators(updatedInput);
-          if (type === 'output') setOutputIndicators(updatedOutput);
-          if (type === 'outcome') setOutcomeIndicators(updatedOutcome);
+          fetchRktDetail(token, id);
         } else {
           error('Gagal', message);
         }
@@ -136,12 +134,12 @@ const Rkts = () => {
         }
 
         const payload = {
-          nama: detailRkt.nama,
+          nama: detailRkt.name || detailRkt.nama,
           label: detailRkt.label,
-          total_anggaran: detailRkt.total_anggaran,
-          id_renstra: detailRkt.renstra?.id,
-          id_sub_kegiatan: (detailRkt.id_sub_kegiatan ?? []).map((item) => item.id),
-          id_unit: detailRkt.id_unit,
+          total_anggaran: detailRkt.totalAnggaran || detailRkt.total_anggaran,
+          id_renstra: detailRkt.renstraId || detailRkt.id_renstra || detailRkt.renstra?.id,
+          id_sub_kegiatan: (detailRkt.subKegiatan || detailRkt.id_sub_kegiatan || []).map((item) => item.id),
+          id_unit: detailRkt.unitId || detailRkt.id_unit,
           input_indikador_kinerja: updatedInput,
           output_indikador_kinerja: updatedOutput,
           outcome_indikador_kinerja: updatedOutcome
@@ -151,9 +149,7 @@ const Rkts = () => {
 
         if (isSuccess) {
           success('Berhasil', message);
-          if (type === 'input') setInputndicators(updatedInput);
-          if (type === 'output') setOutputIndicators(updatedOutput);
-          if (type === 'outcome') setOutcomeIndicators(updatedOutcome);
+          fetchRktDetail(token, id);
         } else {
           error('Gagal', message);
         }
@@ -181,12 +177,12 @@ const Rkts = () => {
         }
 
         const payload = {
-          nama: detailRkt.nama,
+          nama: detailRkt.name || detailRkt.nama,
           label: detailRkt.label,
-          total_anggaran: detailRkt.total_anggaran,
-          id_renstra: detailRkt.renstra?.id,
-          id_sub_kegiatan: (detailRkt.id_sub_kegiatan ?? []).map((item) => item.id),
-          id_unit: detailRkt.id_unit,
+          total_anggaran: detailRkt.totalAnggaran || detailRkt.total_anggaran,
+          id_renstra: detailRkt.renstraId || detailRkt.id_renstra || detailRkt.renstra?.id,
+          id_sub_kegiatan: (detailRkt.subKegiatan || detailRkt.id_sub_kegiatan || []).map((item) => item.id),
+          id_unit: detailRkt.unitId || detailRkt.id_unit,
           input_indikador_kinerja: updatedInput,
           output_indikador_kinerja: updatedOutput,
           outcome_indikador_kinerja: updatedOutcome
@@ -196,9 +192,7 @@ const Rkts = () => {
 
         if (isSuccess) {
           success('Berhasil', message);
-          if (type === 'input') setInputndicators(updatedInput);
-          if (type === 'output') setOutputIndicators(updatedOutput);
-          if (type === 'outcome') setOutcomeIndicators(updatedOutcome);
+          fetchRktDetail(token, id);
         } else {
           error('Gagal', message);
         }

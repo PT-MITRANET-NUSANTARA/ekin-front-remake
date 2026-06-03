@@ -7,13 +7,13 @@ export const formFields = (options = {}) => {
   
   return [
   {
-    label: `Nama ${Modul.ASSESSMENTPERIOD}`,
+    label: `Tahun ${Modul.ASSESSMENTPERIOD}`,
     name: 'nama',
     type: InputType.TEXT,
     rules: [
       {
         required: true,
-        message: `Nama ${Modul.ASSESSMENTPERIOD} harus diisi`
+        message: `Tahun ${Modul.ASSESSMENTPERIOD} harus diisi`
       }
     ]
   },

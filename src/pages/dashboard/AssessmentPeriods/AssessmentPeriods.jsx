@@ -77,7 +77,7 @@ const AssessmentPeriods = () => {
 
   const column = [
     {
-      title: 'Nama Periode',
+      title: 'Tahun Periode',
       dataIndex: 'nama',
       sorter: (a, b) => a.nama.localeCompare(b.nama),
       searchable: true

@@ -93,10 +93,19 @@ const Rkts = () => {
       searchable: true
     },
     {
-      title: 'Renstra',
-      dataIndex: ['renstra', 'nama'],
-      sorter: (a, b) => (a.renstra?.nama || '').length - (b.renstra?.nama || '').length,
-      searchable: true
+      title: 'Sub Kegiatan',
+      dataIndex: 'id_sub_kegiatan',
+      render: (subKegiatan) => {
+        if (!subKegiatan || subKegiatan.length === 0) return '-';
+        return (
+          <ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+            {subKegiatan.map((item, idx) => (
+              <li key={idx}>{item.nama}</li>
+            ))}
+          </ul>
+        );
+      },
+      sorter: (a, b) => (a.id_sub_kegiatan?.length || 0) - (b.id_sub_kegiatan?.length || 0)
     },
     {
       title: 'Total Anggaran',
