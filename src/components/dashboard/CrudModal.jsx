@@ -7,7 +7,7 @@ import TextArea from 'antd/es/input/TextArea';
 import Dragger from 'antd/es/upload/Dragger';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { MapPicker, Select, SelectWithParent } from './input';
+import { MapPicker, Select, SelectWithParent, SatuanInput } from './input';
 import { debounce } from 'lodash';
 import { useAuth } from '@/hooks';
 
@@ -131,6 +131,10 @@ export default function CrudModal({ isModalOpen, data: initialData, close, title
 
       case InputType.MAP_PICKER:
         return <MapPicker form={form} handleValuesChange={handleValuesChange} realtimeData={realtimeData} />;
+
+      case InputType.SATUAN:
+        return <SatuanInput readOnly={field.readOnly} {...field.extra} />;
+
       default:
         return null;
     }

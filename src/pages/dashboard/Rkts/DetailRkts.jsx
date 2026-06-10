@@ -8,6 +8,7 @@ import Modul from '@/constants/Modul';
 import { DataTable, DataTableHeader } from '@/components';
 import { indicatorFormFields } from './FormFields';
 import { useParams } from 'react-router-dom';
+import { getSatuanPrefix } from '@/constants/Satuan';
 
 const Rkts = () => {
   const { id } = useParams();
@@ -46,6 +47,10 @@ const Rkts = () => {
       {
         title: 'Target Indikator',
         dataIndex: 'target',
+        render: (target, record) => {
+          const prefix = getSatuanPrefix(record.satuan);
+          return prefix ? `${prefix} ${target}` : target;
+        },
         sorter: (a, b) => a.target.length - b.target.length,
         searchable: true
       },

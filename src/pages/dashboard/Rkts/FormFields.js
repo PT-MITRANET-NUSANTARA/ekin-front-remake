@@ -1,4 +1,5 @@
 import { InputType } from '@/constants';
+import { SATUAN_LIST, getSatuanPrefix } from '@/constants/Satuan';
 import dateFormatter from '@/utils/dateFormatter';
 
 export const rktFormFields = ({ options }) => [
@@ -115,7 +116,7 @@ export const indicatorFormFields = () => [
   {
     label: `Satuan`,
     name: 'satuan',
-    type: InputType.TEXT,
+    type: InputType.SATUAN,
     rules: [
       {
         required: true,

@@ -1,7 +1,7 @@
 import { Delete, Detail, Edit } from '@/components/dashboard/button';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { RenstrasService, RktsService, SubActivitiesService, UnitKerjaService } from '@/services';
-import { Button, Card, List, Skeleton, Space } from 'antd';
+import { Button, Card, Skeleton, Space } from 'antd';
 import React from 'react';
 import { Rkts as RktModel } from '@/models';
 import Modul from '@/constants/Modul';
@@ -12,6 +12,7 @@ import { rupiahFormat } from '@/utils/rupiahFormat';
 import { rktFormFields, rktsFilterFields } from './FormFields';
 import { InputType, Role } from '@/constants';
 import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
+import { getSatuanPrefix } from '@/constants/Satuan';
 
 const Rkts = () => {
   const { token, user } = useAuth();
@@ -213,60 +214,68 @@ const Rkts = () => {
                   {
                     key: 'sub_kegiatan',
                     label: `Sub Kegiatan`,
-                    children: <List size="small" bordered dataSource={record.id_sub_kegiatan} renderItem={(item) => <List.Item>{item.nama}</List.Item>} />
+                    children: (
+                      <div className="space-y-2">
+                        {(record.id_sub_kegiatan || []).map((item, idx) => (
+                          <div key={idx} className="border p-3 rounded">
+                            {item.nama}
+                          </div>
+                        ))}
+                      </div>
+                    )
                   },
                   {
                     key: 'input',
                     label: `Indikator Input`,
                     children: (
-                      <>
-                        <List
-                          size="small"
-                          bordered
-                          dataSource={record.input_indikator_kinerja}
-                          renderItem={(item) => (
-                            <List.Item>
-                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
-                            </List.Item>
-                          )}
-                        />
-                      </>
+                      <div className="space-y-2">
+                        {(record.input || record.input_indikador_kinerja || []).map((item, idx) => {
+                          const prefix = getSatuanPrefix(item.satuan);
+                          const displayTarget = prefix ? `${prefix} ${item.target}` : item.target;
+                          return (
+                            <div key={idx} className="border p-3 rounded">
+                              <div className="font-medium">{item.nama}</div>
+                              <div className="text-sm text-gray-600">Target : {displayTarget}, Satuan: {item.satuan}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )
                   },
                   {
                     key: 'output',
                     label: `Indikator Output`,
                     children: (
-                      <>
-                        <List
-                          size="small"
-                          bordered
-                          dataSource={record.output_indikator_kinerja}
-                          renderItem={(item) => (
-                            <List.Item>
-                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
-                            </List.Item>
-                          )}
-                        />
-                      </>
+                      <div className="space-y-2">
+                        {(record.output || record.output_indikator_kinerja || []).map((item, idx) => {
+                          const prefix = getSatuanPrefix(item.satuan);
+                          const displayTarget = prefix ? `${prefix} ${item.target}` : item.target;
+                          return (
+                            <div key={idx} className="border p-3 rounded">
+                              <div className="font-medium">{item.nama}</div>
+                              <div className="text-sm text-gray-600">Target : {displayTarget}, Satuan: {item.satuan}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )
                   },
                   {
                     key: 'outcome',
                     label: `Indikator Outcome`,
                     children: (
-                      <>
-                        <List
-                          size="small"
-                          bordered
-                          dataSource={record.outcome_indikator_kinerja}
-                          renderItem={(item) => (
-                            <List.Item>
-                              <List.Item.Meta title={item.nama} description={`Target : ${item.target}, Satuan: ${item.satuan}`} />
-                            </List.Item>
-                          )}
-                        />
-                      </>
+                      <div className="space-y-2">
+                        {(record.outcome || record.outcome_indikator_kinerja || []).map((item, idx) => {
+                          const prefix = getSatuanPrefix(item.satuan);
+                          const displayTarget = prefix ? `${prefix} ${item.target}` : item.target;
+                          return (
+                            <div key={idx} className="border p-3 rounded">
+                              <div className="font-medium">{item.nama}</div>
+                              <div className="text-sm text-gray-600">Target : {displayTarget}, Satuan: {item.satuan}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )
                   }
                 ]

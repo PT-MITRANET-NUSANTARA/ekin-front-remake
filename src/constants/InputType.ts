@@ -14,7 +14,8 @@ enum InputType {
   SELECT_SEARCH = 'select-search',
   MAP_PICKER = 'map-picker',
   SELECT_WITH_PARENT = 'map-picker',
-  SELECT_REMOTE = 'select-remote'
+  SELECT_REMOTE = 'select-remote',
+  SATUAN = 'satuan'
 }
 
 export default InputType;
