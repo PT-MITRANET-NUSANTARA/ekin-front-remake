@@ -23,7 +23,9 @@ const Mph = () => {
   const addRhk = useService(RhkService.addToSkp);
   const deleteRhk = useService(RhkService.delete);
   const updateRhk = useService(RhkService.updateInSkp);
-  const updateAspek = useService(SkpsService.aspekUpdate);
+  const addAspek = useService(RhkService.addAspek);
+  const updateAspekRhk = useService(RhkService.updateAspek);
+  const deleteAspek = useService(RhkService.deleteAspek);
   const pagination = usePagination({ totalData: getAllRhks.totalData });
   const [drawer, setDrawer] = React.useState({ open: false, data: {}, placement: 'right' });
   const [allRkts, setAllRkts] = React.useState([]);
@@ -80,23 +82,77 @@ const Mph = () => {
     }
   };
 
-  const handleUpdateAspek = (data) => {
-    modal.edit({
-      title: `Ubah ${Modul.ASPEK}`,
+  const handleAddAspek = (rhkData) => {
+    modal.create({
+      title: `Tambah ${Modul.ASPEK}`,
       formFields: aspekFormFields,
-      data: { name: data?.indikator_kinerja?.name, target: data?.indikator_kinerja?.target, satuan: data?.indikator_kinerja?.satuan },
       onSubmit: async (values) => {
-        const { isSuccess, message } = await updateAspek.execute(data.id, { indikator_kinerja: { ...values }, jenis: data.jenis, desc: data.desc }, token);
+        const payload = {
+          jenis: values.jenis,
+          desc: values.desc || '',
+          indicator: {
+            name: values.name,
+            target: values.target,
+            satuan: values.satuan
+          }
+        };
+        const { isSuccess, message } = await addAspek.execute(id, rhkData.id, payload, token);
         if (isSuccess) {
           success('Berhasil', message);
           fetchMatriks();
-          setDrawer({ ...drawer, open: false });
         } else {
           error('Gagal', message);
         }
         return isSuccess;
       }
     });
+  };
+
+  const handleEditAspek = (rhkData, aspekData) => {
+    modal.edit({
+      title: `Ubah ${Modul.ASPEK}`,
+      formFields: aspekFormFields,
+      data: {
+        jenis: aspekData.jenis,
+        desc: aspekData.desc,
+        name: aspekData.indicator?.name,
+        target: aspekData.indicator?.target,
+        satuan: aspekData.indicator?.satuan
+      },
+      onSubmit: async (values) => {
+        const payload = {
+          jenis: values.jenis,
+          desc: values.desc || '',
+          indicator: {
+            name: values.name,
+            target: values.target,
+            satuan: values.satuan
+          }
+        };
+        const { isSuccess, message } = await updateAspekRhk.execute(id, rhkData.id, aspekData.id, payload, token);
+        if (isSuccess) {
+          success('Berhasil', message);
+          fetchMatriks();
+        } else {
+          error('Gagal', message);
+        }
+        return isSuccess;
+      }
+    });
+  };
+
+  const handleDeleteAspek = async (rhkData, aspekId) => {
+    if (!(canEdit && detailSkp.nip === user?.nip_baru)) {
+      error('Gagal', 'Anda tidak memiliki izin untuk menghapus Aspek ini');
+      return;
+    }
+    const { isSuccess, message } = await deleteAspek.execute(id, rhkData.id, aspekId, token);
+    if (isSuccess) {
+      success('Berhasil', message);
+      fetchMatriks();
+    } else {
+      error('Gagal', message);
+    }
   };
 
   const handleEditRhk = (item) => {
@@ -448,48 +504,86 @@ const Mph = () => {
           )}
 
           {/* Aspect Information */}
-          {drawer.data.rhkAspeks && drawer.data.rhkAspeks.length > 0 && (
-            <>
-              <hr />
+          <>
+            <hr />
+            <div className="flex items-center justify-between mb-4">
+              <Typography.Title level={5} style={{ margin: 0 }}>
+                Daftar Aspek
+              </Typography.Title>
+              {canEdit && detailSkp.nip === user?.nip_baru && (
+                <Button
+                  variant="solid"
+                  color="primary"
+                  icon={<PlusOutlined />}
+                  onClick={() => handleAddAspek(drawer.data)}
+                >
+                  Tambah Aspek
+                </Button>
+              )}
+            </div>
+            {drawer.data.rhkAspeks && drawer.data.rhkAspeks.length > 0 ? (
               <List
                 className="py-4"
                 size="large"
-                header={
-                  <Typography.Title level={5} style={{ margin: 0 }}>
-                    Daftar Aspek
-                  </Typography.Title>
-                }
                 dataSource={drawer.data.rhkAspeks}
                 renderItem={(item) => (
-                  <Descriptions column={2} bordered className="py-2">
-                    <Descriptions.Item label="Nama Aspek">{item.desc}</Descriptions.Item>
-                    <Descriptions.Item label="Jenis">{item.jenis}</Descriptions.Item>
-                    <Descriptions.Item label="Indikator Kinerja" span={3}>
-                      <div className="inline-flex items-center gap-x-2">
-                        {item.indikator_kinerja ? (
-                          <>
-                            <CheckCircleFilled className="text-green-500" />
-                            {item.indikator_kinerja.name} {item.indikator_kinerja.target} {item.indikator_kinerja.satuan}
-                            {isJpt && detailSkp.nip === user?.nip_baru && (
-                              <Button variant="text" color="primary" icon={<EditOutlined />} onClick={() => handleUpdateAspek(item)} />
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            <CloseCircleFilled className="text-red-500" />
-                            Belum di tambahkan
-                            <Button variant="text" color="primary" icon={<PlusOutlined />} onClick={() => handleUpdateAspek(item)}>
-                              Tambah
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </Descriptions.Item>
-                  </Descriptions>
+                  <Card
+                    className="mb-4"
+                    extra={
+                      canEdit && detailSkp.nip === user?.nip_baru && (
+                        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            icon={<EditOutlined />}
+                            type="text"
+                            color="primary"
+                            size="small"
+                            onClick={() => handleEditAspek(drawer.data, item)}
+                          />
+                          <Popconfirm
+                            title="Hapus Aspek?"
+                            description="Apakah anda yakin ingin menghapus aspek ini?"
+                            onConfirm={() => handleDeleteAspek(drawer.data, item.id)}
+                          >
+                            <Button
+                              type="text"
+                              danger
+                              size="small"
+                              icon={<DeleteOutlined />}
+                            />
+                          </Popconfirm>
+                        </div>
+                      )
+                    }
+                  >
+                    <Descriptions column={2} bordered className="py-2">
+                      <Descriptions.Item label="Nama Aspek">{item.desc}</Descriptions.Item>
+                      <Descriptions.Item label="Jenis">{item.jenis}</Descriptions.Item>
+                      <Descriptions.Item label="Indikator Kinerja" span={2}>
+                        <div className="flex items-center gap-x-2">
+                          {item.indikator_kinerja ? (
+                            <>
+                              <CheckCircleFilled className="text-green-500" />
+                              <span>{item.indikator_kinerja.name} {item.indikator_kinerja.target} {item.indikator_kinerja.satuan}</span>
+                            </>
+                          ) : (
+                            <>
+                              <CloseCircleFilled className="text-red-500" />
+                              <span>Belum di tambahkan</span>
+                            </>
+                          )}
+                        </div>
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </Card>
                 )}
               />
-            </>
-          )}
+            ) : (
+              <div className="text-center py-8 text-gray-400">
+                <p className="text-sm">Belum ada aspek yang ditambahkan</p>
+              </div>
+            )}
+          </>
+
         </div>
       </Drawer>
     </>

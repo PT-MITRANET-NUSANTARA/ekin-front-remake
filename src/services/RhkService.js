@@ -112,4 +112,41 @@ export default class RhkService {
   static async deleteBatch(ids, token) {
     return await api.delete(`/rhk/multi-delete/?id=${ids.join(',')}`, { token });
   }
+
+  /**
+   * Add aspek to RHK
+   * @param {string} skpId - SKP ID
+   * @param {string} rhkId - RHK ID
+   * @param {object} data - Aspek data
+   * @param {string} token
+   * @returns {Promise<Response>}
+   */
+  static async addAspek(skpId, rhkId, data, token) {
+    return await api.post(`/skp/${skpId}/rhk/${rhkId}/aspek`, { body: data, token });
+  }
+
+  /**
+   * Update aspek in RHK
+   * @param {string} skpId - SKP ID
+   * @param {string} rhkId - RHK ID
+   * @param {string} aspekId - Aspek ID
+   * @param {object} data - Aspek data
+   * @param {string} token
+   * @returns {Promise<Response>}
+   */
+  static async updateAspek(skpId, rhkId, aspekId, data, token) {
+    return await api.patch(`/skp/${skpId}/rhk/${rhkId}/aspek/${aspekId}`, { body: data, token });
+  }
+
+  /**
+   * Delete aspek from RHK
+   * @param {string} skpId - SKP ID
+   * @param {string} rhkId - RHK ID
+   * @param {string} aspekId - Aspek ID
+   * @param {string} token
+   * @returns {Promise<Response>}
+   */
+  static async deleteAspek(skpId, rhkId, aspekId, token) {
+    return await api.delete(`/skp/${skpId}/rhk/${rhkId}/aspek/${aspekId}`, { token });
+  }
 }

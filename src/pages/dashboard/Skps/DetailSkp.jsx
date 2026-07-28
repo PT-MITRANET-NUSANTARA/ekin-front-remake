@@ -1,17 +1,16 @@
 import Modul from '@/constants/Modul';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
-import { RhkService, RktsService, SkpsService } from '@/services';
+import { SkpsService } from '@/services';
 import { Alert, Badge, Button, Card, Descriptions, Popconfirm, Skeleton, Table, Typography, Select, Modal, Space } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { aspekFormFields, lampiranFormFields, rhkFormFields } from './FormFields';
+import { lampiranFormFields } from './FormFields';
 import { lampiranColumn, perilakuColumns } from './Columns';
-import { DeleteOutlined, DownloadOutlined, EditOutlined } from '@ant-design/icons';
+import { DownloadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { PageExplanation } from '@/components';
 import { SKP_STATUS } from '@/constants/SkpStatus';
-import { fetchAllFromService } from '@/utils/fetchAllPaginatedData';
 
 const DetailSkp = () => {
   const navigate = useNavigate();
@@ -20,13 +19,8 @@ const DetailSkp = () => {
   const modal = useCrudModal();
   const { success, error } = useNotification();
   const { execute, ...getAllDetailSkp } = useService(SkpsService.getById);
-  const { ...getAllRkts } = useService(RktsService.getAll);
   const updateSkp = useService(SkpsService.update);
   const deleteSKp = useService(SkpsService.delete);
-  const addRhk = useService(RhkService.addToSkp);
-  const updateAspek = useService(SkpsService.aspekUpdate);
-  const deleteRhk = useService(RhkService.delete);
-  const updateRhk = useService(RhkService.updateInSkp);
   const submitSkp = useService(SkpsService.submitSkp);
   const approveSkp = useService(SkpsService.approveSkp);
   const rejectSkp = useService(SkpsService.rejectSkp);
@@ -36,28 +30,9 @@ const DetailSkp = () => {
   const [statusHistoryModal, setStatusHistoryModal] = React.useState(false);
   const [reviewModalOpen, setReviewModalOpen] = React.useState(false);
   const [reviewRemarks, setReviewRemarks] = React.useState('');
-  const [allRkts, setAllRkts] = React.useState([]);
-
-  // Fetch all pages for RKTs dropdown
-  React.useEffect(() => {
-    const loadRktsData = async () => {
-      if (!token) return;
-      
-      try {
-        const allRktsData = await fetchAllFromService(RktsService.getAll, token, {}, 100);
-        setAllRkts(allRktsData);
-      } catch (err) {
-        console.error('Error loading RKTs data:', err);
-        setAllRkts(getAllRkts.data || []);
-      }
-    };
-
-    loadRktsData();
-  }, [token, getAllRkts.data]);
 
   // Define data variables first
   const detailSkp = getAllDetailSkp.data ?? {};
-  const rkts = allRkts.length > 0 ? allRkts : (getAllRkts.data ?? []);
   const currentJabatan = selectedJabatan || detailSkp?.jabatan?.[0];
 
   const fetchDetailSkp = React.useCallback(() => {
@@ -74,40 +49,6 @@ const DetailSkp = () => {
       setSelectedJabatanIndex(0);
     }
   }, [detailSkp?.jabatan, selectedJabatan]);
-
-  const handleUpdateAspek = (record) => {
-    modal.edit({
-      title: `Ubah ${Modul.ASPEK}`,
-      formFields: aspekFormFields,
-      data: { name: record.indikator_name, target: record.indikator_target, satuan: record.indikator_satuan },
-      onSubmit: async (values) => {
-        const { isSuccess, message } = await updateAspek.execute(record.aspekId, { indikator_kinerja: { ...values }, jenis: record.aspekJenis, desc: record.aspekDesc }, token);
-        if (isSuccess) {
-          success('Berhasil', message);
-          fetchDetailSkp();
-        } else {
-          error('Gagal', message);
-        }
-        return isSuccess;
-      }
-    });
-  };
-
-  const handleDeleteRhk = (record) => {
-    modal.delete.default({
-      title: `Hapus ${Modul.RHK}`,
-      onSubmit: async () => {
-        const { isSuccess, message } = await deleteRhk.execute(record.rhkId, token);
-        if (isSuccess) {
-          success('Berhasil', message);
-          fetchDetailSkp();
-        } else {
-          error('Gagal', message);
-        }
-        return isSuccess;
-      }
-    });
-  };
 
   const handleStoreLampiran = (type) => {
     modal.create({
@@ -246,7 +187,6 @@ const DetailSkp = () => {
     }
   };
 
-  const isJpt = detailSkp?.isJPT ?? false;
   const isSkpOwner = detailSkp.nip === user?.nip_baru;
   const isReviewer = detailSkp?.parentSkps?.some(
     (skp) => String(skp?.nip) === String(user?.nip_baru)
@@ -267,7 +207,6 @@ const DetailSkp = () => {
   };
 
   const statusInfo = getRejectionOrApprovalInfo();
-  
 
   return (
     <>
@@ -407,397 +346,6 @@ const DetailSkp = () => {
                 <Descriptions.Item label="Jabatan">{detailSkp?.parentSkps?.[0]?.jabatan?.[selectedJabatanIndex]?.nama_jabatan ?? '-'}</Descriptions.Item>
               </Descriptions>
             </div>
-
-            {/* RHK Utama */}
-            <div className="mt-4 flex w-full items-center justify-between">
-              <div className="inline-flex items-center gap-x-2">
-                <Typography.Title level={5}>Rencana Hasil Kerja Utama</Typography.Title>
-              </div>
-              <div className="inline-flex items-center gap-x-2">
-                {isJpt && detailSkp.nip === user?.nip_baru && (
-                  <Button
-                    variant="solid"
-                    color="primary"
-                    loading={getAllRkts.isLoading}
-                    disabled={!Array.isArray(rkts) || rkts.length === 0}
-                    onClick={() => {
-                      modal.create({
-                        title: `Tambah ${Modul.RHK}`,
-                        formFields: rhkFormFields({ options: { rkts: rkts } }),
-                        onSubmit: async (values) => {
-                          const payload = {
-                            desc: values.desc,
-                            jenis: values.jenis,
-                            klasifikasi: values.klasifikasi,
-                            penugasan: values.penugasan,
-                            rktIds: values.rkts
-                          };
-                          const { isSuccess, message } = await addRhk.execute(detailSkp.id, payload, token);
-                          if (isSuccess) {
-                            success('Berhasil', message);
-                            fetchDetailSkp();
-                          } else {
-                            error('Gagal', message);
-                          }
-                          return isSuccess;
-                        }
-                      });
-                    }}
-                  >
-                    Tambah Data RHK
-                  </Button>
-                )}
-              </div>
-            </div>
-            <Table
-              bordered
-              columns={[
-                {
-                  title: 'Rencana Hasil Kerja',
-                  dataIndex: 'desc',
-                  key: 'desc',
-                  width: 150,
-                  render: (text, record) => {
-                    return {
-                      children: (
-                        <div className="flex flex-col gap-2">
-                          <span>{text}</span>
-                          {record.rhkRowSpan !== 0 && isJpt && detailSkp.nip === user?.nip_baru && (
-                            <div className="flex gap-2">
-                              <Button
-                                icon={<EditOutlined />}
-                                variant="solid"
-                                color="primary"
-                                size="small"
-                                className="w-fit"
-                                onClick={() => {
-                                  modal.edit({
-                                    title: `Ubah ${Modul.RHK}`,
-                                    formFields: rhkFormFields({ options: { rkts: rkts } }),
-                                    data: { desc: record.desc, jenis: record.jenis, klasifikasi: record.klasifikasi, penugasan: record.penugasan, rkts: record.rktIds },
-                                    onSubmit: async (values) => {
-                                      const payload = {
-                                        desc: values.desc,
-                                        jenis: values.jenis,
-                                        klasifikasi: values.klasifikasi,
-                                        penugasan: values.penugasan,
-                                        rktIds: Array.isArray(values.rkts) ? values.rkts : (values.rkts ? [values.rkts] : [])
-                                      };
-                                      const { isSuccess, message } = await updateRhk.execute(detailSkp.id, record.rhkId, payload, token);
-                                      if (isSuccess) {
-                                        success('Berhasil', message);
-                                        fetchDetailSkp();
-                                      } else {
-                                        error('Gagal', message);
-                                      }
-                                      return isSuccess;
-                                    }
-                                  });
-                                }}
-                              >
-                                Edit
-                              </Button>
-                              <Button
-                                icon={<DeleteOutlined />}
-                                variant="solid"
-                                color="danger"
-                                onClick={() => handleDeleteRhk({ rhkId: record.rhkId })}
-                                size="small"
-                                className="w-fit"
-                              >
-                                Hapus
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      ),
-                      props: { rowSpan: record.rhkRowSpan }
-                    };
-                  }
-                },
-                {
-                  title: 'Klasifikasi',
-                  dataIndex: 'klasifikasi',
-                  key: 'klasifikasi',
-                  width: 100,
-                  render: (text, record) => {
-                    return {
-                      children: text,
-                      props: { rowSpan: record.rhkRowSpan }
-                    };
-                  }
-                },
-                {
-                  title: 'Aspek',
-                  dataIndex: 'aspekJenis',
-                  key: 'aspekJenis',
-                  width: 120
-                },
-                ...(detailSkp.pendekatan === 'KUALITATIF' ? [{
-                  title: 'Indikator Kinerja Individu',
-                  dataIndex: 'aspekDesc',
-                  key: 'aspekDesc',
-                  width: 150
-                }] : []),
-                ...(detailSkp.pendekatan === 'KUANTITATIF' ? [{
-                  title: 'Indikator Kinerja',
-                  dataIndex: 'indicatorName',
-                  key: 'indicatorName',
-                  width: 150,
-                  render: (text, record) => {
-                    return (
-                      <div className="flex items-center gap-2">
-                        <span>{text}</span>
-                        {isJpt && detailSkp.nip === user?.nip_baru && (
-                          <Button
-                            icon={<EditOutlined />}
-                            variant="text"
-                            color="primary"
-                            size="small"
-                            onClick={() => handleUpdateAspek(record)}
-                          />
-                        )}
-                      </div>
-                    );
-                  }
-                },
-                {
-                  title: 'Target',
-                  dataIndex: 'indicatorTarget',
-                  key: 'indicatorTarget',
-                  width: 100
-                }] : []),
-                ...(isJpt ? [{
-                  title: 'Rencana Kerja Tahunan',
-                  dataIndex: 'rktNames',
-                  key: 'rktNames',
-                  width: 200,
-                  render: (text, record) => {
-                    return {
-                      children: text?.join(', ') || '-',
-                      props: { rowSpan: record.rhkRowSpan }
-                    };
-                  }
-                }] : []),
-                ...(isJpt && detailSkp.nip === user?.nip_baru ? [{
-                  title: 'Penugasan',
-                  dataIndex: 'penugasan',
-                  key: 'penugasan',
-                  width: 150,
-                  render: (text, record) => {
-                    return {
-                      children: text,
-                      props: { rowSpan: record.rhkRowSpan }
-                    };
-                  }
-                }] : [])
-              ]}
-              dataSource={(() => {
-                const rhkUtama = detailSkp?.rhks?.filter((item) => item.jenis === 'Utama') ?? [];
-                const flatData = [];
-                rhkUtama.forEach((rhk) => {
-                  const aspeks = rhk.rhkAspeks && rhk.rhkAspeks.length > 0 ? rhk.rhkAspeks : [{ id: null, desc: null, jenis: null }];
-                  aspeks.forEach((aspek, idx) => {
-                    flatData.push({
-                      rhkId: rhk.id,
-                      id: rhk.id,
-                      desc: rhk.desc,
-                      klasifikasi: rhk.klasifikasi,
-                      penugasan: rhk.penugasan,
-                      jenis: rhk.jenis,
-                      rktIds: rhk.rhkRkts?.map(rkt => rkt.rktId) || [],
-                      aspekJenis: aspek.jenis || '-',
-                      aspekDesc: aspek.desc || '-',
-                      indicatorName: aspek.indicator?.name || '-',
-                      indicatorTarget: aspek.indicator?.target || '-',
-                      rktNames: rhk.rhkRkts?.map(rkt => rkt.rkt?.name || rkt.rktId) || [],
-                      rhkRowSpan: idx === 0 ? aspeks.length : 0
-                    });
-                  });
-                });
-                return flatData;
-              })()}
-              pagination={false}
-              rowKey={(record, idx) => `${record.rhkId}-${idx}`}
-            />
-
-            {/* RHK Tambahan */}
-            <div className="mt-4 flex w-full items-center justify-between">
-              <div className="inline-flex items-center gap-x-2">
-                <Typography.Title level={5}>Rencana Hasil Kerja Tambahan</Typography.Title>
-              </div>
-            </div>
-            <Table
-              bordered
-              columns={[
-                {
-                  title: 'Rencana Hasil Kerja',
-                  dataIndex: 'desc',
-                  key: 'desc',
-                  width: 150,
-                  render: (text, record) => {
-                    return {
-                      children: (
-                        <div className="flex flex-col gap-2">
-                          <span>{text}</span>
-                          {record.rhkRowSpan !== 0 && isJpt && detailSkp.nip === user?.nip_baru && (
-                            <div className="flex gap-2">
-                              <Button
-                                icon={<EditOutlined />}
-                                variant="solid"
-                                color="primary"
-                                size="small"
-                                className="w-fit"
-                                onClick={() => {
-                                  modal.edit({
-                                    title: `Ubah ${Modul.RHK}`,
-                                    formFields: rhkFormFields({ options: { rkts: rkts } }),
-                                    data: { desc: record.desc, jenis: record.jenis, klasifikasi: record.klasifikasi, penugasan: record.penugasan, rkts: record.rktIds },
-                                    onSubmit: async (values) => {
-                                      const payload = {
-                                        desc: values.desc,
-                                        jenis: values.jenis,
-                                        klasifikasi: values.klasifikasi,
-                                        penugasan: values.penugasan,
-                                        rktIds: Array.isArray(values.rkts) ? values.rkts : (values.rkts ? [values.rkts] : [])
-                                      };
-                                      const { isSuccess, message } = await updateRhk.execute(detailSkp.id, record.rhkId, payload, token);
-                                      if (isSuccess) {
-                                        success('Berhasil', message);
-                                        fetchDetailSkp();
-                                      } else {
-                                        error('Gagal', message);
-                                      }
-                                      return isSuccess;
-                                    }
-                                  });
-                                }}
-                              >
-                                Edit
-                              </Button>
-                              <Button
-                                icon={<DeleteOutlined />}
-                                variant="solid"
-                                color="danger"
-                                onClick={() => handleDeleteRhk({ rhkId: record.rhkId })}
-                                size="small"
-                                className="w-fit"
-                              >
-                                Hapus
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      ),
-                      props: { rowSpan: record.rhkRowSpan }
-                    };
-                  }
-                },
-                {
-                  title: 'Klasifikasi',
-                  dataIndex: 'klasifikasi',
-                  key: 'klasifikasi',
-                  width: 100,
-                  render: (text, record) => {
-                    return {
-                      children: text,
-                      props: { rowSpan: record.rhkRowSpan }
-                    };
-                  }
-                },
-                {
-                  title: 'Aspek',
-                  dataIndex: 'aspekJenis',
-                  key: 'aspekJenis',
-                  width: 120
-                },
-                ...(detailSkp.pendekatan === 'KUALITATIF' ? [{
-                  title: 'Indikator Kinerja Individu',
-                  dataIndex: 'aspekDesc',
-                  key: 'aspekDesc',
-                  width: 150
-                }] : []),
-                ...(detailSkp.pendekatan === 'KUANTITATIF' ? [{
-                  title: 'Indikator Kinerja',
-                  dataIndex: 'indicatorName',
-                  key: 'indicatorName',
-                  width: 150,
-                  render: (text, record) => {
-                    return (
-                      <div className="flex items-center gap-2">
-                        <span>{text}</span>
-                        {isJpt && detailSkp.nip === user?.nip_baru && (
-                          <Button
-                            icon={<EditOutlined />}
-                            variant="text"
-                            color="primary"
-                            size="small"
-                            onClick={() => handleUpdateAspek(record)}
-                          />
-                        )}
-                      </div>
-                    );
-                  }
-                },
-                {
-                  title: 'Target',
-                  dataIndex: 'indicatorTarget',
-                  key: 'indicatorTarget',
-                  width: 100
-                }] : []),
-                ...(isJpt ? [{
-                  title: 'Rencana Kerja Tahunan',
-                  dataIndex: 'rktNames',
-                  key: 'rktNames',
-                  width: 200,
-                  render: (text, record) => {
-                    return {
-                      children: text?.join(', ') || '-',
-                      props: { rowSpan: record.rhkRowSpan }
-                    };
-                  }
-                }] : []),
-                ...(isJpt && detailSkp.nip === user?.nip_baru ? [{
-                  title: 'Penugasan',
-                  dataIndex: 'penugasan',
-                  key: 'penugasan',
-                  width: 150,
-                  render: (text, record) => {
-                    return {
-                      children: text,
-                      props: { rowSpan: record.rhkRowSpan }
-                    };
-                  }
-                }] : [])
-              ]}
-              dataSource={(() => {
-                const rhkTambahan = detailSkp?.rhks?.filter((item) => item.jenis === 'Tambahan') ?? [];
-                const flatData = [];
-                rhkTambahan.forEach((rhk) => {
-                  const aspeks = rhk.rhkAspeks && rhk.rhkAspeks.length > 0 ? rhk.rhkAspeks : [{ id: null, desc: null, jenis: null }];
-                  aspeks.forEach((aspek, idx) => {
-                    flatData.push({
-                      rhkId: rhk.id,
-                      id: rhk.id,
-                      desc: rhk.desc,
-                      klasifikasi: rhk.klasifikasi,
-                      penugasan: rhk.penugasan,
-                      jenis: rhk.jenis,
-                      rktIds: rhk.rhkRkts?.map(rkt => rkt.rktId) || [],
-                      aspekJenis: aspek.jenis || '-',
-                      aspekDesc: aspek.desc || '-',
-                      indicatorName: aspek.indicator?.name || '-',
-                      indicatorTarget: aspek.indicator?.target || '-',
-                      rktNames: rhk.rhkRkts?.map(rkt => rkt.rkt?.name || rkt.rktId) || [],
-                      rhkRowSpan: idx === 0 ? aspeks.length : 0
-                    });
-                  });
-                });
-                return flatData;
-              })()}
-              pagination={false}
-              rowKey={(record, idx) => `${record.rhkId}-${idx}`}
-            />
 
             {/* Perilaku Kinerja */}
             <div className="mt-4 flex w-full items-center justify-between">

@@ -49,6 +49,23 @@ export default class UnitKerjaService {
   }
 
   /**
+   * Get unit details by ID
+   * @param {string} token
+   * @param {number} unit_id - Unit ID
+   * @returns {Promise<{
+   *  code: HTTPStatusCode;
+   *  status: boolean;
+   *  message: string;
+   *  data?: UnitKerja;
+   * }>}
+   * */
+  static async getDetails(token, unit_id) {
+    const response = await api.get(`/unor/${unit_id}/details`, { token });
+    if (!response.data) return response;
+    return { ...response, data: response.data };
+  }
+
+  /**
    * @param {string} token
    * @returns {Promise<{
    *  code: HTTPStatusCode;
@@ -58,7 +75,7 @@ export default class UnitKerjaService {
    * }>}
    * */
   static async getAllHirarchy(token, unit_id) {
-    const response = await api.get(`/unit-kerja/${unit_id}/unor-hierarchy`, { token });
+    const response = await api.get(`/unor/${unit_id}/jabatan`, { token });
     if (!response.data) return response;
     return { ...response, data: response.data };
   }

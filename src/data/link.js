@@ -189,8 +189,7 @@ export const dashboardLink = [
     icon: CalendarOutlined,
     path: '/dashboard/calendar',
     element: Dashboard.Calendars,
-    roles: [Role.ADMIN, Role.PIMPINAN, Role.UMPEG, Role.JPT, Role.ASN],
-    isMaintenance: true
+    roles: [Role.ADMIN, Role.UMPEG]
   },
   {
     label: 'Request Sample 2',

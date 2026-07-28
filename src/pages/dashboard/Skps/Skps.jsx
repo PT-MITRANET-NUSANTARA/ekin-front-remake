@@ -2,7 +2,7 @@ import { DataTableHeader, PageExplanation } from '@/components';
 import Modul from '@/constants/Modul';
 import { useAuth, useCrudModal, useNotification, usePagination, useService } from '@/hooks';
 import { SkpsService, RenstrasService, UnitKerjaService } from '@/services';
-import { CheckSquareOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, TableOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { CheckSquareOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, TableOutlined, UserSwitchOutlined, PrinterOutlined } from '@ant-design/icons';
 import { Badge, Button, Card, Descriptions, Skeleton, Space, Pagination } from 'antd';
 import React from 'react';
 import { formFields } from './FormFields';
@@ -193,9 +193,12 @@ const Skps = () => {
                   </Button>
                   {user?.pimpinan && (
                     <>
-                    
+
                     </>
                   )}
+                  <Button size="small" icon={<PrinterOutlined />} onClick={() => navigate('/dashboard/perjanjian-kinerja-template/' + item.id)}>
+                    Perjanjian Kinerja
+                  </Button>
                   <Button size="small" icon={<CheckSquareOutlined />} onClick={() => navigate(window.location.pathname + '/' + item.id + '/assessment_periods')}>
                     Penilaian
                   </Button>

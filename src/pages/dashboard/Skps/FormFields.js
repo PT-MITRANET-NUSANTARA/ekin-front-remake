@@ -1,4 +1,5 @@
 import { InputType } from '@/constants';
+import { ASPEK_LABEL } from '@/constants/AspekLabel';
 import dayjs from 'dayjs';
 
 export const formFields = ({ options = {}, onRenstraChange } = {}) => [
@@ -220,6 +221,48 @@ export const rhkFormFields = ({ options }) => [
 ];
 
 export const aspekFormFields = () => [
+  {
+    label: `Jenis Aspek`,
+    name: 'jenis',
+    type: InputType.SELECT,
+    rules: [
+      {
+        required: true,
+        message: `Jenis Aspek harus diisi`
+      }
+    ],
+    size: 'large',
+    options: [
+      {
+        label: ASPEK_LABEL.KUALITAS,
+        value: ASPEK_LABEL.KUALITAS
+      },
+      {
+        label: ASPEK_LABEL.KUANTITAS,
+        value: ASPEK_LABEL.KUANTITAS
+      },
+      {
+        label: ASPEK_LABEL.WAKTU,
+        value: ASPEK_LABEL.WAKTU
+      },
+      {
+        label: ASPEK_LABEL.DESKRIPSI,
+        value: ASPEK_LABEL.DESKRIPSI
+      }
+    ]
+  },
+  {
+    label: `Deskripsi Aspek`,
+    name: 'desc',
+    type: InputType.LONGTEXT,
+    rules: [
+      {
+        required: false
+      }
+    ],
+    size: 'large',
+    placeholder: 'Deskripsi aspek (opsional)'
+  },
   {
     label: `Nama Indikator`,
     name: 'name',

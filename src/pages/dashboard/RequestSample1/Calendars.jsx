@@ -1,324 +1,243 @@
 import { useAuth, useCrudModal, useNotification, useService } from '@/hooks';
-import { CalendarsService, WebSettingsService } from '@/services';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Badge, Button, Calendar, Card, Descriptions, Form, Input, Select, Space, TimePicker } from 'antd';
+import { CalendarsService, UnitKerjaService } from '@/services';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Badge, Button, Calendar, Card, Descriptions, Select, Skeleton, Space } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
-import { CalendarFormFields } from './FormFields';
+import { HolidayFormFields, KalenderFormFields } from './FormFields';
 
 const Caledars = () => {
-  const { token, user } = useAuth();
+  const { token } = useAuth();
   const modal = useCrudModal();
   const { success, error } = useNotification();
-  const { execute, ...getAllWebSettings } = useService(WebSettingsService.getAll);
-  const { execute: fetchCalendars, ...getAllCalendars } = useService(CalendarsService.getAll);
 
-  const [selectedDate, setSelectedDate] = React.useState(dayjs());
+  const { execute: fetchAllUnits, ...getAllUnits } = useService(UnitKerjaService.getAll);
+  const { execute: fetchByUnitId, ...getCalendarByUnit } = useService(CalendarsService.getByUnitId);
   const storeCalendar = useService(CalendarsService.store);
   const updateCalendar = useService(CalendarsService.update);
   const deleteCalendar = useService(CalendarsService.delete);
+  const storeHoliday = useService(CalendarsService.storeHoliday);
+  const deleteHoliday = useService(CalendarsService.deleteHoliday);
 
-  const fetchWebSettings = React.useCallback(() => {
-    execute({
-      token: token
-    });
-  }, [execute, token]);
+  const [selectedDate, setSelectedDate] = React.useState(dayjs());
+  const [selectedUnit, setSelectedUnit] = React.useState(null);
+
+  const units = React.useMemo(() => getAllUnits.data ?? [], [getAllUnits.data]);
+  const items = React.useMemo(() => getCalendarByUnit.data?.items ?? [], [getCalendarByUnit.data]);
 
   React.useEffect(() => {
-    fetchWebSettings();
-    fetchCalendars({ token: token });
-  }, [fetchCalendars, fetchWebSettings, token]);
+    fetchAllUnits({ token });
+  }, [fetchAllUnits, token]);
 
-  const websettings = React.useMemo(() => getAllWebSettings.data ?? {}, [getAllWebSettings.data]);
-  const calendars = React.useMemo(() => getAllCalendars.data ?? [], [getAllCalendars.data]);
+  React.useEffect(() => {
+    if (!selectedUnit) return;
+    fetchByUnitId(token, selectedUnit);
+  }, [selectedUnit, fetchByUnitId, token]);
 
   const calendarMap = React.useMemo(() => {
     const map = new Map();
-    calendars.forEach((item) => {
-      map.set(item.date, item);
+    items.forEach((item) => {
+      map.set(dayjs(item.date).format('YYYY-MM-DD'), item);
     });
     return map;
-  }, [calendars]);
+  }, [items]);
 
   const selectedCalendar = React.useMemo(() => {
-    const key = selectedDate.format('YYYY-MM-DD');
-    return calendarMap.get(key);
+    return calendarMap.get(selectedDate.format('YYYY-MM-DD'));
   }, [calendarMap, selectedDate]);
 
-  const WORKDAY_MAP = React.useMemo(
-    () => ({
-      SUN: 0,
-      MON: 1,
-      TUE: 2,
-      WED: 3,
-      THU: 4,
-      FRI: 5,
-      SAT: 6
-    }),
-    []
-  );
+  const refresh = () => fetchByUnitId(token, selectedUnit);
 
-  const workDayNumbers = React.useMemo(() => {
-    if (!websettings?.default_work_days) return [];
-    return websettings.default_work_days.map((day) => WORKDAY_MAP[day]);
-  }, [WORKDAY_MAP, websettings.default_work_days]);
-
-  const mergeDateAndTime = (date, time) => {
-    if (!date || !time) return null;
-
-    return dayjs(date).hour(time.hour()).minute(time.minute()).second(0).format('YYYY-MM-DDTHH:mm:ss');
-  };
-
-  const handleFormSubmit = async (values) => {
-    const payload = {
-      unit_id: user.unor.id,
-      date: selectedDate.format('YYYY-MM-DD'),
-
-      is_holiday: values.is_holiday,
-      holiday_name: values.holiday_name ?? '',
-
-      harian_time_start: mergeDateAndTime(selectedDate, values.harian_time_start),
-      harian_time_end: mergeDateAndTime(selectedDate, values.harian_time_end),
-
-      break_time_start: mergeDateAndTime(selectedDate, values.break_time_start),
-      break_time_end: mergeDateAndTime(selectedDate, values.break_time_end),
-
-      total_minutes: Number(values.total_minutes)
-    };
-
-    const { isSuccess, message } = await storeCalendar.execute(payload, token);
-
-    if (isSuccess) {
-      success('Berhasil', message);
-      fetchCalendars({ token: token });
-    } else {
-      error('Gagal', message);
-    }
-
-    return isSuccess;
-  };
-
-  const mapCalendarToForm = (calendar) => ({
-    is_holiday: calendar.is_holiday,
-    holiday_name: calendar.holiday_name,
-    harian_time_start: dayjs(calendar.harian_time_start),
-    harian_time_end: dayjs(calendar.harian_time_end),
-    break_time_start: dayjs(calendar.break_time_start),
-    break_time_end: dayjs(calendar.break_time_end),
-    total_minutes: calendar.total_minutes
-  });
-
-  const handleUpdatePenanda = async () => {
-    modal.edit({
-      title: `Ubah Data Penanda`,
-      formFields: CalendarFormFields(),
-      data: mapCalendarToForm(selectedCalendar),
+  const handleAddKalender = () => {
+    modal.create({
+      title: `Tambah Kalender - ${selectedDate.format('DD MMMM YYYY')}`,
+      formFields: KalenderFormFields(),
       onSubmit: async (values) => {
         const payload = {
-          is_holiday: values.is_holiday,
-          holiday_name: values.holiday_name ?? '',
-
-          harian_time_start: mergeDateAndTime(selectedDate, values.harian_time_start),
-          harian_time_end: mergeDateAndTime(selectedDate, values.harian_time_end),
-
-          break_time_start: mergeDateAndTime(selectedDate, values.break_time_start),
-          break_time_end: mergeDateAndTime(selectedDate, values.break_time_end),
-
-          total_minutes: Number(values.total_minutes)
+          date: selectedDate.format('YYYY-MM-DD'),
+          unitId: String(selectedUnit),
+          dayTimeStart: values.dayTimeStart?.format('HH:mm'),
+          dayTimeEnd: values.dayTimeEnd?.format('HH:mm'),
+          breakTimeStart: values.breakTimeStart?.format('HH:mm'),
+          breakTimeEnd: values.breakTimeEnd?.format('HH:mm'),
+          totalMinuteWork: Number(values.totalMinuteWork),
+          note: values.note ?? ''
         };
-
-        const { isSuccess, message } = await updateCalendar.execute(selectedCalendar.id, payload, token);
-
-        if (isSuccess) {
-          success('Berhasil', message);
-          fetchCalendars({ token });
-        } else {
-          error('Gagal', message);
-        }
-
+        const { isSuccess, message } = await storeCalendar.execute(payload, token);
+        if (isSuccess) { success('Berhasil', message); refresh(); }
+        else error('Gagal', message);
         return isSuccess;
       }
     });
   };
 
-  const handleDeletePenanda = async () => {
-    modal.delete.default({
-      title: `Delete Penanda`,
-      onSubmit: async () => {
-        const { isSuccess, message } = await deleteCalendar.execute(selectedCalendar.id, token);
-        if (isSuccess) {
-          success('Berhasil', message);
-          fetchCalendars({ token: token });
-        } else {
-          error('Gagal', message);
-        }
+  const handleEditKalender = () => {
+    const cal = selectedCalendar;
+    modal.edit({
+      title: `Ubah Kalender - ${selectedDate.format('DD MMMM YYYY')}`,
+      formFields: KalenderFormFields(),
+      data: {
+        dayTimeStart: dayjs(cal.dayTimeStart, 'HH:mm'),
+        dayTimeEnd: dayjs(cal.dayTimeEnd, 'HH:mm'),
+        breakTimeStart: dayjs(cal.breakTimeStart, 'HH:mm'),
+        breakTimeEnd: dayjs(cal.breakTimeEnd, 'HH:mm'),
+        totalMinuteWork: cal.totalMinuteWork,
+        note: cal.note
+      },
+      onSubmit: async (values) => {
+        const payload = {
+          dayTimeStart: values.dayTimeStart?.format('HH:mm'),
+          dayTimeEnd: values.dayTimeEnd?.format('HH:mm'),
+          breakTimeStart: values.breakTimeStart?.format('HH:mm'),
+          breakTimeEnd: values.breakTimeEnd?.format('HH:mm'),
+          totalMinuteWork: Number(values.totalMinuteWork),
+          note: values.note ?? ''
+        };
+        const { isSuccess, message } = await updateCalendar.execute(cal.id, payload, token);
+        if (isSuccess) { success('Berhasil', message); refresh(); }
+        else error('Gagal', message);
         return isSuccess;
       }
     });
+  };
+
+  const handleDeleteKalender = () => {
+    modal.delete.default({
+      title: 'Hapus Kalender',
+      onSubmit: async () => {
+        const { isSuccess, message } = await deleteCalendar.execute(selectedCalendar.id, token);
+        if (isSuccess) { success('Berhasil', message); refresh(); }
+        else error('Gagal', message);
+        return isSuccess;
+      }
+    });
+  };
+
+  const handleAddHoliday = () => {
+    modal.create({
+      title: `Tambah Hari Libur - ${selectedDate.format('DD MMMM YYYY')}`,
+      formFields: HolidayFormFields(),
+      onSubmit: async (values) => {
+        const payload = {
+          date: selectedDate.format('YYYY-MM-DD'),
+          unitId: String(selectedUnit),
+          name: values.name,
+          note: values.note ?? ''
+        };
+        const { isSuccess, message } = await storeHoliday.execute(payload, token);
+        if (isSuccess) { success('Berhasil', message); refresh(); }
+        else error('Gagal', message);
+        return isSuccess;
+      }
+    });
+  };
+
+  const handleDeleteHoliday = () => {
+    modal.delete.default({
+      title: 'Hapus Hari Libur',
+      onSubmit: async () => {
+        const { isSuccess, message } = await deleteHoliday.execute(selectedCalendar.id, token);
+        if (isSuccess) { success('Berhasil', message); refresh(); }
+        else error('Gagal', message);
+        return isSuccess;
+      }
+    });
+  };
+
+  const renderDetail = () => {
+    if (!selectedCalendar) {
+      return (
+        <Space direction="vertical" className="w-full">
+          <Button block icon={<PlusOutlined />} variant="outlined" color="primary" onClick={handleAddKalender}>
+            Tambah Kalender
+          </Button>
+          <Button block icon={<PlusOutlined />} variant="outlined" color="danger" onClick={handleAddHoliday}>
+            Tambah Hari Libur
+          </Button>
+        </Space>
+      );
+    }
+
+    if (selectedCalendar.type === 'holiday') {
+      return (
+        <Descriptions column={1} bordered size="small">
+          <Descriptions.Item label="Jenis">Hari Libur</Descriptions.Item>
+          <Descriptions.Item label="Nama">{selectedCalendar.name || '-'}</Descriptions.Item>
+          <Descriptions.Item label="Catatan">{selectedCalendar.note || '-'}</Descriptions.Item>
+          <Descriptions.Item label="Aksi">
+            <Button icon={<DeleteOutlined />} variant="outlined" color="danger" onClick={handleDeleteHoliday}>
+              Hapus
+            </Button>
+          </Descriptions.Item>
+        </Descriptions>
+      );
+    }
+
+    return (
+      <Descriptions column={1} bordered size="small">
+        <Descriptions.Item label="Jenis">Hari Kerja</Descriptions.Item>
+        <Descriptions.Item label="Waktu Mulai">{selectedCalendar.dayTimeStart}</Descriptions.Item>
+        <Descriptions.Item label="Waktu Berakhir">{selectedCalendar.dayTimeEnd}</Descriptions.Item>
+        <Descriptions.Item label="Istirahat Mulai">{selectedCalendar.breakTimeStart}</Descriptions.Item>
+        <Descriptions.Item label="Istirahat Berakhir">{selectedCalendar.breakTimeEnd}</Descriptions.Item>
+        <Descriptions.Item label="Total Menit">{selectedCalendar.totalMinuteWork} menit</Descriptions.Item>
+        <Descriptions.Item label="Catatan">{selectedCalendar.note || '-'}</Descriptions.Item>
+        <Descriptions.Item label="Aksi">
+          <Space>
+            <Button icon={<EditOutlined />} variant="outlined" color="primary" onClick={handleEditKalender} />
+            <Button icon={<DeleteOutlined />} variant="outlined" color="danger" onClick={handleDeleteKalender} />
+          </Space>
+        </Descriptions.Item>
+      </Descriptions>
+    );
   };
 
   return (
-    <div className="grid grid-cols-12 gap-4">
-      <Card className="col-span-8">
-        <Calendar
-          onSelect={(date) => {
-            setSelectedDate(date);
-          }}
-          dateCellRender={(value) => {
-            const dateKey = value.format('YYYY-MM-DD');
-            const calendarItem = calendarMap.get(dateKey);
-
-            const dayNumber = value.day();
-            const isWorkDay = workDayNumbers.includes(dayNumber);
-
-            return (
-              <div className="relative h-full w-full">
-                <div className="absolute bottom-2 left-1 flex flex-col gap-y-1">
-                  {!calendarItem && (isWorkDay ? <Badge color="green" text={<span className="text-xs">Onsite</span>} /> : <Badge color="red" text={<span className="text-xs">Libur</span>} />)}
-
-                  {calendarItem && <Badge color={calendarItem.is_holiday ? 'red' : 'blue'} text={<span className="text-xs">{calendarItem.holiday_name}</span>} />}
-                </div>
-              </div>
-            );
-          }}
-        />
+    <div className="flex flex-col gap-4">
+      <Card>
+        <Skeleton loading={getAllUnits.isLoading}>
+          <Select
+            placeholder="Pilih Unit Kerja"
+            className="w-full"
+            value={selectedUnit}
+            onChange={(value) => setSelectedUnit(value)}
+            options={units.map((item) => ({
+              label: item.nama_unor || item.name,
+              value: item.id_simpeg || item.id
+            }))}
+          />
+        </Skeleton>
       </Card>
-      <Card title={selectedDate.format('YYYY-MM-DD')} className="col-span-4 h-fit">
-        {!selectedCalendar && (
-          <Form onFinish={handleFormSubmit} layout="vertical" className="flex flex-col gap-y-3">
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: `Tipe Penanda harus diisi`
-                }
-              ]}
-              label="Pilih Penanda"
-              className="m-0"
-              name="is_holiday"
-            >
-              <Select size="large" placeholder="Pilih Penanda">
-                <Select.Option value={true}>Hari Libur</Select.Option>
-                <Select.Option value={false}>Hari Kerja</Select.Option>
-              </Select>
-            </Form.Item>
 
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: `Nama Penanda harus diisi`
-                }
-              ]}
-              label="Nama Penanda"
-              className="m-0"
-              name="holiday_name"
-            >
-              <Input size="large" placeholder="Masukan Nama Penanda" />
-            </Form.Item>
+      {selectedUnit && (
+        <div className="grid grid-cols-12 gap-4">
+          <Card className="col-span-8">
+            <Skeleton loading={getCalendarByUnit.isLoading}>
+              <Calendar
+                onSelect={(date) => setSelectedDate(date)}
+                cellRender={(value, info) => {
+                  if (info.type !== 'date') return info.originNode;
+                  const calendarItem = calendarMap.get(value.format('YYYY-MM-DD'));
+                  if (!calendarItem) return info.originNode;
+                  return (
+                    <div>
+                      <div className="ant-picker-cell-inner">{value.date()}</div>
+                      <Badge
+                        color={calendarItem.type === 'holiday' ? 'red' : 'blue'}
+                        text={<span className="text-xs">{calendarItem.name || 'Kerja'}</span>}
+                      />
+                    </div>
+                  );
+                }}
+              />
+            </Skeleton>
+          </Card>
 
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: `Waktu Mulai harus diisi`
-                }
-              ]}
-              label="Waktu Mulai"
-              className="m-0"
-              name="harian_time_start"
-            >
-              <TimePicker size="large" className="w-full" />
-            </Form.Item>
-
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: `Waktu Berakhir harus diisi`
-                }
-              ]}
-              label="Waktu Berakhir"
-              className="m-0"
-              name="harian_time_end"
-            >
-              <TimePicker size="large" className="w-full" />
-            </Form.Item>
-
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: `Waktu Istrahat harus diisi`
-                }
-              ]}
-              label="Waktu Istirahat"
-              className="m-0"
-              name="break_time_start"
-            >
-              <TimePicker size="large" className="w-full" />
-            </Form.Item>
-
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: `Wakhir Akhir Istrahat harus diisi`
-                }
-              ]}
-              label="Waktu Akhir Istirahat"
-              className="m-0"
-              name="break_time_end"
-            >
-              <TimePicker size="large" className="w-full" />
-            </Form.Item>
-
-            <Form.Item
-              rules={[
-                {
-                  required: true,
-                  message: `Total Menit harus diisi`
-                }
-              ]}
-              label="Total Menit"
-              className="m-0"
-              name="total_minutes"
-            >
-              <Input type="number" size="large" placeholder="Masukan Total Menit" />
-            </Form.Item>
-
-            <Form.Item>
-              <Button size="large" htmlType="submit" variant="solid" color="primary">
-                Kirim
-              </Button>
-            </Form.Item>
-          </Form>
-        )}
-
-        {selectedCalendar && (
-          <Descriptions column={1} bordered>
-            <Descriptions.Item label="Jenis Hari">{selectedCalendar.is_holiday ? 'Hari Libur' : 'Hari Kerja'}</Descriptions.Item>
-
-            <Descriptions.Item label="Nama Penanda">{selectedCalendar.holiday_name || '-'}</Descriptions.Item>
-
-            <Descriptions.Item label="Waktu Mulai">{dayjs(selectedCalendar.harian_time_start).format('HH:mm')}</Descriptions.Item>
-
-            <Descriptions.Item label="Waktu Berakhir">{dayjs(selectedCalendar.harian_time_end).format('HH:mm')}</Descriptions.Item>
-
-            <Descriptions.Item label="Istirahat Mulai">{dayjs(selectedCalendar.break_time_start).format('HH:mm')}</Descriptions.Item>
-
-            <Descriptions.Item label="Istirahat Berakhir">{dayjs(selectedCalendar.break_time_end).format('HH:mm')}</Descriptions.Item>
-
-            <Descriptions.Item label="Total Menit">{selectedCalendar.total_minutes} menit</Descriptions.Item>
-            <Descriptions.Item label="Aksi">
-              <Space>
-                <Button icon={<EditOutlined />} variant="outlined" color="primary" onClick={() => handleUpdatePenanda()} />
-                <Button icon={<DeleteOutlined />} variant="outlined" color="danger" onClick={() => handleDeletePenanda()} />
-              </Space>
-            </Descriptions.Item>
-          </Descriptions>
-        )}
-      </Card>
+          <Card title={selectedDate.format('DD MMMM YYYY')} className="col-span-4 h-fit">
+            {renderDetail()}
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

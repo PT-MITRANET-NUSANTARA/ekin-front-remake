@@ -1,100 +1,65 @@
 import { InputType } from '@/constants';
 
-export const CalendarFormFields = () => [
-  {
-    label: `Pilih Penanda`,
-    name: 'is_holiday',
-    type: InputType.SELECT,
-    rules: [
-      {
-        required: true,
-        message: `Tipe Penanda harus diisi`
-      }
-    ],
-    size: 'large',
-    options: [
-      {
-        label: 'Hari Libur',
-        value: true
-      },
-      {
-        label: 'Hari Kerja',
-        value: false
-      }
-    ]
-  },
-  {
-    label: 'Nama Penanda',
-    name: 'holiday_name',
-    type: InputType.TEXT,
-    size: 'large',
-    placeholder: 'Masukan Nama Penanda',
-    rules: [
-      {
-        required: true,
-        message: 'Nama Penanda harus diisi'
-      }
-    ]
-  },
+export const KalenderFormFields = () => [
   {
     label: 'Waktu Mulai',
-    name: 'harian_time_start',
+    name: 'dayTimeStart',
     type: InputType.TIME,
     size: 'large',
-    rules: [
-      {
-        required: true,
-        message: 'Waktu Mulai harus diisi'
-      }
-    ]
+    rules: [{ required: true, message: 'Waktu Mulai harus diisi' }]
   },
   {
     label: 'Waktu Berakhir',
-    name: 'harian_time_end',
+    name: 'dayTimeEnd',
     type: InputType.TIME,
     size: 'large',
-    rules: [
-      {
-        required: true,
-        message: 'Waktu Berakhir harus diisi'
-      }
-    ]
+    rules: [{ required: true, message: 'Waktu Berakhir harus diisi' }]
   },
   {
-    label: 'Waktu Istirahat',
-    name: 'break_time_start',
+    label: 'Istirahat Mulai',
+    name: 'breakTimeStart',
     type: InputType.TIME,
     size: 'large',
-    rules: [
-      {
-        required: true,
-        message: 'Waktu Istirahat harus diisi'
-      }
-    ]
+    rules: [{ required: true, message: 'Istirahat Mulai harus diisi' }]
   },
   {
-    label: 'Waktu Akhir Istirahat',
-    name: 'break_time_end',
+    label: 'Istirahat Berakhir',
+    name: 'breakTimeEnd',
     type: InputType.TIME,
     size: 'large',
-    rules: [
-      {
-        required: true,
-        message: 'Waktu Akhir Istirahat harus diisi'
-      }
-    ]
+    rules: [{ required: true, message: 'Istirahat Berakhir harus diisi' }]
   },
   {
-    label: 'Total Menit',
-    name: 'total_minutes',
+    label: 'Total Menit Kerja',
+    name: 'totalMinuteWork',
     type: InputType.NUMBER,
     size: 'large',
-    placeholder: 'Masukan Total Menit',
-    rules: [
-      {
-        required: true,
-        message: 'Total Menit harus diisi'
-      }
-    ]
+    placeholder: 'Masukan total menit',
+    rules: [{ required: true, message: 'Total Menit harus diisi' }]
+  },
+  {
+    label: 'Catatan',
+    name: 'note',
+    type: InputType.TEXT,
+    size: 'large',
+    placeholder: 'Catatan (opsional)'
+  }
+];
+
+export const HolidayFormFields = () => [
+  {
+    label: 'Nama Hari Libur',
+    name: 'name',
+    type: InputType.TEXT,
+    size: 'large',
+    placeholder: 'Masukan nama hari libur',
+    rules: [{ required: true, message: 'Nama harus diisi' }]
+  },
+  {
+    label: 'Catatan',
+    name: 'note',
+    type: InputType.TEXT,
+    size: 'large',
+    placeholder: 'Catatan (opsional)'
   }
 ];
